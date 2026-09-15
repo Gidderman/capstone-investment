@@ -1,6 +1,3 @@
-#Create target library
-add_library(Controllers)
-
 add_executable(Investment)
 
 target_sources(Investment
@@ -10,12 +7,23 @@ target_sources(Investment
 
 target_link_libraries(Investment
   PRIVATE
+    Consolidated
+)
+
+#LIBRARY CONSOLIDATION
+add_library(Consolidated INTERFACE)
+
+target_link_libraries(Consolidated
+  INTERFACE
     Controllers
     Models
     Utils
     Services
     Views
 )
+
+#CONTROLLER LIBRARY
+add_library(Controllers)
 
 #Target sources
 target_sources(Controllers
@@ -30,4 +38,11 @@ target_sources(Controllers
       AdminController.h
       MasterController.h
       TraderController.h
+)
+
+target_link_libraries(Controllers
+  PRIVATE
+    Services
+    Views
+    Models
 )

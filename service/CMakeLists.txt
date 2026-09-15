@@ -19,3 +19,11 @@ target_sources(Services
       LogInService.h
       TraderService.h
 )
+
+target_link_libraries(Services
+  PUBLIC
+    Utils
+
+  PRIVATE
+    Models
+)

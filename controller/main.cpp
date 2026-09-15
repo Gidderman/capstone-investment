@@ -1,26 +1,13 @@
-#include "AdminController.h"
-#include "AdminMainView.h"
-#include "AdminService.h"
-#include "Authorizer.h"
-#include "CRUDManager.h"
-#include "Customer.h"
-#include "CustomerCreationView.h"
-#include "CustomerManagerView.h"
-#include "DataManager.h"
-#include "InitService.h"
-#include "Investment.h"
-#include "LogInService.h"
-#include "LogInView.h"
-#include "MasterController.h"
-#include "PurchaseStockWindow.h"
-#include "Role.h"
-#include "SellStockWindow.h"
-#include "Stock.h"
-#include "Trader.h"
-#include "TraderController.h"
-#include "TraderCreationView.h"
-#include "TraderMainView.h"
-#include "TraderService.h"
-#include "WarningWindow.h"
+// The starting point of the application. It constructs a Qt Application, as
+// well as the master controller that will direct the rest of the application.
 
-int main() { return 0; }
+#include "MasterController.h"
+
+#include <QApplication>
+
+int main(int argc, char *argv[]) {
+  QApplication app(argc, argv);
+  MasterController MasterController;
+
+  return app.exec();
+}

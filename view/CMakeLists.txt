@@ -1,5 +1,7 @@
 add_library(Views)
 
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+
 target_sources(Views
   PRIVATE
     src/AdminMainView.cpp 
@@ -24,4 +26,9 @@ target_sources(Views
       TraderCreationView.h 
       TraderMainView.h 
       WarningWindow.h 
+)
+
+target_link_libraries(Views
+  PUBLIC
+    Qt6::Widgets
 )
