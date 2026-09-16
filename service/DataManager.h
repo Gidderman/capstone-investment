@@ -2,10 +2,12 @@
 #define DATA_MANAGER_H
 
 #include "CRUDManager.h"
+#include "Credentials.h"
 #include "Customer.h"
 #include "Employee.h"
 
 #include <string>
+#include <tuple>
 
 class DataManager {
 private:
@@ -14,7 +16,7 @@ private:
 public:
   DataManager();
   ~DataManager();
-  Employee getEmployeeByUsername(std::string username);
+  std::tuple<Employee, Credentials> getEmployeeByUsername(std::string username);
 };
 
 #endif

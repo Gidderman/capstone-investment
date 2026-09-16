@@ -15,11 +15,20 @@ MasterController::~MasterController() {}
 void MasterController::executeMainFunctions() {};
 
 void MasterController::executeLogin() {
-  ROLE userRole = logInService.handleLogInAttempt(
+  std::tuple<Employee, ROLE> logInInformation = logInService.handleLogInAttempt(
       logInView->getEnteredUsername().toStdString(),
       logInView->getEnteredPassword().toStdString());
-  if (userRole == ROLE::ADMIN) {
-    std::cout << "LOG IN TO ADMIN" << std::endl;
+
+  switch (std::get<1>(logInInformation)) {
+  case ADMIN:
+    std::cout << "ADMIN LOG IN INITIATED" << std::endl;
+    break;
+
+  case TRADER:
+    std::cout << "TRADER LOG IN INITIATED" << std::endl;
+    break;
+  default:
+    std::cout << "INVALID LOG IN!" << std::endl;
   }
 };
 

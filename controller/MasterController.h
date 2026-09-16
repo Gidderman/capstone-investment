@@ -9,6 +9,7 @@
 #include "TraderController.h"
 
 #include <QObject>
+#include <tuple>
 
 class MasterController : public QObject {
   // Necessary macro for using signals and slots

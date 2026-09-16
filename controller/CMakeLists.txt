@@ -20,6 +20,7 @@ target_link_libraries(Consolidated
     Utils
     Services
     Views
+    ViewUtils
 )
 
 #CONTROLLER LIBRARY
@@ -45,4 +46,5 @@ target_link_libraries(Controllers
     Services
     Views
     Models
+    ViewUtils
 )

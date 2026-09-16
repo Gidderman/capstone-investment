@@ -5,6 +5,7 @@
 #include "Role.h"
 
 #include <string>
+#include <tuple>
 
 class LogInService {
 private:
@@ -16,8 +17,8 @@ private:
 public:
   LogInService();
   ~LogInService();
-  ROLE handleLogInAttempt(std::string enteredUsername,
-                          std::string enteredPassword);
+  std::tuple<Employee, ROLE> handleLogInAttempt(std::string enteredUsername,
+                                                std::string enteredPassword);
 };
 
 #endif

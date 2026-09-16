@@ -4,15 +4,19 @@ LogInService::LogInService() {}
 
 LogInService::~LogInService() {}
 
-ROLE LogInService::handleLogInAttempt(std::string enteredUsername,
-                                      std::string enteredPassword) {
-  Employee storedEmployee = dataManager.getEmployeeByUsername(enteredUsername);
+std::tuple<Employee, ROLE>
+LogInService::handleLogInAttempt(std::string enteredUsername,
+                                 std::string enteredPassword) {
+  std::tuple<Employee, Credentials> logInInformation =
+      dataManager.getEmployeeByUsername(enteredUsername);
 
   if (authenticate(hashPassword(enteredPassword),
-                   storedEmployee.credentials.password)) {
-    return storedEmployee.role;
+                   std::get<1>(logInInformation).password)) {
+    return std::tuple<Employee, ROLE>{std::get<0>(logInInformation),
+                                      std::get<0>(logInInformation).role};
   } else {
-    return ROLE::INVALID;
+    return std::tuple<Employee, ROLE>{std::get<0>(logInInformation),
+                                      ROLE::INVALID};
   }
 }
 

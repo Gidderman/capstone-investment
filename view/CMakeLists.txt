@@ -31,4 +31,5 @@ target_sources(Views
 target_link_libraries(Views
   PUBLIC
     Qt6::Widgets
+    ViewUtils
 )
