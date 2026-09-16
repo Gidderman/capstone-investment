@@ -3,8 +3,18 @@
 
 #include "CRUDManager.h"
 #include "Customer.h"
-#include "Trader.h"
+#include "Employee.h"
 
-class DataManager {};
+#include <string>
+
+class DataManager {
+private:
+  CRUDManager crudManager;
+
+public:
+  DataManager();
+  ~DataManager();
+  Employee getEmployeeByUsername(std::string username);
+};
 
 #endif

@@ -13,5 +13,6 @@ target_sources(Utils
       Investment.h 
       Role.h 
       Stock.h 
-      Trader.h 
+      Employee.h 
+      Credentials.h
 )

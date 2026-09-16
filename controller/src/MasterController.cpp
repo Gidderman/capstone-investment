@@ -15,7 +15,12 @@ MasterController::~MasterController() {}
 void MasterController::executeMainFunctions() {};
 
 void MasterController::executeLogin() {
-  std::cout << "BUTTON CLICK DETECTED" << std::endl;
+  ROLE userRole = logInService.handleLogInAttempt(
+      logInView->getEnteredUsername().toStdString(),
+      logInView->getEnteredPassword().toStdString());
+  if (userRole == ROLE::ADMIN) {
+    std::cout << "LOG IN TO ADMIN" << std::endl;
+  }
 };
 
 // ************************* SLOTS **********************************

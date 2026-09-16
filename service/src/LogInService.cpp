@@ -4,15 +4,24 @@ LogInService::LogInService() {}
 
 LogInService::~LogInService() {}
 
-ROLE handleLogInAttempt(std::string enteredUsername,
-                        std::string enteredPassword) {
-  // TODO: LOGIC
+ROLE LogInService::handleLogInAttempt(std::string enteredUsername,
+                                      std::string enteredPassword) {
+  Employee storedEmployee = dataManager.getEmployeeByUsername(enteredUsername);
+
+  if (authenticate(hashPassword(enteredPassword),
+                   storedEmployee.credentials.password)) {
+    return storedEmployee.role;
+  } else {
+    return ROLE::INVALID;
+  }
 }
 
 std::string LogInService::hashPassword(std::string rawPassword) {
-  // TODO: LOGIC
+  // TODO: Actually salt and hash the password
+  return rawPassword;
 }
 
-bool authenticate(std::string enteredPassword, std::string validPassword) {
-  // TODO: LOGIC
+bool LogInService::authenticate(std::string enteredPassword,
+                                std::string validPassword) {
+  return enteredPassword == validPassword;
 }
