@@ -3,6 +3,14 @@
 
 #include "Role.h"
 
-class Authorizer {};
+class Authorizer {
+private:
+  ROLE currRole;
+
+public:
+  Authorizer(ROLE currentUsersRole);
+  ~Authorizer();
+  bool authorizeUser(ROLE requiredRole);
+};
 
 #endif

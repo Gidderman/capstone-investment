@@ -18,9 +18,6 @@ class MasterController : public QObject {
 private:
   LogInView *logInView;
 
-  AdminController adminController;
-  TraderController traderController;
-
   LogInService logInService;
 
 public:
