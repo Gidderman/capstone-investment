@@ -1,4 +1,6 @@
 #include "CustomerDisplayItem.h"
+#include <qevent.h>
+#include <qnamespace.h>
 
 CustomerDisplayItem::CustomerDisplayItem(QString name, QString id,
                                          QString currentWorth,
@@ -23,3 +25,15 @@ CustomerDisplayItem::CustomerDisplayItem(QString name, QString id,
 }
 
 CustomerDisplayItem::~CustomerDisplayItem() {}
+
+void CustomerDisplayItem::mousePressEvent(QMouseEvent *event) {
+  if (event->buttons() == Qt::LeftButton) {
+    // TODO: highlight this widget
+  }
+}
+
+void CustomerDisplayItem::mouseDoubleClickEvent(QMouseEvent *event) {
+  if (event->buttons() == Qt::LeftButton) {
+    emit clicked();
+  }
+}

@@ -2,7 +2,9 @@
 #include "AdminMainView.h"
 #include "Customer.h"
 #include "CustomerDisplayItem.h"
+#include "TraderCreationView.h"
 
+#include <iostream>
 #include <string>
 
 AdminController::AdminController() {
@@ -14,6 +16,23 @@ AdminController::AdminController() {
 
   pAdminMainView =
       new AdminMainView(&customerDisplayList, &employeeDisplayList);
+  pTraderCreationView = new TraderCreationView();
+
+  // Connect all the Admin Main View signals to the applicable slots.
+  connect(pAdminMainView, &AdminMainView::notifyOfLogOut, this,
+          &AdminController::listenForLogOut);
+  connect(pAdminMainView, &AdminMainView::notifyOfEmployeeCreation, this,
+          &AdminController::listenForEmployeeCreation);
+  connect(pAdminMainView, &AdminMainView::notifyOfEmployeeEdit, this,
+          &AdminController::listenForEmployeeEdit);
+  connect(pAdminMainView, &AdminMainView::notifyOfEmployeeDeletion, this,
+          &AdminController::listenForEmployeeDeletion);
+  connect(pAdminMainView, &AdminMainView::notifyOfCustomerCreation, this,
+          &AdminController::listenForCustomerCreation);
+  connect(pAdminMainView, &AdminMainView::notifyOfCustomerEdit, this,
+          &AdminController::listenForCustomerEdit);
+  connect(pAdminMainView, &AdminMainView::notifyOfCustomerDeletion, this,
+          &AdminController::listenForCustomerDeletion);
 };
 
 AdminController::~AdminController() {}
@@ -26,6 +45,27 @@ void AdminController::run(Authorizer *authorizer) {
   pAdminMainView->show();
 }
 
+void AdminController::executeEmployeeCreation() { pTraderCreationView->run(); }
+
+void AdminController::executeEmployeeEdit() { pTraderCreationView->run(); }
+
+void AdminController::executeEmployeeDeletion() {
+  std::cout << "DELETE EMPLOYEE BUTTON CLICKED" << std::endl;
+}
+
+void AdminController::executeCustomerCreation() {
+  std::cout << "CREATE CUSTOMER BUTTON CLICKED" << std::endl;
+}
+
+void AdminController::executeCustomerEdit() {
+  std::cout << "EDIT CUSTOMER BUTTON CLICKED" << std::endl;
+}
+
+void AdminController::executeCustomerDeletion() {
+  std::cout << "DELETE CUSTOMER BUTTON CLICKED" << std::endl;
+}
+
+//*********************PRIVATE FUNCTIONS*****************************
 std::vector<Customer> AdminController::getAllCustomers() {
   // TODO: develope actual functionality
   Stock stock = {0001, "Nintendo", "NTD", 340.00f};
@@ -95,3 +135,15 @@ void AdminController::formatEmployeesForDisplay() {
     employeeDisplayList.push_back(displayItem);
   }
 }
+
+//*********************SLOTS**************************************
+void AdminController::listenForLogOut() {
+  pAdminMainView->hide();
+  emit informMasterControllerOfLogOut();
+}
+void AdminController::listenForEmployeeCreation() { executeEmployeeCreation(); }
+void AdminController::listenForEmployeeEdit() { executeEmployeeEdit(); }
+void AdminController::listenForEmployeeDeletion() { executeEmployeeDeletion(); }
+void AdminController::listenForCustomerCreation() { executeCustomerCreation(); }
+void AdminController::listenForCustomerEdit() { executeCustomerEdit(); }
+void AdminController::listenForCustomerDeletion() { executeCustomerDeletion(); }

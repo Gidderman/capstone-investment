@@ -8,6 +8,8 @@ MasterController::MasterController() {
 
   connect(logInView, &LogInView::notifyOfLogInAttempt, this,
           &MasterController::detectLogin);
+  connect(&adminController, &AdminController::informMasterControllerOfLogOut,
+          this, &MasterController::listenForLogOut);
 
   logInView->show();
 }
@@ -37,5 +39,9 @@ void MasterController::executeLogin() {
   }
 };
 
+void MasterController::executeLogOut() { logInView->show(); }
+
 // ************************* SLOTS **********************************
-void MasterController::detectLogin() { executeLogin(); };
+void MasterController::detectLogin() { executeLogin(); }
+
+void MasterController::listenForLogOut() { executeLogOut(); }

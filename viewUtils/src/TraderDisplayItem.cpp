@@ -1,5 +1,6 @@
 #include "TraderDisplayItem.h"
 #include <qboxlayout.h>
+#include <qevent.h>
 
 TraderDisplayItem::TraderDisplayItem(QString name, QString id,
                                      QString numAccountsManaged) {
@@ -18,3 +19,15 @@ TraderDisplayItem::TraderDisplayItem(QString name, QString id,
 }
 
 TraderDisplayItem::~TraderDisplayItem() {}
+
+void TraderDisplayItem::mousePressEvent(QMouseEvent *event) {
+  if (event->buttons() == Qt::LeftButton) {
+    // TODO: Change widget color
+  }
+}
+
+void TraderDisplayItem::mouseDoubleClickEvent(QMouseEvent *event) {
+  if (event->buttons() == Qt::LeftButton) {
+    emit clicked();
+  }
+}

@@ -3,9 +3,11 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMouseEvent>
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <qevent.h>
 
 class CustomerDisplayItem : public QWidget {
   Q_OBJECT
@@ -20,10 +22,17 @@ private:
   QVBoxLayout *pNameAndIdLayout;
   QVBoxLayout *pFundsLayout;
 
+protected:
+  void mousePressEvent(QMouseEvent *event) override;
+  void mouseDoubleClickEvent(QMouseEvent *event) override;
+
 public:
   CustomerDisplayItem(QString name, QString id, QString currentWorth,
                       QString availableFunds);
   ~CustomerDisplayItem();
+
+signals:
+  void clicked();
 };
 
 #endif

@@ -53,6 +53,22 @@ AdminMainView::AdminMainView(std::vector<CustomerDisplayItem *> *totalCustomers,
 
   pMainLayout->addLayout(pTitleAndTraderLayout);
   pMainLayout->addLayout(pLogOutAndCustomerLayout);
+
+  // Connect widgets to appropriate slots
+  connect(pLogOutButton, &QPushButton::clicked, this,
+          &AdminMainView::logOutInitiated);
+  connect(pCreateTraderButton, &QPushButton::clicked, this,
+          &AdminMainView::createEmployeeInitiated);
+  connect(pTraderList, &ScrollableContainer::notifyOfEmployeeItemSelection,
+          this, &AdminMainView::notifyOfEmployeeEdit);
+  connect(pDeleteTraderButton, &QPushButton::clicked, this,
+          &AdminMainView::notifyOfEmployeeDeletion);
+  connect(pCreateCustomerButton, &QPushButton::clicked, this,
+          &AdminMainView::notifyOfCustomerCreation);
+  connect(pCustomerList, &ScrollableContainer::notifyOfCustomerItemSelection,
+          this, &AdminMainView::notifyOfCustomerEdit);
+  connect(pDeleteCustomerButton, &QPushButton::clicked, this,
+          &AdminMainView::notifyOfCustomerDeletion);
 }
 
 AdminMainView::~AdminMainView() {}

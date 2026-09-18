@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <qboxlayout.h>
+#include <qevent.h>
 
 class TraderDisplayItem : public QWidget {
   Q_OBJECT
@@ -18,9 +19,16 @@ private:
   QHBoxLayout *pMainLayout;
   QVBoxLayout *pNameAndIdLayout;
 
+protected:
+  void mousePressEvent(QMouseEvent *event) override;
+  void mouseDoubleClickEvent(QMouseEvent *event) override;
+
 public:
   TraderDisplayItem(QString name, QString id, QString numAccountsManaged);
   ~TraderDisplayItem();
+
+signals:
+  void clicked();
 };
 
 #endif

@@ -35,6 +35,24 @@ public:
   AdminController();
   ~AdminController();
   void run(Authorizer *authorizer);
+  void executeEmployeeCreation();
+  void executeEmployeeEdit();
+  void executeEmployeeDeletion();
+  void executeCustomerCreation();
+  void executeCustomerEdit();
+  void executeCustomerDeletion();
+
+public slots:
+  void listenForLogOut();
+  void listenForEmployeeCreation();
+  void listenForEmployeeEdit();
+  void listenForEmployeeDeletion();
+  void listenForCustomerCreation();
+  void listenForCustomerEdit();
+  void listenForCustomerDeletion();
+
+signals:
+  void informMasterControllerOfLogOut();
 };
 
 #endif

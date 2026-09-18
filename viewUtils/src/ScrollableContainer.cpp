@@ -1,5 +1,6 @@
 #include "ScrollableContainer.h"
 #include <qboxlayout.h>
+#include <qcoreevent.h>
 
 ScrollableContainer::ScrollableContainer(CONTAINER_TYPE containerType)
     : containerType(containerType) {
@@ -24,10 +25,23 @@ void ScrollableContainer::refreshDisplayList() {
   if (containerType == CUSTOMERS) {
     for (CustomerDisplayItem *displayItem : *pCustomerDisplayList) {
       pLayout->addWidget(displayItem);
+      connect(displayItem, &CustomerDisplayItem::clicked, this,
+              &ScrollableContainer::listenForCustomerItemSelection);
     }
   } else {
     for (TraderDisplayItem *displayItem : *pTraderDisplayList) {
       pLayout->addWidget(displayItem);
+      connect(displayItem, &TraderDisplayItem::clicked, this,
+              &ScrollableContainer::listenForEmployeeItemSelection);
     }
   }
+}
+
+//****************************SLOTS*******************************************
+void ScrollableContainer::listenForCustomerItemSelection() {
+  emit notifyOfCustomerItemSelection();
+}
+
+void ScrollableContainer::listenForEmployeeItemSelection() {
+  emit notifyOfEmployeeItemSelection();
 }

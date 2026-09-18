@@ -25,6 +25,14 @@ public:
   void addDisplayList(std::vector<CustomerDisplayItem *> *diplayList);
   void addDisplayList(std::vector<TraderDisplayItem *> *displayList);
   void refreshDisplayList();
+
+public slots:
+  void listenForCustomerItemSelection();
+  void listenForEmployeeItemSelection();
+
+signals:
+  void notifyOfCustomerItemSelection();
+  void notifyOfEmployeeItemSelection();
 };
 
 #endif

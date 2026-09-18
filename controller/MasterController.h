@@ -26,9 +26,11 @@ public:
   ~MasterController();
   void executeMainFunctions();
   void executeLogin();
+  void executeLogOut();
 
 public slots:
   void detectLogin();
+  void listenForLogOut();
 };
 
 #endif
