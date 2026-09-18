@@ -20,6 +20,7 @@ private:
 
   LogInService logInService;
   AdminController adminController;
+  TraderController traderController;
 
 public:
   MasterController();

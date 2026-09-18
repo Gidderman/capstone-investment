@@ -13,7 +13,7 @@ DataManager::getEmployeeByUsername(std::string username) {
   Employee currentEmployee;
   Credentials employeeCredentials;
 
-  std::vector<std::string> testingVector = crudManager.runQuery();
+  std::vector<std::string> testingVector = crudManager.runQuery(username);
 
   if (testingVector.at(3) == username) {
     currentEmployee.accountID = stoi(testingVector.at(0));

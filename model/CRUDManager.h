@@ -11,7 +11,7 @@ private:
 public:
   CRUDManager();
   ~CRUDManager();
-  std::vector<std::string> runQuery();
+  std::vector<std::string> runQuery(std::string username);
 };
 
 #endif

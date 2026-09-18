@@ -17,6 +17,7 @@ AdminController::AdminController() {
   pAdminMainView =
       new AdminMainView(&customerDisplayList, &employeeDisplayList);
   pTraderCreationView = new TraderCreationView();
+  pCustomerCreationView = new CustomerCreationView();
 
   // Connect all the Admin Main View signals to the applicable slots.
   connect(pAdminMainView, &AdminMainView::notifyOfLogOut, this,
@@ -33,12 +34,23 @@ AdminController::AdminController() {
           &AdminController::listenForCustomerEdit);
   connect(pAdminMainView, &AdminMainView::notifyOfCustomerDeletion, this,
           &AdminController::listenForCustomerDeletion);
+  connect(pTraderCreationView, &TraderCreationView::notifyOfEmployeeCreation,
+          this, &AdminController::executeEmployeeAction);
+  connect(pTraderCreationView, &TraderCreationView::notifyOfCancellation, this,
+          &AdminController::cancelEmployeeAction);
+  connect(pTraderCreationView, &TraderCreationView::notifyOfAccountUnlock, this,
+          &AdminController::executeEmployeeAccountUnlock);
+  connect(pCustomerCreationView,
+          &CustomerCreationView::notifyOfCustomerCreation, this,
+          &AdminController::executeCustomerAction);
+  connect(pCustomerCreationView, &CustomerCreationView::notifyOfCreationCancel,
+          this, &AdminController::cancelCustomerAction);
 };
 
 AdminController::~AdminController() {}
 
 void AdminController::run(Authorizer *authorizer) {
-  if (authorizer->authorizeUser(ADMIN)) {
+  if (!authorizer->authorizeUser(ADMIN)) {
     // TODO: Throw and exception
   }
 
@@ -50,20 +62,28 @@ void AdminController::executeEmployeeCreation() { pTraderCreationView->run(); }
 void AdminController::executeEmployeeEdit() { pTraderCreationView->run(); }
 
 void AdminController::executeEmployeeDeletion() {
-  std::cout << "DELETE EMPLOYEE BUTTON CLICKED" << std::endl;
+  std::cout << "DELETE TRADER BUTTON CLICKED" << std::endl;
 }
 
 void AdminController::executeCustomerCreation() {
-  std::cout << "CREATE CUSTOMER BUTTON CLICKED" << std::endl;
+  pCustomerCreationView->run();
 }
 
-void AdminController::executeCustomerEdit() {
-  std::cout << "EDIT CUSTOMER BUTTON CLICKED" << std::endl;
-}
+void AdminController::executeCustomerEdit() { pCustomerCreationView->run(); }
 
 void AdminController::executeCustomerDeletion() {
   std::cout << "DELETE CUSTOMER BUTTON CLICKED" << std::endl;
 }
+
+void AdminController::executeEmployeeAction() {} // TODO: this
+
+void AdminController::executeEmployeeAccountUnlock() {} // TODO: this
+
+void AdminController::cancelEmployeeAction() { pTraderCreationView->end(); }
+
+void AdminController::executeCustomerAction() {} // TODO: this
+
+void AdminController::cancelCustomerAction() { pCustomerCreationView->end(); }
 
 //*********************PRIVATE FUNCTIONS*****************************
 std::vector<Customer> AdminController::getAllCustomers() {
@@ -141,9 +161,35 @@ void AdminController::listenForLogOut() {
   pAdminMainView->hide();
   emit informMasterControllerOfLogOut();
 }
+
 void AdminController::listenForEmployeeCreation() { executeEmployeeCreation(); }
+
 void AdminController::listenForEmployeeEdit() { executeEmployeeEdit(); }
+
 void AdminController::listenForEmployeeDeletion() { executeEmployeeDeletion(); }
+
 void AdminController::listenForCustomerCreation() { executeCustomerCreation(); }
+
 void AdminController::listenForCustomerEdit() { executeCustomerEdit(); }
+
 void AdminController::listenForCustomerDeletion() { executeCustomerDeletion(); }
+
+void AdminController::listenForEmployeeActionConfirmation() {
+  executeEmployeeAction();
+}
+
+void AdminController::listenForEmployeeActionCancel() {
+  cancelEmployeeAction();
+}
+
+void AdminController::listenForEmployeeAccountUnlock() {
+  executeEmployeeAccountUnlock();
+}
+
+void AdminController::listenForCustomerActionConfirmation() {
+  executeCustomerAction();
+}
+
+void AdminController::listenForCustomerActionCancel() {
+  cancelCustomerAction();
+}

@@ -33,6 +33,8 @@ TraderCreationView::~TraderCreationView() {}
 
 void TraderCreationView::run() { this->show(); }
 
+void TraderCreationView::end() { this->hide(); } // TODO: clear all fields
+
 QString TraderCreationView::getFirstName() { return pFirstNameEntry->text(); }
 
 QString TraderCreationView::getLastName() { return pLastNameEntry->text(); }

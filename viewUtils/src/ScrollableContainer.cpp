@@ -21,6 +21,12 @@ void ScrollableContainer::addDisplayList(
   refreshDisplayList();
 }
 
+void ScrollableContainer::addDisplayList(
+    std::vector<StockDisplayItem *> *displayList) {
+  this->pStockDisplayList = displayList;
+  refreshDisplayList();
+}
+
 void ScrollableContainer::refreshDisplayList() {
   if (containerType == CUSTOMERS) {
     for (CustomerDisplayItem *displayItem : *pCustomerDisplayList) {
@@ -28,11 +34,16 @@ void ScrollableContainer::refreshDisplayList() {
       connect(displayItem, &CustomerDisplayItem::clicked, this,
               &ScrollableContainer::listenForCustomerItemSelection);
     }
-  } else {
+  } else if (containerType == TRADERS) {
     for (TraderDisplayItem *displayItem : *pTraderDisplayList) {
       pLayout->addWidget(displayItem);
       connect(displayItem, &TraderDisplayItem::clicked, this,
               &ScrollableContainer::listenForEmployeeItemSelection);
+    }
+  } else {
+    for (StockDisplayItem *displayItem : *pStockDisplayList) {
+      pLayout->addWidget(displayItem);
+      // TODO: stock display click connections
     }
   }
 }

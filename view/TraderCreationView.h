@@ -26,6 +26,7 @@ public:
   TraderCreationView();
   ~TraderCreationView();
   void run();
+  void end();
   QString getFirstName();
   QString getLastName();
   int getRole();

@@ -42,6 +42,13 @@ public:
   void executeCustomerEdit();
   void executeCustomerDeletion();
 
+  void executeEmployeeAction();
+  void executeEmployeeAccountUnlock();
+  void cancelEmployeeAction();
+
+  void executeCustomerAction();
+  void cancelCustomerAction();
+
 public slots:
   void listenForLogOut();
   void listenForEmployeeCreation();
@@ -50,6 +57,13 @@ public slots:
   void listenForCustomerCreation();
   void listenForCustomerEdit();
   void listenForCustomerDeletion();
+
+  void listenForEmployeeActionConfirmation();
+  void listenForEmployeeActionCancel();
+  void listenForEmployeeAccountUnlock();
+
+  void listenForCustomerActionConfirmation();
+  void listenForCustomerActionCancel();
 
 signals:
   void informMasterControllerOfLogOut();

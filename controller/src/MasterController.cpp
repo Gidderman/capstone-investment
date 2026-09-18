@@ -10,6 +10,8 @@ MasterController::MasterController() {
           &MasterController::detectLogin);
   connect(&adminController, &AdminController::informMasterControllerOfLogOut,
           this, &MasterController::listenForLogOut);
+  connect(&traderController, &TraderController::informMasterControllerOfLogOut,
+          this, &MasterController::listenForLogOut);
 
   logInView->show();
 }
@@ -32,7 +34,8 @@ void MasterController::executeLogin() {
     break;
 
   case TRADER:
-    std::cout << "TRADER LOG IN INITIATED" << std::endl;
+    logInView->hide();
+    traderController.run(&authorizer);
     break;
   default:
     std::cout << "INVALID LOG IN!" << std::endl;

@@ -13,4 +13,14 @@ CRUDManager::CRUDManager() {
 
 CRUDManager::~CRUDManager() {}
 
-std::vector<std::string> CRUDManager::runQuery() { return testingVector; }
+std::vector<std::string> CRUDManager::runQuery(std::string username) {
+  // TODO: Actual logic
+  if (username == "jdoe") {
+    return testingVector;
+  } else if (username == "hdoe") {
+    testingVector.at(3) = "hdoe";
+    testingVector.at(6) = "TRADER";
+  }
+
+  return testingVector;
+}
