@@ -32,8 +32,9 @@ private:
 
   // TODO: Create a function for refreshing displays. One for each list
 public:
-  AdminController(Authorizer *authorizer);
+  AdminController();
   ~AdminController();
+  void run(Authorizer *authorizer);
 };
 
 #endif

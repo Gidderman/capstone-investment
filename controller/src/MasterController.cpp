@@ -1,4 +1,6 @@
 #include "MasterController.h"
+#include "AdminController.h"
+#include "Authorizer.h"
 #include <iostream>
 
 MasterController::MasterController() {
@@ -19,9 +21,12 @@ void MasterController::executeLogin() {
       logInView->getEnteredUsername().toStdString(),
       logInView->getEnteredPassword().toStdString());
 
+  Authorizer authorizer(std::get<1>(logInInformation));
+
   switch (std::get<1>(logInInformation)) {
   case ADMIN:
-    std::cout << "ADMIN LOG IN INITIATED" << std::endl;
+    logInView->hide();
+    adminController.run(&authorizer);
     break;
 
   case TRADER:

@@ -38,6 +38,24 @@ public:
   AdminMainView(std::vector<CustomerDisplayItem *> *totalCustomers,
                 std::vector<TraderDisplayItem *> *totalTraders);
   ~AdminMainView();
+
+public slots:
+  void logOutInitiated();
+  void createEmployeeInitiated();
+  void editEmployeeInitiated();
+  void deleteEmployeeInitiated();
+  void createCustomerInitiated();
+  void editCustomerInitiated();
+  void deleteCustomerInitiated();
+
+signals:
+  void notifyOfLogOut();
+  void notifyOfEmployeeCreation();
+  void notifyOfEmployeeEdit();
+  void notifyOfEmployeeDeletion();
+  void notifyOfCustomerCreation();
+  void notifyOfCustomerEdit();
+  void notifyOfCustomerDeletion();
 };
 
 #endif

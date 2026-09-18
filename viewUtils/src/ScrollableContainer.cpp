@@ -11,11 +11,13 @@ ScrollableContainer::~ScrollableContainer() {}
 void ScrollableContainer::addDisplayList(
     std::vector<CustomerDisplayItem *> *displayList) {
   this->pCustomerDisplayList = displayList;
+  refreshDisplayList();
 }
 
 void ScrollableContainer::addDisplayList(
     std::vector<TraderDisplayItem *> *displayList) {
   this->pTraderDisplayList = displayList;
+  refreshDisplayList();
 }
 
 void ScrollableContainer::refreshDisplayList() {

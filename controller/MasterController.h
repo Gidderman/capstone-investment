@@ -19,6 +19,7 @@ private:
   LogInView *logInView;
 
   LogInService logInService;
+  AdminController adminController;
 
 public:
   MasterController();

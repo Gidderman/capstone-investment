@@ -1,14 +1,11 @@
 #include "AdminController.h"
 #include "AdminMainView.h"
+#include "Customer.h"
 #include "CustomerDisplayItem.h"
 
 #include <string>
 
-AdminController::AdminController(Authorizer *authorizer) {
-  if (authorizer->authorizeUser(ADMIN)) {
-    // TODO: Throw and exception
-  }
-
+AdminController::AdminController() {
   customerList = getAllCustomers();
   employeeList = getAllEmployees();
 
@@ -21,9 +18,36 @@ AdminController::AdminController(Authorizer *authorizer) {
 
 AdminController::~AdminController() {}
 
-std::vector<Customer> AdminController::getAllCustomers() {}
+void AdminController::run(Authorizer *authorizer) {
+  if (authorizer->authorizeUser(ADMIN)) {
+    // TODO: Throw and exception
+  }
 
-std::vector<Employee> AdminController::getAllEmployees() {}
+  pAdminMainView->show();
+}
+
+std::vector<Customer> AdminController::getAllCustomers() {
+  // TODO: develope actual functionality
+  Stock stock = {0001, "Nintendo", "NTD", 340.00f};
+  Investment investment = {0001, stock, 4, 1500.00f, 0002};
+  std::vector<Investment> investments = {investment};
+  Customer tempCustomer = {
+      0002,        "Harry",    "Johans", 888888888,   "hjohans@email.com",
+      "20Feb2020", RETIREMENT, 1500.00f, investments, 0001};
+  std::vector<Customer> customers = {tempCustomer};
+
+  return customers;
+}
+
+std::vector<Employee> AdminController::getAllEmployees() {
+  // TODO: develope actual functionality
+
+  Employee tempEmployee = {0001, "John", "Doe", ADMIN};
+
+  std::vector<Employee> employees = {tempEmployee};
+
+  return employees;
+}
 
 void AdminController::formatCustomersForDisplay() {
   customerDisplayList.clear();

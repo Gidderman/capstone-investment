@@ -1,7 +1,6 @@
 #include "AdminMainView.h"
 
 #include <QString>
-#include <qboxlayout.h>
 
 AdminMainView::AdminMainView(std::vector<CustomerDisplayItem *> *totalCustomers,
                              std::vector<TraderDisplayItem *> *totalTraders) {
@@ -51,6 +50,26 @@ AdminMainView::AdminMainView(std::vector<CustomerDisplayItem *> *totalCustomers,
   pCustomerButtonLayout->addWidget(pCreateCustomerButton);
   pCustomerButtonLayout->addWidget(pDeleteCustomerButton);
   pLogOutAndCustomerLayout->addLayout(pCustomerButtonLayout);
+
+  pMainLayout->addLayout(pTitleAndTraderLayout);
+  pMainLayout->addLayout(pLogOutAndCustomerLayout);
 }
 
 AdminMainView::~AdminMainView() {}
+
+// *********************SLOTS*********************************************
+void AdminMainView::logOutInitiated() { emit notifyOfLogOut(); }
+void AdminMainView::createEmployeeInitiated() {
+  emit notifyOfEmployeeCreation();
+}
+void AdminMainView::editEmployeeInitiated() { emit notifyOfEmployeeEdit(); }
+void AdminMainView::deleteEmployeeInitiated() {
+  emit notifyOfEmployeeDeletion();
+}
+void AdminMainView::createCustomerInitiated() {
+  emit notifyOfCustomerCreation();
+}
+void AdminMainView::editCustomerInitiated() { emit notifyOfCustomerEdit(); }
+void AdminMainView::deleteCustomerInitiated() {
+  emit notifyOfCustomerDeletion();
+}
