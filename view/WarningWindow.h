@@ -1,6 +1,16 @@
 #ifndef WARNING_WINDOW_H
 #define WARNING_WINDOW_H
 
-class WarnignWindow {};
+#include <QMessageBox>
+#include <QString>
+
+class WarningWindow : public QMessageBox {
+private:
+  QString warningText;
+
+public:
+  WarningWindow();
+  ~WarningWindow();
+};
 
 #endif

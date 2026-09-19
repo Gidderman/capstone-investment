@@ -19,6 +19,8 @@ private:
   QHBoxLayout *pMainLayout;
   QVBoxLayout *pNameAndIdLayout;
 
+  int id;
+
 protected:
   void mousePressEvent(QMouseEvent *event) override;
   void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -28,7 +30,7 @@ public:
   ~TraderDisplayItem();
 
 signals:
-  void clicked();
+  void clicked(int id);
 };
 
 #endif

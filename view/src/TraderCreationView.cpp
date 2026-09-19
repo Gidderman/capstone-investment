@@ -43,7 +43,11 @@ int TraderCreationView::getRole() {}
 
 //************************SLOTS****************************
 void TraderCreationView::listenForEmployeeCreation() {
-  emit notifyOfEmployeeCreation();
+  std::vector<QString> employee;
+  employee.push_back(pFirstNameEntry->text());
+  employee.push_back(pLastNameEntry->text());
+  employee.push_back(pRoleSelection->currentText());
+  emit notifyOfEmployeeCreation(employee);
 }
 
 void TraderCreationView::listenForCreationCancellation() {

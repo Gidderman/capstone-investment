@@ -1,16 +1,13 @@
 #include "TraderMainView.h"
 #include "ScrollableContainer.h"
-#include <qboxlayout.h>
-#include <qcoreevent.h>
-#include <qpushbutton.h>
 
 TraderMainView::TraderMainView(
+    std::vector<QString> employeeDisplayInfo,
     std::vector<CustomerDisplayItem *> *managedCustomers) {
   pPageTitleDisplay = new QLabel(QString("Trader"));
-  pTraderNameDisplay = new QLabel(
-      QString("Temp Value For Page Format")); // TODO: Populate page label
-  pTraderAccountNumber = new QLabel(QString("XXXXXX"));
-  pNumAccountsManagedDisplay = new QLabel(QString("XX Accounts Managed"));
+  pTraderNameDisplay = new QLabel("Welcome " + employeeDisplayInfo.at(0));
+  pTraderAccountNumber = new QLabel(employeeDisplayInfo.at(1));
+  pNumAccountsManagedDisplay = new QLabel(employeeDisplayInfo.at(2));
 
   pLogOutButton = new QPushButton(QString("Log Out"));
 
@@ -44,6 +41,6 @@ TraderMainView::~TraderMainView() {}
 //**********************SLOTS******************************
 void TraderMainView::listenForLogOut() { emit notifyOfLogOut(); }
 
-void TraderMainView::listenForCustomerSelection() {
-  emit notifyOfCustomerSelection();
+void TraderMainView::listenForCustomerSelection(int id) {
+  emit notifyOfCustomerSelection(id);
 }

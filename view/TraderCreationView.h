@@ -37,7 +37,7 @@ public slots:
   void listenForAccountUnlock();
 
 signals:
-  void notifyOfEmployeeCreation();
+  void notifyOfEmployeeCreation(std::vector<QString> employee);
   void notifyOfCancellation();
   void notifyOfAccountUnlock();
 };

@@ -28,6 +28,6 @@ void TraderDisplayItem::mousePressEvent(QMouseEvent *event) {
 
 void TraderDisplayItem::mouseDoubleClickEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
-    emit clicked();
+    emit clicked(this->id);
   }
 }

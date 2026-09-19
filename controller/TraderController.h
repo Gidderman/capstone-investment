@@ -4,6 +4,8 @@
 #include "Authorizer.h"
 #include "CustomerDisplayItem.h"
 #include "CustomerManagerView.h"
+#include "PurchaseStockWindow.h"
+#include "SellStockWindow.h"
 #include "TraderMainView.h"
 #include "TraderService.h"
 
@@ -16,6 +18,11 @@ class TraderController : public QObject {
 private:
   TraderMainView *pTraderMainView;
   CustomerManagerView *pCustomerManagerView;
+  PurchaseStockWindow *pPurchaseStockWindow;
+  SellStockWindow *pSellStockWindow;
+
+  TraderService traderService;
+  Employee loggedInEmployee;
 
   std::vector<Customer> customerList;
   std::vector<Stock> stockListForSelectedCustomer;
@@ -26,17 +33,25 @@ private:
   std::vector<Customer> getListOfManagedCustomers(int employeeID);
   std::vector<Stock> getListAndFormatOfCustomerStock(int customerID);
 
-  void formatManagedCustomersForDisplay();
+  void formatAllManagedCustomersForDisplay();
+  std::vector<QString> formatLoggedInEmployeeForDisplay();
+  std::vector<QString> formatIndividualCustomerForDisplay(Customer customer);
 
 public:
   TraderController();
   ~TraderController();
-  void run(Authorizer *authorizer);
+  void run(Employee loggedInEmployee, Authorizer *authorizer);
 
 public slots:
   void listenForLogOut();
-  void listenForCustomerSelection();
+  void listenForCustomerSelection(int id);
   void listenForReturnFromCustomerScreen();
+  void listenForStockPurchaseInitiation();
+  void listenForStockPurchaseConfirmation();
+  void listenForStockPurchaseCancellation();
+  void listenForStockSaleInitiation();
+  void listenForStockSaleConfirmation();
+  void listenForStockSaleCancellation();
 
 signals:
   void informMasterControllerOfLogOut();

@@ -12,7 +12,7 @@ struct Customer {
   int customerID;
   std::string firstName;
   std::string lastName;
-  int phoneNum;
+  std::string phoneNum;
   std::string email;
   std::string
       dateAccountOpened; // TODO: Introduce a date data type, find a library

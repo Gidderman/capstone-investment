@@ -16,7 +16,10 @@ private:
   AdminMainView *pAdminMainView;
   CustomerCreationView *pCustomerCreationView;
   TraderCreationView *pTraderCreationView;
-  AdminService *pAdminService;
+
+  WarningWindow *pDeleteWarning;
+
+  AdminService adminService;
 
   std::vector<Customer> customerList;
   std::vector<Employee> employeeList;
@@ -36,13 +39,13 @@ public:
   ~AdminController();
   void run(Authorizer *authorizer);
   void executeEmployeeCreation();
-  void executeEmployeeEdit();
+  void executeEmployeeEdit(Employee employeeToBeEdited);
   void executeEmployeeDeletion();
   void executeCustomerCreation();
   void executeCustomerEdit();
   void executeCustomerDeletion();
 
-  void executeEmployeeAction();
+  void executeEmployeeAction(Employee employee);
   void executeEmployeeAccountUnlock();
   void cancelEmployeeAction();
 
@@ -52,13 +55,13 @@ public:
 public slots:
   void listenForLogOut();
   void listenForEmployeeCreation();
-  void listenForEmployeeEdit();
+  void listenForEmployeeEdit(int id);
   void listenForEmployeeDeletion();
   void listenForCustomerCreation();
   void listenForCustomerEdit();
   void listenForCustomerDeletion();
 
-  void listenForEmployeeActionConfirmation();
+  void listenForEmployeeActionConfirmation(std::vector<QString> employee);
   void listenForEmployeeActionCancel();
   void listenForEmployeeAccountUnlock();
 

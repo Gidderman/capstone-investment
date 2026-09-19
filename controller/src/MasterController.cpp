@@ -1,17 +1,18 @@
 #include "MasterController.h"
 #include "AdminController.h"
 #include "Authorizer.h"
+#include "TraderController.h"
 #include <iostream>
 
 MasterController::MasterController() {
   logInView = new LogInView();
 
-  connect(logInView, &LogInView::notifyOfLogInAttempt, this,
-          &MasterController::detectLogin);
-  connect(&adminController, &AdminController::informMasterControllerOfLogOut,
-          this, &MasterController::listenForLogOut);
   connect(&traderController, &TraderController::informMasterControllerOfLogOut,
           this, &MasterController::listenForLogOut);
+  connect(&adminController, &AdminController::informMasterControllerOfLogOut,
+          this, &MasterController::listenForLogOut);
+  connect(logInView, &LogInView::notifyOfLogInAttempt, this,
+          &MasterController::detectLogin);
 
   logInView->show();
 }
@@ -35,8 +36,9 @@ void MasterController::executeLogin() {
 
   case TRADER:
     logInView->hide();
-    traderController.run(&authorizer);
+    traderController.run(std::get<0>(logInInformation), &authorizer);
     break;
+
   default:
     std::cout << "INVALID LOG IN!" << std::endl;
   }

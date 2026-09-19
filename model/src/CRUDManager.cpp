@@ -1,26 +1,244 @@
 #include "CRUDManager.h"
 
+#include <iostream>
+
 CRUDManager::CRUDManager() {
   // TODO: DELETE FOLLOWING TESTING VECTOR
-  testingVector.push_back("00001");
-  testingVector.push_back("John");
-  testingVector.push_back("Doe");
-  testingVector.push_back("jdoe");
-  testingVector.push_back("pass123");
-  testingVector.push_back("321");
-  testingVector.push_back("ADMIN");
+
+  // Vector order for employee:
+  //  id
+  //  First name
+  //  Last name
+  //  username
+  //  password
+  //  salt
+  //  role
+  //  accountLocked?
+
+  std::vector<std::string> populatingVector;
+  populatingVector.push_back("00001");
+  populatingVector.push_back("John");
+  populatingVector.push_back("Doe");
+  populatingVector.push_back("jdoe");
+  populatingVector.push_back("pass123");
+  populatingVector.push_back("321");
+  populatingVector.push_back("ADMIN");
+  populatingVector.push_back("FALSE");
+
+  testingEmployeeDatabase.emplace(00001, populatingVector);
+
+  populatingVector.clear();
+  populatingVector.push_back("00002");
+  populatingVector.push_back("Harry");
+  populatingVector.push_back("Styles");
+  populatingVector.push_back("hstyle");
+  populatingVector.push_back("pass1234");
+  populatingVector.push_back("321");
+  populatingVector.push_back("TRADER");
+  populatingVector.push_back("FALSE");
+
+  testingEmployeeDatabase.emplace(00002, populatingVector);
+
+  populatingVector.clear();
+  populatingVector.push_back("00003");
+  populatingVector.push_back("Tommy");
+  populatingVector.push_back("Screwup");
+  populatingVector.push_back("tscrewup");
+  populatingVector.push_back("pass12345");
+  populatingVector.push_back("321");
+  populatingVector.push_back("TRADER");
+  populatingVector.push_back("TRUE");
+
+  testingEmployeeDatabase.emplace(00003, populatingVector);
+
+  populatingVector.clear();
+  // Vector order for customers:
+  //  id
+  //  first name
+  //  last name
+  //  phone number
+  //  email
+  //  date account opened
+  //  account type
+  //  uninvested funds
+  // NUM OF INVESTMENTS (purely for data formatting) (10 per stock)
+  //  investment id 0
+  // STOCK
+  //   stock id 1
+  //   stock name 2
+  //   stock code 3
+  //   stockPrice 4
+  //  number held 5
+  //  current worth 6
+  //  initial investment 7
+  //  customerID 8
+  //  account id 9
+  populatingVector.push_back("00001");
+  populatingVector.push_back("Bill");
+  populatingVector.push_back("Nye");
+  populatingVector.push_back("8008008000");
+  populatingVector.push_back("email@email.com");
+  populatingVector.push_back("20Feb2010");
+  populatingVector.push_back("BROKERAGE");
+  populatingVector.push_back("200000.00");
+  populatingVector.push_back("3");
+  populatingVector.push_back("00001");
+  populatingVector.push_back("00001");
+  populatingVector.push_back("Nividia");
+  populatingVector.push_back("NVD");
+  populatingVector.push_back("130.00");
+  populatingVector.push_back("2");
+  populatingVector.push_back("260.00");
+  populatingVector.push_back("75.00");
+  populatingVector.push_back("00001");
+  populatingVector.push_back("00002");
+  populatingVector.push_back("00002");
+  populatingVector.push_back("00005");
+  populatingVector.push_back("Google");
+  populatingVector.push_back("GOOG");
+  populatingVector.push_back("170.00");
+  populatingVector.push_back("3");
+  populatingVector.push_back("410.00");
+  populatingVector.push_back("15.00");
+  populatingVector.push_back("00001");
+  populatingVector.push_back("00002");
+  populatingVector.push_back("00003");
+  populatingVector.push_back("00007");
+  populatingVector.push_back("Company");
+  populatingVector.push_back("CMP");
+  populatingVector.push_back("70.00");
+  populatingVector.push_back("3");
+  populatingVector.push_back("210.00");
+  populatingVector.push_back("10.00");
+  populatingVector.push_back("00001");
+  populatingVector.push_back("00002");
+
+  testingCustomerDatabase.emplace(00001, populatingVector);
+
+  populatingVector.clear();
+  populatingVector.push_back("00002");
+  populatingVector.push_back("Jim");
+  populatingVector.push_back("Halpert");
+  populatingVector.push_back("8008008000");
+  populatingVector.push_back("email@email.com");
+  populatingVector.push_back("20Feb2001");
+  populatingVector.push_back("RETIREMENT");
+  populatingVector.push_back("200000.00");
+  populatingVector.push_back("1");
+  populatingVector.push_back("00002");
+  populatingVector.push_back("00007");
+  populatingVector.push_back("Dunder Mifflin");
+  populatingVector.push_back("DNDR");
+  populatingVector.push_back("130.00");
+  populatingVector.push_back("2");
+  populatingVector.push_back("260.00");
+  populatingVector.push_back("75.00");
+  populatingVector.push_back("00002");
+  populatingVector.push_back("00002");
+
+  testingCustomerDatabase.emplace(00002, populatingVector);
+  populatingVector.clear();
 }
 
 CRUDManager::~CRUDManager() {}
 
-std::vector<std::string> CRUDManager::runQuery(std::string username) {
-  // TODO: Actual logic
-  if (username == "jdoe") {
-    return testingVector;
-  } else if (username == "hdoe") {
-    testingVector.at(3) = "hdoe";
-    testingVector.at(6) = "TRADER";
+std::vector<std::string> CRUDManager::runLogInQuery(std::string username) {
+  for (auto &item : testingEmployeeDatabase) {
+    if (item.second.at(3) == username) {
+      return item.second;
+    }
   }
+  std::vector<std::string> blankVector;
+  return blankVector;
+}
 
-  return testingVector;
+std::vector<std::string> CRUDManager::runQuery(int id, bool isCustomer,
+                                               std::string queryType) {
+  if (queryType == "read") {
+    return readSelection(id, isCustomer);
+  } else if (queryType == "delete") {
+    return deleteSelection(id, isCustomer);
+  } else {
+    std::cout << "INVALID QUERY" << std::endl;
+    std::vector<std::string> blankVector;
+    return blankVector;
+  }
+}
+
+std::vector<std::string> CRUDManager::runQuery(int id, bool isCustomer,
+                                               std::string queryType,
+                                               std::vector<std::string> data) {
+  if (queryType == "create") {
+    return createSelection(id, isCustomer, data);
+  } else if (queryType == "update") {
+    return createSelection(id, isCustomer, data);
+  } else {
+    std::cout << "INVALID QUERY" << std::endl;
+    std::vector<std::string> blankVector;
+    return blankVector;
+  }
+}
+
+std::vector<std::string>
+CRUDManager::createSelection(int id, bool isCustomer,
+                             std::vector<std::string> userToCreate) {
+  if (isCustomer) {
+    testingCustomerDatabase.emplace(std::stoi(userToCreate.at(0)),
+                                    userToCreate);
+    return testingCustomerDatabase.at(std::stoi(userToCreate.at(0)));
+  } else {
+    testingEmployeeDatabase.emplace(std::stoi(userToCreate.at(0)),
+                                    userToCreate);
+    return testingEmployeeDatabase.at(std::stoi(userToCreate.at(0)));
+  }
+}
+
+std::vector<std::string> CRUDManager::readSelection(int id, bool isCustomer) {
+  if (isCustomer) {
+    return testingCustomerDatabase.at(id);
+  } else {
+    return testingEmployeeDatabase.at(id);
+  }
+}
+
+std::vector<std::string>
+CRUDManager::updateSelection(int id, bool isCustomer,
+                             std::vector<std::string> update) {
+  if (isCustomer) {
+    testingCustomerDatabase.at(id) = update;
+    return testingCustomerDatabase.at(id);
+  } else {
+    testingEmployeeDatabase.at(id) = update;
+    return testingEmployeeDatabase.at(id);
+  }
+}
+
+std::vector<std::string> CRUDManager::deleteSelection(int id, bool isCustomer) {
+  if (isCustomer) {
+    testingCustomerDatabase.erase(id);
+    if (testingCustomerDatabase.count(id) == 0) {
+      std::vector<std::string> blankVector;
+      return blankVector;
+    } else {
+      return testingCustomerDatabase.at(id);
+    }
+  } else {
+    testingEmployeeDatabase.erase(id);
+    if (testingEmployeeDatabase.count(id) == 0) {
+      std::vector<std::string> blankVector;
+      return blankVector;
+    } else {
+      return testingEmployeeDatabase.at(id);
+    }
+  }
+}
+
+std::unordered_map<int, std::vector<std::string>>
+CRUDManager::getAllEmployees() {
+  return testingEmployeeDatabase;
+}
+
+std::unordered_map<int, std::vector<std::string>>
+CRUDManager::getAllCustomers() {
+  return testingCustomerDatabase;
 }

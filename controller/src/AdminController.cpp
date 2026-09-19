@@ -1,13 +1,23 @@
 #include "AdminController.h"
 #include "AdminMainView.h"
+#include "Authorizer.h"
 #include "Customer.h"
 #include "CustomerDisplayItem.h"
 #include "TraderCreationView.h"
+#include "WarningWindow.h"
 
 #include <iostream>
 #include <string>
 
-AdminController::AdminController() {
+AdminController::AdminController() {};
+
+AdminController::~AdminController() {}
+
+void AdminController::run(Authorizer *authorizer) {
+  if (!authorizer->authorizeUser(ADMIN)) {
+    // TODO: Throw and exception
+  }
+
   customerList = getAllCustomers();
   employeeList = getAllEmployees();
 
@@ -45,24 +55,37 @@ AdminController::AdminController() {
           &AdminController::executeCustomerAction);
   connect(pCustomerCreationView, &CustomerCreationView::notifyOfCreationCancel,
           this, &AdminController::cancelCustomerAction);
-};
-
-AdminController::~AdminController() {}
-
-void AdminController::run(Authorizer *authorizer) {
-  if (!authorizer->authorizeUser(ADMIN)) {
-    // TODO: Throw and exception
-  }
 
   pAdminMainView->show();
 }
 
 void AdminController::executeEmployeeCreation() { pTraderCreationView->run(); }
 
-void AdminController::executeEmployeeEdit() { pTraderCreationView->run(); }
+void AdminController::executeEmployeeEdit(Employee employeeToBeEdited) {
+  // TODO: Prepopulate the items to be edited.
+  pTraderCreationView->run();
+}
 
 void AdminController::executeEmployeeDeletion() {
-  std::cout << "DELETE TRADER BUTTON CLICKED" << std::endl;
+  pDeleteWarning = new WarningWindow();
+
+  int warningWindowChoice = pDeleteWarning->exec();
+  switch (warningWindowChoice) {
+  case QMessageBox::Cancel:
+    // User cancelled...
+    std::cout << warningWindowChoice << " DID NOT DELETE" << std::endl;
+    break;
+  case QMessageBox::Apply:
+    // User confirmed deletion.
+    std::cout << warningWindowChoice << " DELETED" << std::endl;
+    break;
+  default:
+    std::cout << warningWindowChoice << " HIT THE DEFAULT" << std::endl;
+    break;
+  }
+
+  delete pDeleteWarning;
+  pDeleteWarning = nullptr;
 }
 
 void AdminController::executeCustomerCreation() {
@@ -72,10 +95,40 @@ void AdminController::executeCustomerCreation() {
 void AdminController::executeCustomerEdit() { pCustomerCreationView->run(); }
 
 void AdminController::executeCustomerDeletion() {
-  std::cout << "DELETE CUSTOMER BUTTON CLICKED" << std::endl;
+  pDeleteWarning = new WarningWindow();
+
+  int warningWindowChoice = pDeleteWarning->exec();
+  switch (warningWindowChoice) {
+  case QMessageBox::Cancel:
+    // User cancelled...
+    std::cout << warningWindowChoice << " DID NOT DELETE" << std::endl;
+    break;
+  case QMessageBox::Apply:
+    // User confirmed deletion.
+    std::cout << warningWindowChoice << " DELETED" << std::endl;
+    break;
+  default:
+    std::cout << warningWindowChoice << " HIT THE DEFAULT" << std::endl;
+    break;
+  }
+
+  delete pDeleteWarning;
+  pDeleteWarning = nullptr;
 }
 
-void AdminController::executeEmployeeAction() {} // TODO: this
+void AdminController::executeEmployeeAction(Employee employee) {
+  employeeList = getAllEmployees();
+  for (Employee existingEmployee : employeeList) {
+    if (employee.firstName == existingEmployee.firstName &&
+        employee.lastName == existingEmployee.lastName &&
+        employee.role == existingEmployee.role) {
+      // TODO: PERFORM AN UPDATE EVOLUTION FOR EXISTING EMPLOYEE
+      return;
+    }
+  }
+
+  // TODO: PERFORM A CREATION EVOLUTION FOR EXITING EMPLOYEE
+}
 
 void AdminController::executeEmployeeAccountUnlock() {} // TODO: this
 
@@ -87,26 +140,11 @@ void AdminController::cancelCustomerAction() { pCustomerCreationView->end(); }
 
 //*********************PRIVATE FUNCTIONS*****************************
 std::vector<Customer> AdminController::getAllCustomers() {
-  // TODO: develope actual functionality
-  Stock stock = {0001, "Nintendo", "NTD", 340.00f};
-  Investment investment = {0001, stock, 4, 1500.00f, 0002};
-  std::vector<Investment> investments = {investment};
-  Customer tempCustomer = {
-      0002,        "Harry",    "Johans", 888888888,   "hjohans@email.com",
-      "20Feb2020", RETIREMENT, 1500.00f, investments, 0001};
-  std::vector<Customer> customers = {tempCustomer};
-
-  return customers;
+  return adminService.getAllCustomers();
 }
 
 std::vector<Employee> AdminController::getAllEmployees() {
-  // TODO: develope actual functionality
-
-  Employee tempEmployee = {0001, "John", "Doe", ADMIN};
-
-  std::vector<Employee> employees = {tempEmployee};
-
-  return employees;
+  return adminService.getAllEmployees();
 }
 
 void AdminController::formatCustomersForDisplay() {
@@ -164,7 +202,15 @@ void AdminController::listenForLogOut() {
 
 void AdminController::listenForEmployeeCreation() { executeEmployeeCreation(); }
 
-void AdminController::listenForEmployeeEdit() { executeEmployeeEdit(); }
+void AdminController::listenForEmployeeEdit(int id) {
+  Employee employeeToEdit;
+  for (Employee employee : employeeList) {
+    if (employee.accountID == id) {
+      employeeToEdit = employee;
+    }
+  }
+  executeEmployeeEdit(employeeToEdit);
+}
 
 void AdminController::listenForEmployeeDeletion() { executeEmployeeDeletion(); }
 
@@ -174,8 +220,17 @@ void AdminController::listenForCustomerEdit() { executeCustomerEdit(); }
 
 void AdminController::listenForCustomerDeletion() { executeCustomerDeletion(); }
 
-void AdminController::listenForEmployeeActionConfirmation() {
-  executeEmployeeAction();
+void AdminController::listenForEmployeeActionConfirmation(
+    std::vector<QString> employee) {
+  Employee inputtedEmployee;
+  inputtedEmployee.firstName = employee.at(0).toStdString();
+  inputtedEmployee.lastName = employee.at(1).toStdString();
+  if (employee.at(3) == "ADMIN") {
+    inputtedEmployee.role = ADMIN;
+  } else {
+    inputtedEmployee.role = TRADER;
+  }
+  executeEmployeeAction(inputtedEmployee);
 }
 
 void AdminController::listenForEmployeeActionCancel() {

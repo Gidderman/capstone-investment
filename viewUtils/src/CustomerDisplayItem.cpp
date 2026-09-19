@@ -22,6 +22,8 @@ CustomerDisplayItem::CustomerDisplayItem(QString name, QString id,
 
   pMainLayout->addLayout(pNameAndIdLayout);
   pMainLayout->addLayout(pFundsLayout);
+
+  this->id = id.toInt();
 }
 
 CustomerDisplayItem::~CustomerDisplayItem() {}
@@ -34,6 +36,6 @@ void CustomerDisplayItem::mousePressEvent(QMouseEvent *event) {
 
 void CustomerDisplayItem::mouseDoubleClickEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
-    emit clicked();
+    emit clicked(this->id);
   }
 }

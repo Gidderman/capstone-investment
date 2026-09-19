@@ -37,7 +37,8 @@ private:
   QVBoxLayout *pMainLayout;
 
 public:
-  CustomerManagerView(std::vector<StockDisplayItem *> *stocks);
+  CustomerManagerView(std::vector<QString> customerDisplayInfo,
+                      std::vector<StockDisplayItem *> *stocks);
   ~CustomerManagerView();
 
 public slots:

@@ -29,16 +29,17 @@ private:
   QHBoxLayout *pMainLayout;
 
 public:
-  TraderMainView(std::vector<CustomerDisplayItem *> *managedCustomers);
+  TraderMainView(std::vector<QString> employeeDisplayInfo,
+                 std::vector<CustomerDisplayItem *> *managedCustomers);
   ~TraderMainView();
 
 public slots:
   void listenForLogOut();
-  void listenForCustomerSelection();
+  void listenForCustomerSelection(int id);
 
 signals:
   void notifyOfLogOut();
-  void notifyOfCustomerSelection();
+  void notifyOfCustomerSelection(int id);
 };
 
 #endif

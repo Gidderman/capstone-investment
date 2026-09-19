@@ -22,6 +22,8 @@ private:
   QVBoxLayout *pNameAndIdLayout;
   QVBoxLayout *pFundsLayout;
 
+  int id;
+
 protected:
   void mousePressEvent(QMouseEvent *event) override;
   void mouseDoubleClickEvent(QMouseEvent *event) override;
@@ -32,7 +34,7 @@ public:
   ~CustomerDisplayItem();
 
 signals:
-  void clicked();
+  void clicked(int id);
 };
 
 #endif

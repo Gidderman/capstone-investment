@@ -60,13 +60,13 @@ AdminMainView::AdminMainView(std::vector<CustomerDisplayItem *> *totalCustomers,
   connect(pCreateTraderButton, &QPushButton::clicked, this,
           &AdminMainView::createEmployeeInitiated);
   connect(pTraderList, &ScrollableContainer::notifyOfEmployeeItemSelection,
-          this, &AdminMainView::notifyOfEmployeeEdit);
+          this, &AdminMainView::editEmployeeInitiated);
   connect(pDeleteTraderButton, &QPushButton::clicked, this,
           &AdminMainView::notifyOfEmployeeDeletion);
   connect(pCreateCustomerButton, &QPushButton::clicked, this,
           &AdminMainView::notifyOfCustomerCreation);
   connect(pCustomerList, &ScrollableContainer::notifyOfCustomerItemSelection,
-          this, &AdminMainView::notifyOfCustomerEdit);
+          this, &AdminMainView::editCustomerInitiated);
   connect(pDeleteCustomerButton, &QPushButton::clicked, this,
           &AdminMainView::notifyOfCustomerDeletion);
 }
@@ -78,7 +78,9 @@ void AdminMainView::logOutInitiated() { emit notifyOfLogOut(); }
 void AdminMainView::createEmployeeInitiated() {
   emit notifyOfEmployeeCreation();
 }
-void AdminMainView::editEmployeeInitiated() { emit notifyOfEmployeeEdit(); }
+void AdminMainView::editEmployeeInitiated(int id) {
+  emit notifyOfEmployeeEdit(id);
+}
 void AdminMainView::deleteEmployeeInitiated() {
   emit notifyOfEmployeeDeletion();
 }

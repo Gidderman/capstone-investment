@@ -3,6 +3,16 @@
 
 #include "DataManager.h"
 
-class TraderService {};
+#include <vector>
+
+class TraderService {
+private:
+  DataManager dataManager;
+
+public:
+  TraderService();
+  ~TraderService();
+  std::vector<Customer> getListOfManagedCustomers(int employeeId);
+};
 
 #endif

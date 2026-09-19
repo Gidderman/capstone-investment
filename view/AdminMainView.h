@@ -42,7 +42,7 @@ public:
 public slots:
   void logOutInitiated();
   void createEmployeeInitiated();
-  void editEmployeeInitiated();
+  void editEmployeeInitiated(int id);
   void deleteEmployeeInitiated();
   void createCustomerInitiated();
   void editCustomerInitiated();
@@ -51,7 +51,7 @@ public slots:
 signals:
   void notifyOfLogOut();
   void notifyOfEmployeeCreation();
-  void notifyOfEmployeeEdit();
+  void notifyOfEmployeeEdit(int id);
   void notifyOfEmployeeDeletion();
   void notifyOfCustomerCreation();
   void notifyOfCustomerEdit();

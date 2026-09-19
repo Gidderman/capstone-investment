@@ -30,13 +30,13 @@ public:
   void refreshDisplayList();
 
 public slots:
-  void listenForCustomerItemSelection();
-  void listenForEmployeeItemSelection();
+  void listenForCustomerItemSelection(int id);
+  void listenForEmployeeItemSelection(int id);
   // TODO: Stock display items
 
 signals:
-  void notifyOfCustomerItemSelection();
-  void notifyOfEmployeeItemSelection();
+  void notifyOfCustomerItemSelection(int id);
+  void notifyOfEmployeeItemSelection(int id);
   // TODO: stock display items
 };
 

@@ -49,10 +49,10 @@ void ScrollableContainer::refreshDisplayList() {
 }
 
 //****************************SLOTS*******************************************
-void ScrollableContainer::listenForCustomerItemSelection() {
-  emit notifyOfCustomerItemSelection();
+void ScrollableContainer::listenForCustomerItemSelection(int id) {
+  emit notifyOfCustomerItemSelection(id);
 }
 
-void ScrollableContainer::listenForEmployeeItemSelection() {
-  emit notifyOfEmployeeItemSelection();
+void ScrollableContainer::listenForEmployeeItemSelection(int id) {
+  emit notifyOfEmployeeItemSelection(id);
 }

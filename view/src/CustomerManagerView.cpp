@@ -4,13 +4,14 @@
 #include <qpushbutton.h>
 
 CustomerManagerView::CustomerManagerView(
+    std::vector<QString> customerInfo,
     std::vector<StockDisplayItem *> *stocks) {
-  pCustomerFullName = new QLabel("Customer Name");
-  pCustomerPhoneNumber = new QLabel("XXX-XXX-XXXX");
-  pCustomerEmail = new QLabel("email@email.com");
-  pDateAccountedOpened = new QLabel("ddMMMYYYY");
-  pAccountType = new QLabel("RETIREMENT");
-  pUninvestedFunds = new QLabel("$XXXXXX.XX");
+  pCustomerFullName = new QLabel(customerInfo.at(0));
+  pCustomerPhoneNumber = new QLabel(customerInfo.at(1));
+  pCustomerEmail = new QLabel(customerInfo.at(2));
+  pDateAccountedOpened = new QLabel(customerInfo.at(3));
+  pAccountType = new QLabel(customerInfo.at(4));
+  pUninvestedFunds = new QLabel(customerInfo.at(5));
 
   pHeldStocks = new ScrollableContainer(STOCKS);
   pHeldStocks->addDisplayList(stocks);

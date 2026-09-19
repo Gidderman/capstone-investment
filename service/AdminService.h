@@ -3,6 +3,17 @@
 
 #include "DataManager.h"
 
-class AdminService {};
+#include <vector>
+
+class AdminService {
+private:
+  DataManager dataManager;
+
+public:
+  AdminService();
+  ~AdminService();
+  std::vector<Employee> getAllEmployees();
+  std::vector<Customer> getAllCustomers();
+};
 
 #endif
