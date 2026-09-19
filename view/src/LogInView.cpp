@@ -8,8 +8,11 @@ LogInView::LogInView()
 
   // Initialize all member variables
   pTitleLabel = new QLabel(QString(title));
-  pUsernameEntryField = new QLineEdit(QString("Username"));
-  pPasswordEntryField = new QLineEdit(QString("Password"));
+  pUsernameEntryField = new QLineEdit();
+  pUsernameEntryField->setPlaceholderText(QString("Username"));
+  pPasswordEntryField = new QLineEdit();
+  pPasswordEntryField->setPlaceholderText(QString("Password"));
+  pPasswordEntryField->setEchoMode(QLineEdit::Password);
   pAttemptLoginButton = new QPushButton(QString("Log In"));
 
   // Connect the log in pushbutton to the notifyOfLogInAttempt signal to allow
@@ -32,3 +35,8 @@ void LogInView::logInAttempted() { emit notifyOfLogInAttempt(); }
 QString LogInView::getEnteredUsername() { return pUsernameEntryField->text(); }
 
 QString LogInView::getEnteredPassword() { return pPasswordEntryField->text(); }
+
+void LogInView::clear() {
+  pUsernameEntryField->setText("");
+  pPasswordEntryField->setText("");
+}

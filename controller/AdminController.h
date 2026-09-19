@@ -33,6 +33,8 @@ private:
   void formatCustomersForDisplay();
   void formatEmployeesForDisplay();
 
+  std::vector<QString> formatIndividualEmployeeForDisplay(Employee employee);
+
   // TODO: Create a function for refreshing displays. One for each list
 public:
   AdminController();

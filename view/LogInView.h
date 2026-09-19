@@ -27,6 +27,7 @@ public:
   ~LogInView();
   QString getEnteredUsername();
   QString getEnteredPassword();
+  void clear();
 
 public slots:
   void logInAttempted();

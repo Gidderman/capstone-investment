@@ -1,9 +1,15 @@
 #include "TraderCreationView.h"
 
-TraderCreationView::TraderCreationView() {
+#include <iostream>
+
+TraderCreationView::TraderCreationView() : id(-1) {
   pFirstNameEntry = new QLineEdit();
+  pFirstNameEntry->setPlaceholderText("First Name");
   pLastNameEntry = new QLineEdit();
+  pLastNameEntry->setPlaceholderText("Last Name");
   pRoleSelection = new QComboBox();
+  pRoleSelection->addItem(QString("Trader"));
+  pRoleSelection->addItem(QString("Admin"));
 
   pCreateEmployeeButton = new QPushButton(QString("Create Employee"));
   pCancelCreationButton = new QPushButton(QString("Cancel"));
@@ -31,7 +37,29 @@ TraderCreationView::TraderCreationView() {
 
 TraderCreationView::~TraderCreationView() {}
 
-void TraderCreationView::run() { this->show(); }
+void TraderCreationView::run() {
+  id = -1;
+  pFirstNameEntry->clear();
+  pLastNameEntry->clear();
+  pRoleSelection->setCurrentText("Trader");
+  pCreateEmployeeButton->setText("Create Employee");
+  this->show();
+}
+
+void TraderCreationView::run(std::vector<QString> employee) {
+  pFirstNameEntry->setText(employee.at(0));
+  pLastNameEntry->setText(employee.at(1));
+  pRoleSelection->setCurrentText(employee.at(2));
+  std::cout << "Setting role to " << employee.at(2).toStdString() << " for "
+            << employee.at(1).toStdString() << std::endl;
+  if (employee.size() == 4) {
+    id = employee.at(3).toInt();
+  }
+
+  pCreateEmployeeButton->setText("Save Changes");
+
+  this->show();
+}
 
 void TraderCreationView::end() { this->hide(); } // TODO: clear all fields
 

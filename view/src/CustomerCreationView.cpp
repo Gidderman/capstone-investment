@@ -5,11 +5,18 @@
 
 CustomerCreationView::CustomerCreationView() {
   pFirstNameEntry = new QLineEdit();
+  pFirstNameEntry->setPlaceholderText("First Name");
   pLastNameEntry = new QLineEdit();
+  pLastNameEntry->setPlaceholderText("Last Name");
   pPhoneNumberEntry = new QLineEdit();
+  pPhoneNumberEntry->setPlaceholderText("Phone Number");
   pEmailEntry = new QLineEdit();
+  pEmailEntry->setPlaceholderText("E-Mail");
   pInitialInvestmentEntry = new QLineEdit();
+  pInitialInvestmentEntry->setPlaceholderText("Initial Money Invested");
   pAccountTypeEntry = new QComboBox();
+  pAccountTypeEntry->addItem("Brokerage");
+  pAccountTypeEntry->addItem("Retirement");
 
   pCreateCustomerButton = new QPushButton(QString("Create Customer"));
   pCancelCreationButton = new QPushButton(QString("Cancel"));

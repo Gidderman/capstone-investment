@@ -45,16 +45,19 @@ void AdminController::run(Authorizer *authorizer) {
   connect(pAdminMainView, &AdminMainView::notifyOfCustomerDeletion, this,
           &AdminController::listenForCustomerDeletion);
   connect(pTraderCreationView, &TraderCreationView::notifyOfEmployeeCreation,
-          this, &AdminController::executeEmployeeAction);
+          this, &AdminController::listenForEmployeeCreation);
   connect(pTraderCreationView, &TraderCreationView::notifyOfCancellation, this,
-          &AdminController::cancelEmployeeAction);
+          &AdminController::listenForEmployeeActionCancel);
   connect(pTraderCreationView, &TraderCreationView::notifyOfAccountUnlock, this,
-          &AdminController::executeEmployeeAccountUnlock);
+          &AdminController::listenForEmployeeAccountUnlock);
   connect(pCustomerCreationView,
           &CustomerCreationView::notifyOfCustomerCreation, this,
-          &AdminController::executeCustomerAction);
+          &AdminController::listenForCustomerActionConfirmation);
   connect(pCustomerCreationView, &CustomerCreationView::notifyOfCreationCancel,
-          this, &AdminController::cancelCustomerAction);
+          this, &AdminController::listenForCustomerActionCancel);
+
+  // TODO: Check these signal and slot names and make sure they make sense and
+  // aren't redundent.
 
   pAdminMainView->show();
 }
@@ -62,8 +65,8 @@ void AdminController::run(Authorizer *authorizer) {
 void AdminController::executeEmployeeCreation() { pTraderCreationView->run(); }
 
 void AdminController::executeEmployeeEdit(Employee employeeToBeEdited) {
-  // TODO: Prepopulate the items to be edited.
-  pTraderCreationView->run();
+  pTraderCreationView->run(
+      formatIndividualEmployeeForDisplay(employeeToBeEdited));
 }
 
 void AdminController::executeEmployeeDeletion() {
@@ -194,6 +197,27 @@ void AdminController::formatEmployeesForDisplay() {
   }
 }
 
+std::vector<QString>
+AdminController::formatIndividualEmployeeForDisplay(Employee employee) {
+
+  std::vector<QString> returnData;
+  returnData.push_back(QString::fromStdString(employee.firstName));
+  returnData.push_back(QString::fromStdString(employee.lastName));
+  std::cout << "Roll prior to writing to vector is " << employee.role
+            << " ADMIN is " << ADMIN << std::endl;
+  if (employee.role == ADMIN) {
+    returnData.push_back(QString("Admin"));
+  } else {
+    returnData.push_back(QString("Trader"));
+  }
+  returnData.push_back(QString::number(employee.accountID));
+
+  std::cout << "Current role is " << returnData.at(2).toStdString()
+            << std::endl;
+
+  return returnData;
+}
+
 //*********************SLOTS**************************************
 void AdminController::listenForLogOut() {
   pAdminMainView->hide();
@@ -225,7 +249,7 @@ void AdminController::listenForEmployeeActionConfirmation(
   Employee inputtedEmployee;
   inputtedEmployee.firstName = employee.at(0).toStdString();
   inputtedEmployee.lastName = employee.at(1).toStdString();
-  if (employee.at(3) == "ADMIN") {
+  if (employee.at(2) == "Admin" || employee.at(2) == "ADMIN") {
     inputtedEmployee.role = ADMIN;
   } else {
     inputtedEmployee.role = TRADER;

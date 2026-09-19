@@ -8,6 +8,8 @@ TraderDisplayItem::TraderDisplayItem(QString name, QString id,
   this->pId = new QLabel(id);
   this->pNumAccountsManaged = new QLabel(numAccountsManaged);
 
+  this->id = id.toInt();
+
   pNameAndIdLayout = new QVBoxLayout();
   pMainLayout = new QHBoxLayout(this);
 

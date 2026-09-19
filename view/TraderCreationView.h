@@ -22,10 +22,13 @@ private:
 
   QVBoxLayout *layout;
 
+  int id;
+
 public:
   TraderCreationView();
   ~TraderCreationView();
   void run();
+  void run(std::vector<QString> employee);
   void end();
   QString getFirstName();
   QString getLastName();

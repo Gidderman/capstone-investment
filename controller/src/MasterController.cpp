@@ -44,7 +44,10 @@ void MasterController::executeLogin() {
   }
 };
 
-void MasterController::executeLogOut() { logInView->show(); }
+void MasterController::executeLogOut() {
+  logInView->clear();
+  logInView->show();
+}
 
 // ************************* SLOTS **********************************
 void MasterController::detectLogin() { executeLogin(); }
