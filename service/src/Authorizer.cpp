@@ -1,3 +1,6 @@
+// This class implements Authorizer.h. See that header file for the purpose of
+// the class.
+
 #include "Authorizer.h"
 
 Authorizer::Authorizer(ROLE currentUsersRole) {

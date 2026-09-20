@@ -1,3 +1,9 @@
+// This class handles all the business logic related to the trader functionality
+// of the application.
+
+// TODO:
+// THIS CLASS IS LARGELY UNIMPLEMENTED AND REQUIRES MORE WORK.
+
 #ifndef TRADER_SERVICE_H
 #define TRADER_SERVICE_H
 
@@ -12,6 +18,7 @@ private:
 public:
   TraderService();
   ~TraderService();
+  // Used to get the list of customers to display on the MainTraderView
   std::vector<Customer> getListOfManagedCustomers(int employeeId);
 };
 

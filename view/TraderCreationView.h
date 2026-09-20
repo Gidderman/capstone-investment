@@ -30,9 +30,6 @@ public:
   void run();
   void run(std::vector<QString> employee);
   void end();
-  QString getFirstName();
-  QString getLastName();
-  int getRole();
 
 public slots:
   void listenForEmployeeCreation();

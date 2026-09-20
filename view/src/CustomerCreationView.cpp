@@ -1,9 +1,15 @@
+// This class implements CustomerCreationView.h, refer to that header file for
+// more information
+
 #include "CustomerCreationView.h"
 #include <qboxlayout.h>
 #include <qlineedit.h>
 #include <qpushbutton.h>
 
 CustomerCreationView::CustomerCreationView() {
+
+  // Initialize all display items, to include the placeholder text for all entry
+  // boxes
   pFirstNameEntry = new QLineEdit();
   pFirstNameEntry->setPlaceholderText("First Name");
   pLastNameEntry = new QLineEdit();
@@ -21,6 +27,8 @@ CustomerCreationView::CustomerCreationView() {
   pCreateCustomerButton = new QPushButton(QString("Create Customer"));
   pCancelCreationButton = new QPushButton(QString("Cancel"));
 
+  // Add components to the layout, they are displayed from top to bottom in the
+  // order they are added to the layout
   layout = new QVBoxLayout(this);
   layout->addWidget(pFirstNameEntry);
   layout->addWidget(pLastNameEntry);
@@ -31,6 +39,7 @@ CustomerCreationView::CustomerCreationView() {
   layout->addWidget(pCreateCustomerButton);
   layout->addWidget(pCancelCreationButton);
 
+  // Connect the buttons to the appropriate slots
   connect(pCreateCustomerButton, &QPushButton::clicked, this,
           &CustomerCreationView::listenForCustomerCreation);
   connect(pCancelCreationButton, &QPushButton::clicked, this,
@@ -43,29 +52,13 @@ void CustomerCreationView::run() { this->show(); }
 
 void CustomerCreationView::end() { this->hide(); } // TODO: clear all fields
 
-QString CustomerCreationView::getFirstName() { return pFirstNameEntry->text(); }
-
-QString CustomerCreationView::getLastName() { return pLastNameEntry->text(); }
-
-QString CustomerCreationView::getPhoneNumber() {
-  return pPhoneNumberEntry->text();
-}
-
-QString CustomerCreationView::getEmail() { return pEmailEntry->text(); }
-
-QString CustomerCreationView::getInitialInvestment() {
-  return pInitialInvestmentEntry->text();
-}
-
-int CustomerCreationView::getAccountType() {
-  // TODO: this
-}
-
 //************************SLOTS***********************
+// Connected to the Create Customer button
 void CustomerCreationView::listenForCustomerCreation() {
   emit notifyOfCustomerCreation();
 }
 
+// Connected to the cancel button
 void CustomerCreationView::listenForCreationCancel() {
   emit notifyOfCreationCancel();
 }

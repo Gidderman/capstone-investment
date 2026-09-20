@@ -1,3 +1,11 @@
+// The CRUDManager is the point of contact with the database. It handles all
+// database interfacing and queries, utilizing Qt::SQL to perform those actions.
+
+// TODO:
+// THIS CLASS IS NOT COMPLETE. CURRENTLY IT IS SIMULATING A DATABASE USING
+// UNORDERED_MAPS FOR TESTING THE REMAINDER OF THE APPLICATION, THERE WILL BE
+// MANY CHANGES TO THIS CLASS
+
 #ifndef CRUD_MANAGER_H
 #define CRUD_MANAGER_H
 
@@ -31,6 +39,7 @@ public:
   std::vector<std::string> runQuery(int id, bool isCustomer,
                                     std::string queryType,
                                     std::vector<std::string> data);
+  std::vector<std::string> getCredentialsByEmployeeId(int employeeId);
   std::unordered_map<int, std::vector<std::string>> getAllEmployees();
   std::unordered_map<int, std::vector<std::string>> getAllCustomers();
 };

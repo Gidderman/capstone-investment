@@ -1,3 +1,11 @@
+// This class implements DataManager.h, see that header file for details
+// regarding the purpose of this class.
+
+// TODO:
+// CURRENTLY THIS CLASS FORMATS DATA IN A WAY THAT MY SIMULATED DATABASE CAN
+// INTERFACE WITH IT, I.E. MOSTLY INTO VECTORS OF STRINGS. THERE WILL BE
+// REFACTORING REQUIRED WHEN AN ACTUAL DATABASE CONNECTION IS MADE
+
 #include "DataManager.h"
 #include "Credentials.h"
 #include "Customer.h"
@@ -17,6 +25,13 @@ DataManager::getEmployeeByUsername(std::string username) {
   std::vector<std::string> returnedVector = crudManager.runLogInQuery(username);
 
   return formatEmployeeQueriedData(returnedVector);
+}
+
+Credentials DataManager::getCredentialsByEmployeeId(int employeeId) {
+  std::vector<std::string> returnedVector =
+      crudManager.getCredentialsByEmployeeId(employeeId);
+
+  return std::get<1>(formatEmployeeQueriedData(returnedVector));
 }
 
 std::vector<Employee> DataManager::getAllEmployees() {
@@ -88,6 +103,18 @@ bool DataManager::updateEmployee(Employee employeeToUpdate, Employee update,
 
   std::vector<std::string> returnedVector = crudManager.runQuery(
       employeeToUpdate.accountID, false, "update", queryFormattedData);
+
+  std::cout << "DataManager::updateEmployee - Data sent to CRUD Manager: "
+            << std::endl;
+  for (std::string item : queryFormattedData) {
+    std::cout << "   " << item << std::endl;
+  }
+
+  std::cout << "DataManager::updateEmployee - Data returned from CRUD Manager: "
+            << std::endl;
+  for (std::string item : returnedVector) {
+    std::cout << "   " << item << std::endl;
+  }
 
   return queryFormattedData == returnedVector;
 }

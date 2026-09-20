@@ -37,14 +37,7 @@ TraderCreationView::TraderCreationView() : id(-1) {
 
 TraderCreationView::~TraderCreationView() {}
 
-void TraderCreationView::run() {
-  id = -1;
-  pFirstNameEntry->clear();
-  pLastNameEntry->clear();
-  pRoleSelection->setCurrentText("Trader");
-  pCreateEmployeeButton->setText("Create Employee");
-  this->show();
-}
+void TraderCreationView::run() { this->show(); }
 
 void TraderCreationView::run(std::vector<QString> employee) {
   pFirstNameEntry->setText(employee.at(0));
@@ -61,13 +54,14 @@ void TraderCreationView::run(std::vector<QString> employee) {
   this->show();
 }
 
-void TraderCreationView::end() { this->hide(); } // TODO: clear all fields
-
-QString TraderCreationView::getFirstName() { return pFirstNameEntry->text(); }
-
-QString TraderCreationView::getLastName() { return pLastNameEntry->text(); }
-
-int TraderCreationView::getRole() {}
+void TraderCreationView::end() {
+  id = -1;
+  pFirstNameEntry->clear();
+  pLastNameEntry->clear();
+  pRoleSelection->setCurrentText("Trader");
+  pCreateEmployeeButton->setText("Create Employee");
+  this->hide();
+}
 
 //************************SLOTS****************************
 void TraderCreationView::listenForEmployeeCreation() {
@@ -75,7 +69,11 @@ void TraderCreationView::listenForEmployeeCreation() {
   employee.push_back(pFirstNameEntry->text());
   employee.push_back(pLastNameEntry->text());
   employee.push_back(pRoleSelection->currentText());
-  emit notifyOfEmployeeCreation(employee);
+  employee.push_back(QString::number(id));
+
+  emit notifyOfEmployeeCreation(
+      employee); // Connected to
+                 // AdminController::listenForEmployeeActionConfirmation
 }
 
 void TraderCreationView::listenForCreationCancellation() {

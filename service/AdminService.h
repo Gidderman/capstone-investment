@@ -1,3 +1,7 @@
+// The AdminService class handles all business logic for the Admin Portion of
+// the program. It performs actions as directed by the Admin Controller, and
+// communicates with the DataManager class to get information from the Database.
+
 #ifndef ADMIN_SERVICE_H
 #define ADMIN_SERVICE_H
 
@@ -14,6 +18,8 @@ public:
   ~AdminService();
   std::vector<Employee> getAllEmployees();
   std::vector<Customer> getAllCustomers();
+  bool createEmployee(Employee employeeToCreate);
+  bool editEmployee(Employee employeeToEdit, Employee edit);
 };
 
 #endif

@@ -1,3 +1,8 @@
+// TODO:
+// THIS CLASS IS NOT COMPLETE. CURRENTLY IT IS SIMULATING A DATABASE USING
+// UNORDERED_MAPS FOR TESTING THE REMAINDER OF THE APPLICATION, THERE WILL BE
+// MANY CHANGES TO THIS CLASS
+
 #include "CRUDManager.h"
 
 #include <iostream>
@@ -16,7 +21,7 @@ CRUDManager::CRUDManager() {
   //  accountLocked?
 
   std::vector<std::string> populatingVector;
-  populatingVector.push_back("00001");
+  populatingVector.push_back("1");
   populatingVector.push_back("John");
   populatingVector.push_back("Doe");
   populatingVector.push_back("jdoe");
@@ -28,7 +33,7 @@ CRUDManager::CRUDManager() {
   testingEmployeeDatabase.emplace(00001, populatingVector);
 
   populatingVector.clear();
-  populatingVector.push_back("00002");
+  populatingVector.push_back("2");
   populatingVector.push_back("Harry");
   populatingVector.push_back("Styles");
   populatingVector.push_back("hstyle");
@@ -40,7 +45,7 @@ CRUDManager::CRUDManager() {
   testingEmployeeDatabase.emplace(00002, populatingVector);
 
   populatingVector.clear();
-  populatingVector.push_back("00003");
+  populatingVector.push_back("3");
   populatingVector.push_back("Tommy");
   populatingVector.push_back("Screwup");
   populatingVector.push_back("tscrewup");
@@ -73,7 +78,7 @@ CRUDManager::CRUDManager() {
   //  initial investment 7
   //  customerID 8
   //  account id 9
-  populatingVector.push_back("00001");
+  populatingVector.push_back("1");
   populatingVector.push_back("Bill");
   populatingVector.push_back("Nye");
   populatingVector.push_back("8008008000");
@@ -82,41 +87,41 @@ CRUDManager::CRUDManager() {
   populatingVector.push_back("BROKERAGE");
   populatingVector.push_back("200000.00");
   populatingVector.push_back("3");
-  populatingVector.push_back("00001");
-  populatingVector.push_back("00001");
+  populatingVector.push_back("1");
+  populatingVector.push_back("1");
   populatingVector.push_back("Nividia");
   populatingVector.push_back("NVD");
   populatingVector.push_back("130.00");
   populatingVector.push_back("2");
   populatingVector.push_back("260.00");
   populatingVector.push_back("75.00");
-  populatingVector.push_back("00001");
-  populatingVector.push_back("00002");
-  populatingVector.push_back("00002");
-  populatingVector.push_back("00005");
+  populatingVector.push_back("1");
+  populatingVector.push_back("2");
+  populatingVector.push_back("2");
+  populatingVector.push_back("5");
   populatingVector.push_back("Google");
   populatingVector.push_back("GOOG");
   populatingVector.push_back("170.00");
   populatingVector.push_back("3");
   populatingVector.push_back("410.00");
   populatingVector.push_back("15.00");
-  populatingVector.push_back("00001");
-  populatingVector.push_back("00002");
-  populatingVector.push_back("00003");
-  populatingVector.push_back("00007");
+  populatingVector.push_back("1");
+  populatingVector.push_back("2");
+  populatingVector.push_back("3");
+  populatingVector.push_back("7");
   populatingVector.push_back("Company");
   populatingVector.push_back("CMP");
   populatingVector.push_back("70.00");
   populatingVector.push_back("3");
   populatingVector.push_back("210.00");
   populatingVector.push_back("10.00");
-  populatingVector.push_back("00001");
-  populatingVector.push_back("00002");
+  populatingVector.push_back("1");
+  populatingVector.push_back("2");
 
   testingCustomerDatabase.emplace(00001, populatingVector);
 
   populatingVector.clear();
-  populatingVector.push_back("00002");
+  populatingVector.push_back("2");
   populatingVector.push_back("Jim");
   populatingVector.push_back("Halpert");
   populatingVector.push_back("8008008000");
@@ -125,18 +130,18 @@ CRUDManager::CRUDManager() {
   populatingVector.push_back("RETIREMENT");
   populatingVector.push_back("200000.00");
   populatingVector.push_back("1");
-  populatingVector.push_back("00002");
-  populatingVector.push_back("00007");
+  populatingVector.push_back("2");
+  populatingVector.push_back("7");
   populatingVector.push_back("Dunder Mifflin");
   populatingVector.push_back("DNDR");
   populatingVector.push_back("130.00");
   populatingVector.push_back("2");
   populatingVector.push_back("260.00");
   populatingVector.push_back("75.00");
-  populatingVector.push_back("00002");
-  populatingVector.push_back("00002");
+  populatingVector.push_back("2");
+  populatingVector.push_back("2");
 
-  testingCustomerDatabase.emplace(00002, populatingVector);
+  testingCustomerDatabase.emplace(2, populatingVector);
   populatingVector.clear();
 }
 
@@ -171,12 +176,17 @@ std::vector<std::string> CRUDManager::runQuery(int id, bool isCustomer,
   if (queryType == "create") {
     return createSelection(id, isCustomer, data);
   } else if (queryType == "update") {
-    return createSelection(id, isCustomer, data);
+    return updateSelection(id, isCustomer, data);
   } else {
     std::cout << "INVALID QUERY" << std::endl;
     std::vector<std::string> blankVector;
     return blankVector;
   }
+}
+
+std::vector<std::string>
+CRUDManager::getCredentialsByEmployeeId(int employeeId) {
+  return testingEmployeeDatabase.at(employeeId);
 }
 
 std::vector<std::string>
@@ -208,7 +218,19 @@ CRUDManager::updateSelection(int id, bool isCustomer,
     testingCustomerDatabase.at(id) = update;
     return testingCustomerDatabase.at(id);
   } else {
+    std::cout << "CRUDManager::updateSelection - Update information: "
+              << std::endl;
+    for (std::string item : update) {
+      std::cout << "    " << item << std::endl;
+    }
+    std::cout << "CRUDManager::updateSelection - writing update: " << std::endl;
     testingEmployeeDatabase.at(id) = update;
+
+    std::cout << "CRUDManager::updateSelection - return information: "
+              << std::endl;
+    for (std::string item : testingEmployeeDatabase.at(id)) {
+      std::cout << "    " << item << std::endl;
+    }
     return testingEmployeeDatabase.at(id);
   }
 }

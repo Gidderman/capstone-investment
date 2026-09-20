@@ -1,3 +1,6 @@
+// This class implements AdminController.h, which contains a summary of the
+// purpose of the class.
+
 #include "AdminController.h"
 #include "AdminMainView.h"
 #include "Authorizer.h"
@@ -13,17 +16,26 @@ AdminController::AdminController() {};
 
 AdminController::~AdminController() {}
 
+// This is the entry point into the class
 void AdminController::run(Authorizer *authorizer) {
+  // The authorizer pointer contains the allowed role based on the logged in
+  // user. When we call the authorize user function, pass in the role required
+  // to access the admin account, and it compares that to its stored role. If
+  // they do not match, it returns false.
   if (!authorizer->authorizeUser(ADMIN)) {
     // TODO: Throw and exception
   }
 
+  // Initialize our customer and employee lists
   customerList = getAllCustomers();
   employeeList = getAllEmployees();
 
+  // Format the lists for display
   formatCustomersForDisplay();
   formatEmployeesForDisplay();
 
+  // We initialize the three screens that will be accessed, passing in the
+  // display lists to the Admin Main View.
   pAdminMainView =
       new AdminMainView(&customerDisplayList, &employeeDisplayList);
   pTraderCreationView = new TraderCreationView();
@@ -45,7 +57,7 @@ void AdminController::run(Authorizer *authorizer) {
   connect(pAdminMainView, &AdminMainView::notifyOfCustomerDeletion, this,
           &AdminController::listenForCustomerDeletion);
   connect(pTraderCreationView, &TraderCreationView::notifyOfEmployeeCreation,
-          this, &AdminController::listenForEmployeeCreation);
+          this, &AdminController::listenForEmployeeActionConfirmation);
   connect(pTraderCreationView, &TraderCreationView::notifyOfCancellation, this,
           &AdminController::listenForEmployeeActionCancel);
   connect(pTraderCreationView, &TraderCreationView::notifyOfAccountUnlock, this,
@@ -59,16 +71,19 @@ void AdminController::run(Authorizer *authorizer) {
   // TODO: Check these signal and slot names and make sure they make sense and
   // aren't redundent.
 
-  pAdminMainView->show();
+  pAdminMainView->show(); // Display the main screen
 }
 
+// We are creating a new employee.
 void AdminController::executeEmployeeCreation() { pTraderCreationView->run(); }
 
+// We are editing a new employee.
 void AdminController::executeEmployeeEdit(Employee employeeToBeEdited) {
   pTraderCreationView->run(
       formatIndividualEmployeeForDisplay(employeeToBeEdited));
 }
 
+// We are deleteing an existing employee, first throwing a warning window.
 void AdminController::executeEmployeeDeletion() {
   pDeleteWarning = new WarningWindow();
 
@@ -76,27 +91,34 @@ void AdminController::executeEmployeeDeletion() {
   switch (warningWindowChoice) {
   case QMessageBox::Cancel:
     // User cancelled...
+    // TODO: Actual functionality
     std::cout << warningWindowChoice << " DID NOT DELETE" << std::endl;
     break;
   case QMessageBox::Apply:
     // User confirmed deletion.
+    // TODO: Actual functionality
     std::cout << warningWindowChoice << " DELETED" << std::endl;
     break;
   default:
+    // TODO: Actual functionality
     std::cout << warningWindowChoice << " HIT THE DEFAULT" << std::endl;
     break;
   }
 
+  // Free the memory
   delete pDeleteWarning;
   pDeleteWarning = nullptr;
 }
 
+// We are creating a new customer
 void AdminController::executeCustomerCreation() {
   pCustomerCreationView->run();
 }
 
+// We are editing an existing customer
 void AdminController::executeCustomerEdit() { pCustomerCreationView->run(); }
 
+// We are deleting an exiting customer, first throwing a waring window
 void AdminController::executeCustomerDeletion() {
   pDeleteWarning = new WarningWindow();
 
@@ -104,13 +126,16 @@ void AdminController::executeCustomerDeletion() {
   switch (warningWindowChoice) {
   case QMessageBox::Cancel:
     // User cancelled...
+    // TODO: actual functionality
     std::cout << warningWindowChoice << " DID NOT DELETE" << std::endl;
     break;
   case QMessageBox::Apply:
     // User confirmed deletion.
+    // TODO: actual functionality
     std::cout << warningWindowChoice << " DELETED" << std::endl;
     break;
   default:
+    // TODO: actual functionality
     std::cout << warningWindowChoice << " HIT THE DEFAULT" << std::endl;
     break;
   }
@@ -119,26 +144,51 @@ void AdminController::executeCustomerDeletion() {
   pDeleteWarning = nullptr;
 }
 
+// We have either confirmed the creation of a new employee or
+// saved changes to an existing employee
 void AdminController::executeEmployeeAction(Employee employee) {
-  employeeList = getAllEmployees();
-  for (Employee existingEmployee : employeeList) {
-    if (employee.firstName == existingEmployee.firstName &&
-        employee.lastName == existingEmployee.lastName &&
-        employee.role == existingEmployee.role) {
-      // TODO: PERFORM AN UPDATE EVOLUTION FOR EXISTING EMPLOYEE
-      return;
+  // We determine if this employee is an existing one, or a new one by
+  // checking the ID. If it has an existing ID we call the update function,
+  // otherwise we create the employee.
+  Employee employeeToEdit;
+  if (employee.accountID != -1) {
+    for (Employee existingEmployee : employeeList) {
+      if (employee.accountID == existingEmployee.accountID) {
+        employeeToEdit = existingEmployee;
+      }
+    }
+    if (adminService.editEmployee(employeeToEdit, employee)) {
+      // TODO: successful edit
+    } else {
+      // TODO: unsuccesful edit
+    }
+  } else {
+    if (adminService.createEmployee(employee)) {
+      // TODO: sucessful edit
+    } else {
+      // TODO: unsuccesful edit
     }
   }
 
-  // TODO: PERFORM A CREATION EVOLUTION FOR EXITING EMPLOYEE
+  // Refresh our lists and the display to show up to date information.
+  employeeList = getAllEmployees();
+  customerList = getAllCustomers();
+  formatEmployeesForDisplay();
+  formatCustomersForDisplay();
+  pAdminMainView->refreshPage();
 }
 
+// We are unlocking and employee account
 void AdminController::executeEmployeeAccountUnlock() {} // TODO: this
 
+// We are cancelling the creation or edit of an employee
 void AdminController::cancelEmployeeAction() { pTraderCreationView->end(); }
 
+// We have confirmed the creation of a new customer or saved changes to and
+// existing customer
 void AdminController::executeCustomerAction() {} // TODO: this
 
+// We have cancelled the creation or edit of an employee
 void AdminController::cancelCustomerAction() { pCustomerCreationView->end(); }
 
 //*********************PRIVATE FUNCTIONS*****************************
@@ -150,6 +200,10 @@ std::vector<Employee> AdminController::getAllEmployees() {
   return adminService.getAllEmployees();
 }
 
+// The custom display containers are formated with the customer full
+// name in the top left, customer id below that, current worth on the right
+// and univested funds below the current worth. All these values must be in
+// QStrings.
 void AdminController::formatCustomersForDisplay() {
   customerDisplayList.clear();
 
@@ -172,6 +226,9 @@ void AdminController::formatCustomersForDisplay() {
   }
 }
 
+// The custom display contianers for employees consist of their full name
+// on the left with their account ID below it, and the number of customer
+// accounts managed on the right. All in QStrings
 void AdminController::formatEmployeesForDisplay() {
   employeeDisplayList.clear();
 
@@ -197,14 +254,15 @@ void AdminController::formatEmployeesForDisplay() {
   }
 }
 
+// We format an individual employee for display within the Employee Creation
+// Window. All values must be in QStrings.
 std::vector<QString>
 AdminController::formatIndividualEmployeeForDisplay(Employee employee) {
 
   std::vector<QString> returnData;
   returnData.push_back(QString::fromStdString(employee.firstName));
   returnData.push_back(QString::fromStdString(employee.lastName));
-  std::cout << "Roll prior to writing to vector is " << employee.role
-            << " ADMIN is " << ADMIN << std::endl;
+
   if (employee.role == ADMIN) {
     returnData.push_back(QString("Admin"));
   } else {
@@ -212,20 +270,21 @@ AdminController::formatIndividualEmployeeForDisplay(Employee employee) {
   }
   returnData.push_back(QString::number(employee.accountID));
 
-  std::cout << "Current role is " << returnData.at(2).toStdString()
-            << std::endl;
-
   return returnData;
 }
 
 //*********************SLOTS**************************************
+// Connected to the AdminMainView logout button
 void AdminController::listenForLogOut() {
   pAdminMainView->hide();
   emit informMasterControllerOfLogOut();
 }
 
+// Connected to the AdminMainView Create Employee button
 void AdminController::listenForEmployeeCreation() { executeEmployeeCreation(); }
 
+// Connected to a double click on an existing employee. We additionally pull the
+// existing employee from our employeeList based on the returned ID.
 void AdminController::listenForEmployeeEdit(int id) {
   Employee employeeToEdit;
   for (Employee employee : employeeList) {
@@ -236,39 +295,58 @@ void AdminController::listenForEmployeeEdit(int id) {
   executeEmployeeEdit(employeeToEdit);
 }
 
+// Connected to the Admin Main View Delete Employee button
 void AdminController::listenForEmployeeDeletion() { executeEmployeeDeletion(); }
 
+// Connected to the AdminMainView create customer button.
 void AdminController::listenForCustomerCreation() { executeCustomerCreation(); }
 
+// Connected to a double click on an existing customer
 void AdminController::listenForCustomerEdit() { executeCustomerEdit(); }
 
+// Connected to the AdminMainView delete customer button
 void AdminController::listenForCustomerDeletion() { executeCustomerDeletion(); }
 
+// Connected to the CreateTraderView Create Employee/Save Changes button
+// If the passed in vector last index is not negative 1 that means it is an
+// existing employee that has been edited
 void AdminController::listenForEmployeeActionConfirmation(
     std::vector<QString> employee) {
   Employee inputtedEmployee;
+
   inputtedEmployee.firstName = employee.at(0).toStdString();
   inputtedEmployee.lastName = employee.at(1).toStdString();
+
   if (employee.at(2) == "Admin" || employee.at(2) == "ADMIN") {
     inputtedEmployee.role = ADMIN;
   } else {
     inputtedEmployee.role = TRADER;
   }
+  inputtedEmployee.accountID = employee.at(3).toInt();
+
+  pTraderCreationView->end();
+
   executeEmployeeAction(inputtedEmployee);
 }
 
+// Connected to the CreateTraderView cancel button
 void AdminController::listenForEmployeeActionCancel() {
+  pTraderCreationView->end();
   cancelEmployeeAction();
 }
 
+// Connected to the CreateTraderView unlock account button
 void AdminController::listenForEmployeeAccountUnlock() {
+  pTraderCreationView->end();
   executeEmployeeAccountUnlock();
 }
 
+// Connected to the CreateCustomerView Create Customer/Save Changes button
 void AdminController::listenForCustomerActionConfirmation() {
   executeCustomerAction();
 }
 
+// Connected to the CreateCustomerView cancel button.
 void AdminController::listenForCustomerActionCancel() {
   cancelCustomerAction();
 }

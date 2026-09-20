@@ -1,3 +1,8 @@
+// This is a custom data structure used to hold information regarding a singular
+// customer account. It includes a list of investments associated with the
+// customer, and an accountID that matches the accountID of the employee that
+// manages the account.
+
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 

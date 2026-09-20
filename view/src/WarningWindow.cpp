@@ -1,6 +1,4 @@
 #include "WarningWindow.h"
-#include <qmessagebox.h>
-#include <qtextoption.h>
 
 WarningWindow::WarningWindow() {
   this->warningText =

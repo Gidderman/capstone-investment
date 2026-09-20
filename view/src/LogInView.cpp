@@ -1,7 +1,9 @@
+// This class implements LogInView.h, see the header file for more information
+
 #include "LogInView.h"
 
 // TODO: Format for populating the proper screen size and the various other
-// widgets within.
+// widgets within, and passing data via signals
 
 LogInView::LogInView()
     : enteredUsername(""), enteredPassword(""), title("Investment Company") {
