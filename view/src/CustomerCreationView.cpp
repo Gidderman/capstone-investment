@@ -2,11 +2,10 @@
 // more information
 
 #include "CustomerCreationView.h"
-#include <qboxlayout.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
 
-CustomerCreationView::CustomerCreationView() {
+#include <iostream>
+
+CustomerCreationView::CustomerCreationView() : id(-1) {
 
   // Initialize all display items, to include the placeholder text for all entry
   // boxes
@@ -48,14 +47,61 @@ CustomerCreationView::CustomerCreationView() {
 
 CustomerCreationView::~CustomerCreationView() {}
 
-void CustomerCreationView::run() { this->show(); }
+void CustomerCreationView::run() {
+  this->clear();
+  this->show();
+}
 
-void CustomerCreationView::end() { this->hide(); } // TODO: clear all fields
+// Called when editing a customer
+void CustomerCreationView::run(std::vector<QString> customerData) {
+  std::cout << "Customer data size " << customerData.size() << std::endl;
+
+  pFirstNameEntry->setText(customerData.at(0));
+  pLastNameEntry->setText(customerData.at(1));
+  pPhoneNumberEntry->setText(customerData.at(2));
+  pEmailEntry->setText(customerData.at(3));
+  pInitialInvestmentEntry->setText(customerData.at(4));
+  pAccountTypeEntry->setCurrentText(customerData.at(5));
+  id = customerData.at(6).toInt();
+
+  pCreateCustomerButton->setText(QString("Save Changes"));
+
+  this->show();
+}
+
+// Clear all fields and hide the screen
+void CustomerCreationView::end() {
+  this->clear();
+  this->hide();
+}
+
+//************************PRIVATE FUNCTIONS***********
+// Clears all fields to their defaults
+void CustomerCreationView::clear() {
+  pFirstNameEntry->clear();
+  pLastNameEntry->clear();
+  pPhoneNumberEntry->clear();
+  pEmailEntry->clear();
+  pInitialInvestmentEntry->clear();
+  pAccountTypeEntry->setCurrentText("Retirement");
+  id = -1;
+
+  pCreateCustomerButton->setText(QString("Create Customer"));
+}
 
 //************************SLOTS***********************
 // Connected to the Create Customer button
 void CustomerCreationView::listenForCustomerCreation() {
-  emit notifyOfCustomerCreation();
+  std::vector<QString> customer;
+  customer.push_back(pFirstNameEntry->text());
+  customer.push_back(pLastNameEntry->text());
+  customer.push_back(pPhoneNumberEntry->text());
+  customer.push_back(pEmailEntry->text());
+  customer.push_back(pInitialInvestmentEntry->text());
+  customer.push_back(pAccountTypeEntry->currentText());
+  customer.push_back(QString::number(id));
+
+  emit notifyOfCustomerCreation(customer);
 }
 
 // Connected to the cancel button

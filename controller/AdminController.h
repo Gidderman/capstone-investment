@@ -61,10 +61,11 @@ private:
   void formatCustomersForDisplay();
   void formatEmployeesForDisplay();
 
-  // This formats an individual employee for display. This is primarily used
-  // when editing and employee and it is needed to display the existing employee
-  // data.
+  // This formats an individual employee or customer for display. This is
+  // primarily used when editing an employee or customer and it is needed to
+  // display the existing data.
   std::vector<QString> formatIndividualEmployeeForDisplay(Employee employee);
+  std::vector<QString> formatIndividualCustomerForDisplay(Customer customer);
 
   // TODO: Create a function for refreshing displays. One for each list
 public:
@@ -80,7 +81,7 @@ public:
   void executeEmployeeEdit(Employee employeeToBeEdited);
   void executeEmployeeDeletion();
   void executeCustomerCreation();
-  void executeCustomerEdit();
+  void executeCustomerEdit(Customer customer);
   void executeCustomerDeletion();
 
   // These actions are called from the TraderCreationView and correspond to the
@@ -92,7 +93,7 @@ public:
   void cancelEmployeeAction();
 
   // These functions perform the same as above but for the CustomerCreationView.
-  void executeCustomerAction();
+  void executeCustomerAction(Customer customer);
   void cancelCustomerAction();
 
 public slots:
@@ -103,14 +104,14 @@ public slots:
                                     // Employee button.
   void listenForEmployeeEdit(
       int id); // Connected a double click on an existing employee
-  void listenForEmployeeDeletion(); // Connected to the AdminMainView Remove
-                                    // Employee button.
-  void listenForCustomerCreation(); // Connected to the AdminMainView Create
-                                    // Customer button.
-  void listenForCustomerEdit(); // Connected to a double click on an existing
-                                // customer.
-  void listenForCustomerDeletion(); // Connected to the AdminMainView Remove
-                                    // Customer button.
+  void listenForEmployeeDeletion();   // Connected to the AdminMainView Remove
+                                      // Employee button.
+  void listenForCustomerCreation();   // Connected to the AdminMainView Create
+                                      // Customer button.
+  void listenForCustomerEdit(int id); // Connected to a double click on an
+                                      // existing customer.
+  void listenForCustomerDeletion();   // Connected to the AdminMainView Remove
+                                      // Customer button.
 
   // While the above slots were related to the AdminMainView, these are related
   // to the CreateTraderView
@@ -121,8 +122,9 @@ public slots:
   listenForEmployeeAccountUnlock(); // Connected to the Unlock account button
 
   // These slots are for the CreateCustomerView
-  void listenForCustomerActionConfirmation(); // Connected to the confirm button
-  void listenForCustomerActionCancel();       // Connected to the cancel button
+  void listenForCustomerActionConfirmation(
+      std::vector<QString> customer);   // Connected to the confirm button
+  void listenForCustomerActionCancel(); // Connected to the cancel button
 
 signals:
   void informMasterControllerOfLogOut();

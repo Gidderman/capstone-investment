@@ -75,8 +75,8 @@ public slots:
                                   // the MainAdminView
   void createCustomerInitiated(); // Connected to the Create Customer button in
                                   // the MainAdminView
-  void
-  editCustomerInitiated(); // TODO: adjust to pass selected customer information
+  void editCustomerInitiated(
+      int id); // called when the user double clicks an existing customer
   void deleteCustomerInitiated(); // Connected to the Delete Customer button in
                                   // the MainAdminView
 
@@ -91,8 +91,8 @@ signals:
                                    // is trying to delete an employee
   void notifyOfCustomerCreation(); // Informs the AdminController that the user
                                    // wants to create a new employee
-  void
-  notifyOfCustomerEdit(); // TODO: adjust to pass selected customer information
+  void notifyOfCustomerEdit(
+      int id); // Informs adminController that we are editing a customer
   void notifyOfCustomerDeletion(); // informs the AdminController that the user
                                    // is trying to delete a customer
 };

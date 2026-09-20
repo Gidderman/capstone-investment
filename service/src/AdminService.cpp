@@ -63,3 +63,25 @@ bool AdminService::editEmployee(Employee employeeToEdit, Employee edit) {
 
   return dataManager.updateEmployee(employeeToEdit, edit, employeeCredentials);
 }
+
+// Create a customer, populating it will a blank investment vector.
+bool AdminService::createCustomer(Customer customer) {
+  std::vector<Investment> investments(0);
+  customer.dateAccountOpened = "TODAY"; // TODO: populate with an actual date
+  customer.investments = investments;
+  customer.accountID = 2; // TODO: when creating/editing a customer there should
+                          // be a field for assigning an employee
+
+  return dataManager.createCustomer(customer);
+}
+
+// Edit an existing customer
+bool AdminService::editCustomer(Customer customer, Customer edit) {
+  // Populate the fields that are not editable within the edit Customer so they
+  // aren't just overwritten to blank values.
+  edit.dateAccountOpened = customer.dateAccountOpened;
+  edit.investments = customer.investments;
+  edit.accountID = customer.accountID;
+
+  return dataManager.updateCustomer(customer, edit);
+}

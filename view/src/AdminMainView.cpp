@@ -114,9 +114,9 @@ void AdminMainView::createCustomerInitiated() {
 }
 
 // Called when a displayed customer is double clicked
-// TODO: This should accept the selected customers id, and pass that to the
-// admin controller
-void AdminMainView::editCustomerInitiated() { emit notifyOfCustomerEdit(); }
+void AdminMainView::editCustomerInitiated(int id) {
+  emit notifyOfCustomerEdit(id);
+}
 
 // Called when the delete customer button is clicked, causing the
 // AdminController to display the warning window

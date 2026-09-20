@@ -20,6 +20,8 @@ public:
   std::vector<Customer> getAllCustomers();
   bool createEmployee(Employee employeeToCreate);
   bool editEmployee(Employee employeeToEdit, Employee edit);
+  bool createCustomer(Customer customer);
+  bool editCustomer(Customer customer, Customer edit);
 };
 
 #endif

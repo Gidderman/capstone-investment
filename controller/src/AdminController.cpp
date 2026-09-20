@@ -116,7 +116,9 @@ void AdminController::executeCustomerCreation() {
 }
 
 // We are editing an existing customer
-void AdminController::executeCustomerEdit() { pCustomerCreationView->run(); }
+void AdminController::executeCustomerEdit(Customer customer) {
+  pCustomerCreationView->run(formatIndividualCustomerForDisplay(customer));
+}
 
 // We are deleting an exiting customer, first throwing a waring window
 void AdminController::executeCustomerDeletion() {
@@ -186,7 +188,37 @@ void AdminController::cancelEmployeeAction() { pTraderCreationView->end(); }
 
 // We have confirmed the creation of a new customer or saved changes to and
 // existing customer
-void AdminController::executeCustomerAction() {} // TODO: this
+void AdminController::executeCustomerAction(Customer customer) {
+  // We determine if this customer is an existing one, or a new one by
+  // checking the ID. If it has an existing ID we call the update function,
+  // otherwise we create the customer.
+  Customer customerToEdit;
+  if (customer.customerID != -1) {
+    for (Customer existingCustomer : customerList) {
+      if (customer.customerID == existingCustomer.customerID) {
+        customerToEdit = existingCustomer;
+      }
+    }
+    if (adminService.editCustomer(customerToEdit, customer)) {
+      // TODO: successful edit
+    } else {
+      // TODO: unsuccesful edit
+    }
+  } else {
+    if (adminService.createCustomer(customer)) {
+      // TODO: sucessful edit
+    } else {
+      // TODO: unsuccesful edit
+    }
+  }
+
+  // Refresh our lists and the display to show up to date information.
+  employeeList = getAllEmployees();
+  customerList = getAllCustomers();
+  formatEmployeesForDisplay();
+  formatCustomersForDisplay();
+  pAdminMainView->refreshPage();
+}
 
 // We have cancelled the creation or edit of an employee
 void AdminController::cancelCustomerAction() { pCustomerCreationView->end(); }
@@ -273,6 +305,29 @@ AdminController::formatIndividualEmployeeForDisplay(Employee employee) {
   return returnData;
 }
 
+// We format an individual customer for display within the customer Creation
+// Window. All values must be in QStrings.
+std::vector<QString>
+AdminController::formatIndividualCustomerForDisplay(Customer customer) {
+  std::vector<QString> returnData;
+  returnData.push_back(QString::fromStdString(customer.firstName));
+  returnData.push_back(QString::fromStdString(customer.lastName));
+  returnData.push_back(QString::fromStdString(customer.phoneNum));
+  returnData.push_back(QString::fromStdString(customer.email));
+  returnData.push_back(QString::number(
+      customer.uninvestedFunds)); // TODO: This is a placeholder, the screen
+                                  // should not display initial investment when
+                                  // editing an customer
+  if (customer.accountType == RETIREMENT) {
+    returnData.push_back(QString("Retirement"));
+  } else {
+    returnData.push_back(QString("Brokerage"));
+  }
+  returnData.push_back(QString::number(customer.customerID));
+
+  return returnData;
+}
+
 //*********************SLOTS**************************************
 // Connected to the AdminMainView logout button
 void AdminController::listenForLogOut() {
@@ -302,7 +357,15 @@ void AdminController::listenForEmployeeDeletion() { executeEmployeeDeletion(); }
 void AdminController::listenForCustomerCreation() { executeCustomerCreation(); }
 
 // Connected to a double click on an existing customer
-void AdminController::listenForCustomerEdit() { executeCustomerEdit(); }
+void AdminController::listenForCustomerEdit(int id) {
+  Customer customerToEdit;
+  for (Customer customer : customerList) {
+    if (customer.customerID == id) {
+      customerToEdit = customer;
+    }
+  }
+  executeCustomerEdit(customerToEdit);
+}
 
 // Connected to the AdminMainView delete customer button
 void AdminController::listenForCustomerDeletion() { executeCustomerDeletion(); }
@@ -342,8 +405,24 @@ void AdminController::listenForEmployeeAccountUnlock() {
 }
 
 // Connected to the CreateCustomerView Create Customer/Save Changes button
-void AdminController::listenForCustomerActionConfirmation() {
-  executeCustomerAction();
+void AdminController::listenForCustomerActionConfirmation(
+    std::vector<QString> customer) {
+  Customer inputtedCustomer;
+  inputtedCustomer.firstName = customer.at(0).toStdString();
+  inputtedCustomer.lastName = customer.at(1).toStdString();
+  inputtedCustomer.phoneNum = customer.at(2).toStdString();
+  inputtedCustomer.email = customer.at(3).toStdString();
+  inputtedCustomer.uninvestedFunds = customer.at(4).toFloat();
+  if (customer.at(5).toStdString() == "Retirement") {
+    inputtedCustomer.accountType = RETIREMENT;
+  } else {
+    inputtedCustomer.accountType = BROKERAGE;
+  }
+  inputtedCustomer.customerID = customer.at(6).toInt();
+
+  pCustomerCreationView->end();
+
+  executeCustomerAction(inputtedCustomer);
 }
 
 // Connected to the CreateCustomerView cancel button.

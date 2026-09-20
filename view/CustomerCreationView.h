@@ -2,9 +2,8 @@
 // input for the customer information.
 
 // TODO:
-// THIS CLASS IS YET INCOMPLETE, REQUIRING MORE FORMATING AND PROPER
-// FUNCTIONALITY FOR DISPLAYING CUSTOMER INFORMATION WHEN IT IS OPENED TO EDIT A
-// CUSTOMER
+// THIS CLASS IS YET INCOMPLETE, REQUIRING MORE FORMATING AND THE ADDITION
+// A WAY TO ASSIGN A CUSTOMER TO AN EMPLOYEE
 
 #ifndef CUSTOMER_CREATION_VIEW_H
 #define CUSTOMER_CREATION_VIEW_H
@@ -33,11 +32,21 @@ private:
 
   QVBoxLayout *layout;
 
+  // Used to hold the id of a customer, will be -1 if its a new customer
+  int id;
+
+  // Clears all display components to defaults
+  void clear();
+
 public:
   CustomerCreationView();
   ~CustomerCreationView();
   // This is the primary entry point for this view
   void run();
+  // Overloaded run function that passes in a customer
+  // to populate the screen. This will be called when
+  // editing a customer
+  void run(std::vector<QString> customerData);
   // Called when the view no longer needs to be displayed
   void end();
 
@@ -48,10 +57,12 @@ public slots:
                                   // CustomerCreationView
 
 signals:
-  void notifyOfCustomerCreation(); // Connected to the AdminController to notify
-                                   // that the user has confirmed creation/edit
-  void notifyOfCreationCancel();   // Connected to the AdminController to notify
-                                   // that the user has cancelled creation
+  void notifyOfCustomerCreation(
+      std::vector<QString>
+          customer);             // Connected to the AdminController to notify
+                                 // that the user has confirmed creation/edit
+  void notifyOfCreationCancel(); // Connected to the AdminController to notify
+                                 // that the user has cancelled creation
 };
 
 #endif

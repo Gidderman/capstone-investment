@@ -1,8 +1,15 @@
+// This class implements TraderCreationView.h, see header file for further
+// information
+
+// TODO:
+// THIS CLASS IS INCOMPLETE AND REQUIRES MORE WORK FOR FORMATTING
+
 #include "TraderCreationView.h"
 
 #include <iostream>
 
 TraderCreationView::TraderCreationView() : id(-1) {
+  // Initialize display components
   pFirstNameEntry = new QLineEdit();
   pFirstNameEntry->setPlaceholderText("First Name");
   pLastNameEntry = new QLineEdit();
@@ -16,6 +23,8 @@ TraderCreationView::TraderCreationView() : id(-1) {
 
   pUnlockAccountButton = new QPushButton(QString("Unlock Account"));
 
+  // Set up the layout. Components are displayed from top to bottom in the order
+  // they are added to the layout
   layout = new QVBoxLayout(this);
 
   layout->addWidget(pFirstNameEntry);
@@ -27,6 +36,7 @@ TraderCreationView::TraderCreationView() : id(-1) {
   // if locked
   layout->addWidget(pUnlockAccountButton);
 
+  // Make connections
   connect(pCreateEmployeeButton, &QPushButton::clicked, this,
           &TraderCreationView::listenForEmployeeCreation);
   connect(pCancelCreationButton, &QPushButton::clicked, this,
@@ -37,8 +47,13 @@ TraderCreationView::TraderCreationView() : id(-1) {
 
 TraderCreationView::~TraderCreationView() {}
 
-void TraderCreationView::run() { this->show(); }
+void TraderCreationView::run() {
+  this->clear();
+  this->show();
+}
 
+// Called when editing an existing employee. Prepopulates all the fiels with the
+// employee data.
 void TraderCreationView::run(std::vector<QString> employee) {
   pFirstNameEntry->setText(employee.at(0));
   pLastNameEntry->setText(employee.at(1));
@@ -55,15 +70,23 @@ void TraderCreationView::run(std::vector<QString> employee) {
 }
 
 void TraderCreationView::end() {
+  this->clear();
+  this->hide();
+}
+
+//************************PRIVATE FUNCTIONS****************
+// Clears all entry fields to their defaults
+void TraderCreationView::clear() {
   id = -1;
   pFirstNameEntry->clear();
   pLastNameEntry->clear();
   pRoleSelection->setCurrentText("Trader");
   pCreateEmployeeButton->setText("Create Employee");
-  this->hide();
 }
 
 //************************SLOTS****************************
+// Called when the Create Employee/Save Employee button is clicked,
+// lets AdminController know that there is some action that needs to be taken
 void TraderCreationView::listenForEmployeeCreation() {
   std::vector<QString> employee;
   employee.push_back(pFirstNameEntry->text());
@@ -76,10 +99,14 @@ void TraderCreationView::listenForEmployeeCreation() {
                  // AdminController::listenForEmployeeActionConfirmation
 }
 
+// Called when the cancel button is clicked, lets the AdminController know
+// to close the screen
 void TraderCreationView::listenForCreationCancellation() {
   emit notifyOfCancellation();
 }
 
+// Called when the Unlock account button is clicked. Informs the Admin
+// Controller
 void TraderCreationView::listenForAccountUnlock() {
   emit notifyOfAccountUnlock();
 }
