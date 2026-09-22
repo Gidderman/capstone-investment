@@ -39,10 +39,15 @@ public:
   PurchaseStockWindow(
       std::vector<std::tuple<QString, QString, QString>> stockList);
   ~PurchaseStockWindow();
+  void run();
+  void setDisplayPrice(QString price);
 
 public slots:
   void listenForConfirmPurchase(); // Connected to the confirm purchase button
   void listenForCancelPurchase();  // Connected to the cancel puchase button
+  void
+  listenForTotalPriceChange(); // Connected to spin box, as well as the stock
+                               // code for calculating the price of the purchase
 
   void matchStockCodeAfterChange(int index);
   void matchStockNameAfterChange(int index);
@@ -52,6 +57,10 @@ signals:
                                   // user has confirmed a purchase
   void notifyOfCancelPurchase(); // Lets the TraderController know that the user
                                  // has cancelled a purchase
+  void notifyOfPriceCalculation(
+      std::tuple<QString, int>
+          stockAndNumber); // Used to let the controller know that
+                           // new display price needs to be calculated
 };
 
 #endif

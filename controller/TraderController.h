@@ -91,6 +91,11 @@ public slots:
                                          // on the SellStockWindow
   void listenForStockSaleCancellation(); // Connected to the Cancel Sale button
                                          // on the SellStockWindow
+  void listenForPriceCalculation(
+      std::tuple<QString, int>
+          stockAndNumber); // Connected to the notifyOfPriceCalculation signal
+                           // from the PurchaseStockWindow. Used to calculate
+                           // the price of purchase that is displayed
 
 signals:
   void informMasterControllerOfLogOut(); // Informs the MasterController that a

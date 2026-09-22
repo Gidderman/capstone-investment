@@ -4,6 +4,7 @@
 #include "PurchaseStockWindow.h"
 #include <qcombobox.h>
 #include <qsizepolicy.h>
+#include <qspinbox.h>
 
 PurchaseStockWindow::PurchaseStockWindow(
     std::vector<std::tuple<QString, QString, QString>> stockList) {
@@ -17,6 +18,8 @@ PurchaseStockWindow::PurchaseStockWindow(
   }
 
   pNumberOfStockToPurchaseDisplay = new QSpinBox();
+  pNumberOfStockToPurchaseDisplay->setMinimum(1);
+
   pTotalPriceOfPurchase = new QLabel(QString("TOTAL PRICE"));
 
   pConfirmPurchaseButton = new QPushButton(QString("Confirm Purchase"));
@@ -41,6 +44,15 @@ PurchaseStockWindow::PurchaseStockWindow(
   connect(pCancelPurchaseButton, &QPushButton::clicked, this,
           &PurchaseStockWindow::listenForCancelPurchase);
 
+  // Connect the price change slot to the spin box for the number of stocks to
+  // purchase
+  connect(pNumberOfStockToPurchaseDisplay, &QSpinBox::valueChanged, this,
+          &PurchaseStockWindow::listenForTotalPriceChange);
+  // Connect to the stock code, so a new price will be calculated when a stock
+  // is selected
+  connect(pSelectedStockCodeDisplay, &QComboBox::currentIndexChanged, this,
+          &PurchaseStockWindow::listenForTotalPriceChange);
+
   // These connections relate to when the user changes the selected stock by
   // name or code, and will update the code or name to match.
   connect(pSelectedStockDisplay, &QComboBox::currentIndexChanged, this,
@@ -51,8 +63,19 @@ PurchaseStockWindow::PurchaseStockWindow(
 
 PurchaseStockWindow::~PurchaseStockWindow() {}
 
+void PurchaseStockWindow::run() {
+  emit notifyOfPriceCalculation({pSelectedStockCodeDisplay->currentText(),
+                                 pNumberOfStockToPurchaseDisplay->value()});
+
+  this->show();
+}
+
+void PurchaseStockWindow::setDisplayPrice(QString price) {
+  pTotalPriceOfPurchase->setText(QString("Total Price: $") + price);
+}
+
 //**********************SLOTS**************************
-// This is called when the user clicks teh confirm purchase button,
+// This is called when the user clicks the confirm purchase button,
 // which then notifies the TraderController that a stock purchase occured
 void PurchaseStockWindow::listenForConfirmPurchase() {
   emit notifyOfConfirmPurchase();
@@ -62,6 +85,16 @@ void PurchaseStockWindow::listenForConfirmPurchase() {
 // notifies the TraderController to hid this window
 void PurchaseStockWindow::listenForCancelPurchase() {
   emit notifyOfCancelPurchase();
+}
+
+// This is called whenever the user changes the number of stocks they are
+// looking to purchase or the stock that they want to purchase.
+void PurchaseStockWindow::listenForTotalPriceChange() {
+  std::tuple<QString, int> stockAndNumberForPurchase;
+  stockAndNumberForPurchase = {pSelectedStockCodeDisplay->currentText(),
+                               pNumberOfStockToPurchaseDisplay->value()};
+
+  emit notifyOfPriceCalculation(stockAndNumberForPurchase);
 }
 
 void PurchaseStockWindow::matchStockCodeAfterChange(int index) {

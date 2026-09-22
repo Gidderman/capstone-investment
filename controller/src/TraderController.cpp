@@ -208,8 +208,10 @@ void TraderController::listenForStockPurchaseInitiation() {
           this, &TraderController::listenForStockPurchaseConfirmation);
   connect(pPurchaseStockWindow, &PurchaseStockWindow::notifyOfCancelPurchase,
           this, &TraderController::listenForStockPurchaseCancellation);
+  connect(pPurchaseStockWindow, &PurchaseStockWindow::notifyOfPriceCalculation,
+          this, &TraderController::listenForPriceCalculation);
 
-  pPurchaseStockWindow->show();
+  pPurchaseStockWindow->run();
 }
 
 // This function listens for confirmation of a stock purchase. When it is
@@ -250,4 +252,14 @@ void TraderController::listenForStockSaleConfirmation() {
 // will then hide the window.
 void TraderController::listenForStockSaleCancellation() {
   pSellStockWindow->hide();
+}
+
+// When notified that the display price should change, displays the following
+void TraderController::listenForPriceCalculation(
+    std::tuple<QString, int> stockAndNumber) {
+  pPurchaseStockWindow->setDisplayPrice(
+      QString::number(traderService.calculatePriceOfStockPurchase(
+                          std::get<0>(stockAndNumber).toStdString(),
+                          std::get<1>(stockAndNumber)),
+                      'f', 2));
 }
