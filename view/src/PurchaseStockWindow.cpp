@@ -78,7 +78,9 @@ void PurchaseStockWindow::setDisplayPrice(QString price) {
 // This is called when the user clicks the confirm purchase button,
 // which then notifies the TraderController that a stock purchase occured
 void PurchaseStockWindow::listenForConfirmPurchase() {
-  emit notifyOfConfirmPurchase();
+  emit notifyOfConfirmPurchase({pSelectedStockCodeDisplay->currentText(),
+                                pNumberOfStockToPurchaseDisplay->value(),
+                                pTotalPriceOfPurchase->text()});
 }
 
 // This is called when the user clicks the cancel button, which then

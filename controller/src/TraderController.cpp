@@ -159,14 +159,13 @@ void TraderController::listenForLogOut() {
 // TraderMainView and displaying the CustomerManagerView
 void TraderController::listenForCustomerSelection(int id) {
   stockListForSelectedCustomer = getListAndFormatOfCustomerStock(id);
-  Customer customerToDisplay;
   for (Customer customer : customerList) {
     if (customer.customerID == id) {
-      customerToDisplay = customer;
+      selectedCustomer = customer;
     }
   }
   pCustomerManagerView = new CustomerManagerView(
-      formatIndividualCustomerForDisplay(customerToDisplay),
+      formatIndividualCustomerForDisplay(selectedCustomer),
       &stockByCustomerDisplayList);
 
   connect(pCustomerManagerView, &CustomerManagerView::notifyOfBackButton, this,
@@ -217,9 +216,17 @@ void TraderController::listenForStockPurchaseInitiation() {
 // This function listens for confirmation of a stock purchase. When it is
 // called, it adds the stock to the appropriate customer, and hides the purchase
 // stock screen.
-void TraderController::listenForStockPurchaseConfirmation() {
-  // TODO: Logic for purchasing a stock
+void TraderController::listenForStockPurchaseConfirmation(
+    std::tuple<QString, int, QString> transaction) {
+  traderService.executeStockPurchase(selectedCustomer,
+                                     {std::get<0>(transaction).toStdString(),
+                                      std::get<1>(transaction),
+                                      std::get<2>(transaction).toFloat()});
+
+  stockListForSelectedCustomer =
+      getListAndFormatOfCustomerStock(selectedCustomer.customerID);
   pPurchaseStockWindow->hide();
+  pCustomerManagerView->refreshPage();
 }
 
 // This function listens for cancellation of a stock purchase, which if

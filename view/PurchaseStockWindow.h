@@ -53,8 +53,10 @@ public slots:
   void matchStockNameAfterChange(int index);
 
 signals:
-  void notifyOfConfirmPurchase(); // Lets the TraderController know that the
-                                  // user has confirmed a purchase
+  void notifyOfConfirmPurchase(
+      std::tuple<QString, int, QString>
+          transaction);          // Lets the TraderController know that the
+                                 // user has confirmed a purchase
   void notifyOfCancelPurchase(); // Lets the TraderController know that the user
                                  // has cancelled a purchase
   void notifyOfPriceCalculation(

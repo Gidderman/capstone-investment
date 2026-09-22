@@ -54,6 +54,7 @@ public:
   CustomerManagerView(std::vector<QString> customerDisplayInfo,
                       std::vector<StockDisplayItem *> *stocks);
   ~CustomerManagerView();
+  void refreshPage();
 
 public slots:
   void

@@ -38,6 +38,7 @@ private:
   // This struct is used for displaying the logged in employee information as
   // well as finding and displaying the associated customers
   Employee loggedInEmployee;
+  Customer selectedCustomer;
 
   // Stores a local copy of the customer accounts this employee manages
   std::vector<Customer> customerList;
@@ -79,9 +80,10 @@ public slots:
                                             // the CustomerManagerView
   void listenForStockPurchaseInitiation();  // Connected to the Buy Stock button
                                             // on the CustomerManagerView
-  void
-  listenForStockPurchaseConfirmation(); // Connected to the Confirm Purchase
-                                        // button on the PurchaseStockWindow
+  void listenForStockPurchaseConfirmation(
+      std::tuple<QString, int, QString>
+          transaction); // Connected to the Confirm Purchase
+                        // button on the PurchaseStockWindow
   void
   listenForStockPurchaseCancellation(); // Connected to the Cancel Purchase
                                         // button on the PurchaseStockWindow

@@ -14,7 +14,7 @@ struct Investment {
   int numHeld;
   float initialInvestment;
   int customerID;
-  float currentInvestmentWorth = numHeld * stock.stockPrice;
+  float currentInvestmentWorth;
 };
 
 #endif

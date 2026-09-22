@@ -75,6 +75,8 @@ CustomerManagerView::CustomerManagerView(
 
 CustomerManagerView::~CustomerManagerView() {}
 
+void CustomerManagerView::refreshPage() { pHeldStocks->refreshDisplayList(); }
+
 //***************************SLOTS***********************************
 // Called when the user clicks the back button, tells the trader controller to
 // stop displaying the CustomerManagerView and instead display the
