@@ -15,4 +15,6 @@ target_sources(Utils
       Stock.h 
       Employee.h 
       Credentials.h
+      QuickSort.h
+      QuickSort.tpp
 )

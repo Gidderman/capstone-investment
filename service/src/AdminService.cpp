@@ -3,6 +3,7 @@
 
 #include "AdminService.h"
 #include "Credentials.h"
+#include "QuickSort.h"
 
 #include <iostream>
 
@@ -11,11 +12,19 @@ AdminService::AdminService() {}
 AdminService::~AdminService() {}
 
 std::vector<Employee> AdminService::getAllEmployees() {
-  return dataManager.getAllEmployees();
+  std::vector<Employee> employees = dataManager.getAllEmployees();
+
+  Custom::quickSort(employees, Custom::employeeName);
+
+  return employees;
 }
 
 std::vector<Customer> AdminService::getAllCustomers() {
-  return dataManager.getAllCustomers();
+  std::vector<Customer> customers = dataManager.getAllCustomers();
+
+  Custom::quickSort(customers, Custom::customerName);
+
+  return customers;
 }
 
 // Getting the employee data, we then generate a username which will be the

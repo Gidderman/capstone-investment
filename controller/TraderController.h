@@ -77,16 +77,16 @@ public slots:
                // user double clicks on a displayed customer
   void listenForReturnFromCustomerScreen(); // Connected to the back button on
                                             // the CustomerManagerView
-  void listenForStockPurchaseInitiation(); // Connected to the Buy Stock button
-                                           // on the CustomerManagerView
+  void listenForStockPurchaseInitiation();  // Connected to the Buy Stock button
+                                            // on the CustomerManagerView
   void
   listenForStockPurchaseConfirmation(); // Connected to the Confirm Purchase
                                         // button on the PurchaseStockWindow
   void
   listenForStockPurchaseCancellation(); // Connected to the Cancel Purchase
                                         // button on the PurchaseStockWindow
-  void listenForStockSaleInitiation(); // Connected to the Sell Stock button on
-                                       // the CustomerManagerView
+  void listenForStockSaleInitiation();  // Connected to the Sell Stock button on
+                                        // the CustomerManagerView
   void listenForStockSaleConfirmation(); // Connected to the Confirm Sale button
                                          // on the SellStockWindow
   void listenForStockSaleCancellation(); // Connected to the Cancel Sale button

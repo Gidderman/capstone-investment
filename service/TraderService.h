@@ -20,6 +20,7 @@ public:
   ~TraderService();
   // Used to get the list of customers to display on the MainTraderView
   std::vector<Customer> getListOfManagedCustomers(int employeeId);
+  std::vector<Stock> getListOfAvailableStocks();
 };
 
 #endif

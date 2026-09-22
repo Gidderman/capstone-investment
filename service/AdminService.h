@@ -6,6 +6,7 @@
 #define ADMIN_SERVICE_H
 
 #include "DataManager.h"
+#include "QuickSort.h"
 
 #include <vector>
 

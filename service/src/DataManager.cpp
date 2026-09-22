@@ -83,7 +83,7 @@ bool DataManager::createEmployee(Employee employeeToCreate,
   std::vector<std::string> returnedVector = crudManager.runQuery(
       std::stoi(queryFormattedData.at(0)), false, "create", queryFormattedData);
 
-  return queryFormattedData == returnedVector;
+  return std::stoi(returnedVector.at(0)) != -1;
 }
 
 bool DataManager::createCustomer(Customer customerToCreate) {
@@ -93,7 +93,7 @@ bool DataManager::createCustomer(Customer customerToCreate) {
   std::vector<std::string> returnedVector = crudManager.runQuery(
       std::stoi(queryFormattedData.at(0)), true, "create", queryFormattedData);
 
-  return queryFormattedData == returnedVector;
+  return std::stoi(returnedVector.at(0)) != -1;
 }
 
 bool DataManager::updateEmployee(Employee employeeToUpdate, Employee update,
@@ -143,14 +143,24 @@ bool DataManager::deleteCustomer(Customer customerToDelete) {
 }
 
 bool DataManager::updateStoredStocks(std::vector<Stock>) {
-  // TODO: Handle stock manipulation
+  // TODO: store updated stock data into the database, and store into the hash
+  // map for quick access.
   return true;
 }
 
 std::vector<Stock> DataManager::getAllStoredStocks() {
-  // TODO: Handle stock manipulation
-  std::vector<Stock> blankVector;
-  return blankVector;
+  std::vector<Stock> stockVector;
+  std::unordered_map<int, std::vector<std::string>> stockData =
+      crudManager.getAllStocks();
+
+  for (const auto &item : stockData) {
+    Stock newStock = {std::stoi(item.second.at(0)), item.second.at(1),
+                      item.second.at(2), std::stof(item.second.at(3))};
+
+    stockVector.push_back(newStock);
+  }
+
+  return stockVector;
 }
 
 //*******************PRIVATE FUNCTIONS****************************

@@ -20,8 +20,14 @@
 
 class CRUDManager {
 private:
+  int nextEmployeeId;
+  int nextCustomerId;
+  int nextInvestmentId;
+
   std::unordered_map<int, std::vector<std::string>> testingEmployeeDatabase;
   std::unordered_map<int, std::vector<std::string>> testingCustomerDatabase;
+  std::unordered_map<int, std::vector<std::string>> testingStockDatabase;
+
   std::vector<std::string>
   createSelection(int id, bool isCustomer,
                   std::vector<std::string> userToCreate);
@@ -42,6 +48,8 @@ public:
   std::vector<std::string> getCredentialsByEmployeeId(int employeeId);
   std::unordered_map<int, std::vector<std::string>> getAllEmployees();
   std::unordered_map<int, std::vector<std::string>> getAllCustomers();
+
+  std::unordered_map<int, std::vector<std::string>> getAllStocks();
 };
 
 #endif

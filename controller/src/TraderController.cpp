@@ -190,7 +190,20 @@ void TraderController::listenForReturnFromCustomerScreen() {
 // This function is called when the user clicks on the Purchase Stock button. It
 // creates the PurchaseStockWindow, connects the buttons, and shows the window.
 void TraderController::listenForStockPurchaseInitiation() {
-  pPurchaseStockWindow = new PurchaseStockWindow();
+  std::tuple<QString, QString, QString> stockItem;
+  std::vector<std::tuple<QString, QString, QString>> stockList;
+
+  std::vector<Stock> unformattedStockData =
+      traderService.getListOfAvailableStocks();
+
+  for (Stock stock : unformattedStockData) {
+    stockItem = {QString::fromStdString(stock.stockName),
+                 QString::fromStdString(stock.stockCode),
+                 QString::number(stock.stockPrice)};
+    stockList.push_back(stockItem);
+  }
+
+  pPurchaseStockWindow = new PurchaseStockWindow(stockList);
   connect(pPurchaseStockWindow, &PurchaseStockWindow::notifyOfConfirmPurchase,
           this, &TraderController::listenForStockPurchaseConfirmation);
   connect(pPurchaseStockWindow, &PurchaseStockWindow::notifyOfCancelPurchase,

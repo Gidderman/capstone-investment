@@ -2,11 +2,20 @@
 // info
 
 #include "PurchaseStockWindow.h"
+#include <qcombobox.h>
+#include <qsizepolicy.h>
 
-PurchaseStockWindow::PurchaseStockWindow() {
+PurchaseStockWindow::PurchaseStockWindow(
+    std::vector<std::tuple<QString, QString, QString>> stockList) {
   // Initialize display items
   pSelectedStockDisplay = new QComboBox();
   pSelectedStockCodeDisplay = new QComboBox();
+
+  for (std::tuple<QString, QString, QString> stock : stockList) {
+    pSelectedStockDisplay->addItem(std::get<0>(stock));
+    pSelectedStockCodeDisplay->addItem(std::get<1>(stock));
+  }
+
   pNumberOfStockToPurchaseDisplay = new QSpinBox();
   pTotalPriceOfPurchase = new QLabel(QString("TOTAL PRICE"));
 
@@ -31,6 +40,13 @@ PurchaseStockWindow::PurchaseStockWindow() {
           &PurchaseStockWindow::listenForConfirmPurchase);
   connect(pCancelPurchaseButton, &QPushButton::clicked, this,
           &PurchaseStockWindow::listenForCancelPurchase);
+
+  // These connections relate to when the user changes the selected stock by
+  // name or code, and will update the code or name to match.
+  connect(pSelectedStockDisplay, &QComboBox::currentIndexChanged, this,
+          &PurchaseStockWindow::matchStockCodeAfterChange);
+  connect(pSelectedStockCodeDisplay, &QComboBox::currentIndexChanged, this,
+          &PurchaseStockWindow::matchStockNameAfterChange);
 }
 
 PurchaseStockWindow::~PurchaseStockWindow() {}
@@ -46,4 +62,12 @@ void PurchaseStockWindow::listenForConfirmPurchase() {
 // notifies the TraderController to hid this window
 void PurchaseStockWindow::listenForCancelPurchase() {
   emit notifyOfCancelPurchase();
+}
+
+void PurchaseStockWindow::matchStockCodeAfterChange(int index) {
+  pSelectedStockCodeDisplay->setCurrentIndex(index);
+}
+
+void PurchaseStockWindow::matchStockNameAfterChange(int index) {
+  pSelectedStockDisplay->setCurrentIndex(index);
 }

@@ -36,12 +36,16 @@ private:
   QVBoxLayout *pMainLayout;
 
 public:
-  PurchaseStockWindow();
+  PurchaseStockWindow(
+      std::vector<std::tuple<QString, QString, QString>> stockList);
   ~PurchaseStockWindow();
 
 public slots:
   void listenForConfirmPurchase(); // Connected to the confirm purchase button
   void listenForCancelPurchase();  // Connected to the cancel puchase button
+
+  void matchStockCodeAfterChange(int index);
+  void matchStockNameAfterChange(int index);
 
 signals:
   void notifyOfConfirmPurchase(); // Lets the TraderController know that the

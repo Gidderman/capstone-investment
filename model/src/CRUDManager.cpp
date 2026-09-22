@@ -6,8 +6,10 @@
 #include "CRUDManager.h"
 
 #include <iostream>
+#include <string>
 
-CRUDManager::CRUDManager() {
+CRUDManager::CRUDManager()
+    : nextEmployeeId(4), nextCustomerId(3), nextInvestmentId(10) {
   // TODO: DELETE FOLLOWING TESTING VECTOR
 
   // Vector order for employee:
@@ -108,7 +110,7 @@ CRUDManager::CRUDManager() {
   populatingVector.push_back("1");
   populatingVector.push_back("2");
   populatingVector.push_back("3");
-  populatingVector.push_back("7");
+  populatingVector.push_back("6");
   populatingVector.push_back("Company");
   populatingVector.push_back("CMP");
   populatingVector.push_back("70.00");
@@ -142,6 +144,86 @@ CRUDManager::CRUDManager() {
   populatingVector.push_back("2");
 
   testingCustomerDatabase.emplace(2, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("1");
+  populatingVector.push_back("Nividia");
+  populatingVector.push_back("NVD");
+  populatingVector.push_back("130.00");
+
+  testingStockDatabase.emplace(1, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("2");
+  populatingVector.push_back("Apple");
+  populatingVector.push_back("APP");
+  populatingVector.push_back("180.00");
+
+  testingStockDatabase.emplace(2, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("3");
+  populatingVector.push_back("Nintendo");
+  populatingVector.push_back("NIN");
+  populatingVector.push_back("100.00");
+
+  testingStockDatabase.emplace(3, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("4");
+  populatingVector.push_back("Samsung");
+  populatingVector.push_back("SSG");
+  populatingVector.push_back("200.00");
+
+  testingStockDatabase.emplace(4, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("5");
+  populatingVector.push_back("Google");
+  populatingVector.push_back("GOOG");
+  populatingVector.push_back("170.00");
+
+  testingStockDatabase.emplace(5, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("6");
+  populatingVector.push_back("Company");
+  populatingVector.push_back("CMP");
+  populatingVector.push_back("70.00");
+
+  testingStockDatabase.emplace(6, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("7");
+  populatingVector.push_back("Dunder Mifflin");
+  populatingVector.push_back("DNDR");
+  populatingVector.push_back("130.00");
+
+  testingStockDatabase.emplace(7, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("8");
+  populatingVector.push_back("Paramount");
+  populatingVector.push_back("PRMT");
+  populatingVector.push_back("10.00");
+
+  testingStockDatabase.emplace(8, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("9");
+  populatingVector.push_back("Microsoft");
+  populatingVector.push_back("MCR");
+  populatingVector.push_back("1000.00");
+
+  testingStockDatabase.emplace(9, populatingVector);
+  populatingVector.clear();
+
+  populatingVector.push_back("10");
+  populatingVector.push_back("Sony");
+  populatingVector.push_back("SNY");
+  populatingVector.push_back("900.00");
+
+  testingStockDatabase.emplace(10, populatingVector);
   populatingVector.clear();
 }
 
@@ -193,10 +275,14 @@ std::vector<std::string>
 CRUDManager::createSelection(int id, bool isCustomer,
                              std::vector<std::string> userToCreate) {
   if (isCustomer) {
+    userToCreate.at(0) = std::to_string(nextCustomerId);
+    nextCustomerId++;
     testingCustomerDatabase.emplace(std::stoi(userToCreate.at(0)),
                                     userToCreate);
     return testingCustomerDatabase.at(std::stoi(userToCreate.at(0)));
   } else {
+    userToCreate.at(0) = std::to_string(nextEmployeeId);
+    nextEmployeeId++;
     testingEmployeeDatabase.emplace(std::stoi(userToCreate.at(0)),
                                     userToCreate);
     return testingEmployeeDatabase.at(std::stoi(userToCreate.at(0)));
@@ -263,4 +349,8 @@ CRUDManager::getAllEmployees() {
 std::unordered_map<int, std::vector<std::string>>
 CRUDManager::getAllCustomers() {
   return testingCustomerDatabase;
+}
+
+std::unordered_map<int, std::vector<std::string>> CRUDManager::getAllStocks() {
+  return testingStockDatabase;
 }
