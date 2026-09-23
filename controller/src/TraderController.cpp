@@ -66,6 +66,9 @@ TraderController::getListAndFormatOfCustomerStock(int customerID) {
   stockListForSelectedCustomer.clear();
   stockByCustomerDisplayList.clear();
 
+  // Refresh our customer list
+  customerList = getListOfManagedCustomers(loggedInEmployee.accountID);
+
   for (Customer customer : customerList) {
     if (customerID == customer.customerID) {
       for (Investment investment : customer.investments) {
@@ -218,8 +221,9 @@ void TraderController::listenForStockPurchaseInitiation() {
 // stock screen.
 void TraderController::listenForStockPurchaseConfirmation(
     std::tuple<QString, int, QString> transaction) {
-  traderService.executeStockPurchase(selectedCustomer,
-                                     {std::get<0>(transaction).toStdString(),
+  std::cout << "TraderController::listenForStockSaleInitiation - result: "
+            << traderService.executeStockPurchase(
+                   selectedCustomer, {std::get<0>(transaction).toStdString(),
                                       std::get<1>(transaction),
                                       std::get<2>(transaction).toFloat()});
 

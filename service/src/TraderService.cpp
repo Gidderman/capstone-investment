@@ -6,7 +6,10 @@
 
 #include "TraderService.h"
 #include "Investment.h"
+#include <ostream>
 #include <string>
+
+#include <iostream>
 
 TraderService::TraderService() {}
 
@@ -28,17 +31,34 @@ bool TraderService::executeStockPurchase(
     Customer customer, std::tuple<std::string, int, float> transaction) {
   Customer editedCustomer = customer;
 
+  std::cout << "TraderService::executeStockPurchase - Investment size prior to "
+               "update: "
+            << editedCustomer.investments.size() << std::endl;
+
   for (Investment investment : editedCustomer.investments) {
     if (std::get<0>(transaction) == investment.stock.stockCode) {
+
+      std::cout << "TraderService::executeStockPurchase (existing investment) "
+                   "- running"
+                << std::endl;
+
       investment.numHeld += std::get<1>(transaction);
       investment.initialInvestment += std::get<2>(transaction);
       investment.currentInvestmentWorth =
           (float)investment.numHeld * investment.stock.stockPrice;
+
+      std::cout
+          << "TraderService::executeStockPurchase (existing investment) - end"
+          << std::endl;
       return dataManager.updateCustomer(customer, editedCustomer);
     }
   }
   for (Stock stock : dataManager.getAllStoredStocks()) {
     if (std::get<0>(transaction) == stock.stockCode) {
+      std::cout
+          << "TraderService::executeStockPurchase (new investment) - start"
+          << std::endl;
+
       Investment newInvestment;
       newInvestment.investmentID = -1;
       newInvestment.customerID = editedCustomer.customerID;
@@ -47,6 +67,9 @@ bool TraderService::executeStockPurchase(
       newInvestment.initialInvestment = std::get<2>(transaction);
       newInvestment.currentInvestmentWorth = newInvestment.initialInvestment;
       editedCustomer.investments.push_back(newInvestment);
+
+      std::cout << "TraderService::executeStockPurchase (new investment) - end"
+                << std::endl;
       return dataManager.updateCustomer(customer, editedCustomer);
     }
   }

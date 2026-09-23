@@ -120,10 +120,22 @@ bool DataManager::updateEmployee(Employee employeeToUpdate, Employee update,
 }
 
 bool DataManager::updateCustomer(Customer customerToUpdate, Customer update) {
+  std::cout << "DataManager::updateCustomer - beginning update: " << std::endl;
+  std::cout << "Edited data: " << std::endl;
+
   std::vector<std::string> queryFormattedData = formatCustomerForQuery(update);
+
+  for (std::string item : queryFormattedData) {
+    std::cout << item << std::endl;
+  }
 
   std::vector<std::string> returnedVector = crudManager.runQuery(
       customerToUpdate.customerID, true, "update", queryFormattedData);
+
+  std::cout << "Returned vector: " << std::endl;
+  for (std::string item : returnedVector) {
+    std::cout << item << std::endl;
+  }
 
   return queryFormattedData == returnedVector;
 }
