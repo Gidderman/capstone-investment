@@ -11,7 +11,7 @@
 #define SCROLLABLE_CONTAINER_H
 
 #include "CustomerDisplayItem.h"
-#include "StockDisplayItem.h"
+#include "InvestmentDisplayItem.h"
 #include "TraderDisplayItem.h"
 
 #include <QVBoxLayout>
@@ -35,7 +35,7 @@ private:
   // information
   std::vector<CustomerDisplayItem *> *pCustomerDisplayList;
   std::vector<TraderDisplayItem *> *pTraderDisplayList;
-  std::vector<StockDisplayItem *> *pStockDisplayList;
+  std::vector<InvestmentDisplayItem *> *pInvestmentDisplayList;
 
   // This private function is used when refreshing the screen to clear
   // out stale displayed widgets.
@@ -50,7 +50,7 @@ public:
   // to the member variable as appropriate.
   void addDisplayList(std::vector<CustomerDisplayItem *> *diplayList);
   void addDisplayList(std::vector<TraderDisplayItem *> *displayList);
-  void addDisplayList(std::vector<StockDisplayItem *> *displayList);
+  void addDisplayList(std::vector<InvestmentDisplayItem *> *displayList);
 
   // Used whenever the display list changes
   void refreshDisplayList();

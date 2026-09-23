@@ -5,9 +5,9 @@
 #include "Authorizer.h"
 #include "Customer.h"
 #include "CustomerManagerView.h"
+#include "InvestmentDisplayItem.h"
 #include "PurchaseStockWindow.h"
 #include "SellStockWindow.h"
-#include "StockDisplayItem.h"
 #include "TraderMainView.h"
 
 #include <iostream>
@@ -74,7 +74,7 @@ TraderController::getListAndFormatOfCustomerStock(int customerID) {
       for (Investment investment : customer.investments) {
         stockListForSelectedCustomer.push_back(investment.stock);
 
-        StockDisplayItem *displayFormat = new StockDisplayItem(
+        InvestmentDisplayItem *displayFormat = new InvestmentDisplayItem(
             QString::fromStdString(investment.stock.stockName),
             QString::fromStdString(investment.stock.stockCode),
             QString::number(investment.numHeld),
@@ -211,7 +211,7 @@ void TraderController::listenForStockPurchaseInitiation() {
   connect(pPurchaseStockWindow, &PurchaseStockWindow::notifyOfCancelPurchase,
           this, &TraderController::listenForStockPurchaseCancellation);
   connect(pPurchaseStockWindow, &PurchaseStockWindow::notifyOfPriceCalculation,
-          this, &TraderController::listenForPriceCalculation);
+          this, &TraderController::listenForPurchasePriceCalculation);
 
   pPurchaseStockWindow->run();
 }
@@ -221,9 +221,8 @@ void TraderController::listenForStockPurchaseInitiation() {
 // stock screen.
 void TraderController::listenForStockPurchaseConfirmation(
     std::tuple<QString, int, QString> transaction) {
-  std::cout << "TraderController::listenForStockSaleInitiation - result: "
-            << traderService.executeStockPurchase(
-                   selectedCustomer, {std::get<0>(transaction).toStdString(),
+  traderService.executeStockPurchase(selectedCustomer,
+                                     {std::get<0>(transaction).toStdString(),
                                       std::get<1>(transaction),
                                       std::get<2>(transaction).toFloat()});
 
@@ -242,19 +241,32 @@ void TraderController::listenForStockPurchaseCancellation() {
 // This function is called when the user clicks on the Sell Stock button. It
 // creates the SellStockWindow, connects the buttons, and shows the window.
 void TraderController::listenForStockSaleInitiation() {
-  pSellStockWindow = new SellStockWindow();
+  std::vector<QString> availableStockNames;
+  std::vector<QString> availableStockCodes;
+
+  for (Stock stock : stockListForSelectedCustomer) {
+    availableStockNames.push_back(QString::fromStdString(stock.stockName));
+    availableStockCodes.push_back(QString::fromStdString(stock.stockCode));
+  }
+
+  pSellStockWindow =
+      new SellStockWindow({availableStockNames, availableStockCodes});
+
   connect(pSellStockWindow, &SellStockWindow::notifyOfConfirmSale, this,
           &TraderController::listenForStockSaleConfirmation);
   connect(pSellStockWindow, &SellStockWindow::notifyOfCancelSale, this,
           &TraderController::listenForStockSaleCancellation);
+  connect(pSellStockWindow, &SellStockWindow::notifyOfSaleCalculation, this,
+          &TraderController::listenForSalePriceCalculation);
 
-  pSellStockWindow->show();
+  pSellStockWindow->run();
 }
 
 // This function listens for confirmation of a stock sale. When it is called,
 // it removes the proper number of stocks from the appropriate customer, and
 // hides the sell stock screen.
-void TraderController::listenForStockSaleConfirmation() {
+void TraderController::listenForStockSaleConfirmation(
+    std::tuple<QString, int, QString> transaction) {
   // TODO: Logic for selling a stock
   pSellStockWindow->hide();
 }
@@ -266,11 +278,25 @@ void TraderController::listenForStockSaleCancellation() {
 }
 
 // When notified that the display price should change, displays the following
-void TraderController::listenForPriceCalculation(
+void TraderController::listenForPurchasePriceCalculation(
     std::tuple<QString, int> stockAndNumber) {
   pPurchaseStockWindow->setDisplayPrice(
       QString::number(traderService.calculatePriceOfStockPurchase(
                           std::get<0>(stockAndNumber).toStdString(),
                           std::get<1>(stockAndNumber)),
                       'f', 2));
+}
+
+void TraderController::listenForSalePriceCalculation(
+    std::tuple<QString, int> stockAndNumber) {
+  std::vector<float> transactionInfo = traderService.calculateResultOfSale(
+      selectedCustomer, std::get<0>(stockAndNumber).toStdString(),
+      std::get<1>(stockAndNumber));
+
+  pSellStockWindow->setDisplayInfo(
+      {QString::number(transactionInfo.at(0), 'f', 2),
+       QString::number(transactionInfo.at(1), 'f', 2),
+       QString::number(transactionInfo.at(2), 'f', 2)},
+      traderService.getNumOfHeldStock(
+          selectedCustomer, std::get<0>(stockAndNumber).toStdString()));
 }

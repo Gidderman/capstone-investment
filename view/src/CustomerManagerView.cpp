@@ -8,7 +8,7 @@
 
 CustomerManagerView::CustomerManagerView(
     std::vector<QString> customerInfo,
-    std::vector<StockDisplayItem *> *stocks) {
+    std::vector<InvestmentDisplayItem *> *stocks) {
 
   // Initialize the display components with the appropriate information
   pCustomerFullName = new QLabel(customerInfo.at(0));

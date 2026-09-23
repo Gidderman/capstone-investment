@@ -4,10 +4,12 @@
 // THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING AND
 // COMMUNICATION VIA SLOTS AND SIGNALS
 
-#include "StockDisplayItem.h"
+#include "InvestmentDisplayItem.h"
 
-StockDisplayItem::StockDisplayItem(QString stockName, QString stockCode,
-                                   QString numberHeld, QString pricePerStock) {
+InvestmentDisplayItem::InvestmentDisplayItem(QString stockName,
+                                             QString stockCode,
+                                             QString numberHeld,
+                                             QString pricePerStock) {
   // Initialize the display variables
   this->pStockName = new QLabel(stockName);
   this->pStockCode = new QLabel(stockCode);
@@ -26,10 +28,10 @@ StockDisplayItem::StockDisplayItem(QString stockName, QString stockCode,
   pLayout->addWidget(pTotalWorth);
 }
 
-StockDisplayItem::~StockDisplayItem() {}
+InvestmentDisplayItem::~InvestmentDisplayItem() {}
 
 // When the item is double clicked, tell the scrollable container
-void StockDisplayItem::mousePressEvent(QMouseEvent *event) {
+void InvestmentDisplayItem::mousePressEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
     // TODO: highlight the stock
   }

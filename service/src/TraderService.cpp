@@ -88,3 +88,34 @@ float TraderService::calculatePriceOfStockPurchase(std::string stockCode,
   // If the stock code doesn't match, return this display error
   return 0.0f;
 }
+
+// TODO: these
+bool TraderService::executeStockSale(
+    Customer customer, std::tuple<std::string, int, float> transaction) {}
+
+std::vector<float> TraderService::calculateResultOfSale(Customer customer,
+                                                        std::string stockCode,
+                                                        int num) {
+  std::vector<float> transactionInfo;
+  for (Investment investment : customer.investments) {
+    if (investment.stock.stockCode == stockCode) {
+      transactionInfo.push_back(
+          investment.initialInvestment); // Initial investment
+      transactionInfo.push_back(
+          investment.stock.stockPrice *
+          (float)investment.numHeld); // Current investment worth
+      transactionInfo.push_back(num * investment.stock.stockPrice -
+                                transactionInfo.at(0)); // Result of transaction
+    }
+  }
+
+  return transactionInfo;
+}
+
+int TraderService::getNumOfHeldStock(Customer customer, std::string stockCode) {
+  for (Investment investment : customer.investments) {
+    if (investment.stock.stockCode == stockCode) {
+      return investment.numHeld;
+    }
+  }
+}

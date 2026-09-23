@@ -26,8 +26,8 @@ void ScrollableContainer::addDisplayList(
 }
 
 void ScrollableContainer::addDisplayList(
-    std::vector<StockDisplayItem *> *displayList) {
-  this->pStockDisplayList = displayList;
+    std::vector<InvestmentDisplayItem *> *displayList) {
+  this->pInvestmentDisplayList = displayList;
   refreshDisplayList();
 }
 
@@ -47,7 +47,7 @@ void ScrollableContainer::refreshDisplayList() {
               &ScrollableContainer::listenForEmployeeItemSelection);
     }
   } else {
-    for (StockDisplayItem *displayItem : *pStockDisplayList) {
+    for (InvestmentDisplayItem *displayItem : *pInvestmentDisplayList) {
       pLayout->addWidget(displayItem);
       // TODO: stock display click connections
     }

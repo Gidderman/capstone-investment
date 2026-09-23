@@ -27,9 +27,12 @@ public:
   bool executeStockPurchase(Customer customer,
                             std::tuple<std::string, int, float> transaction);
   float calculatePriceOfStockPurchase(std::string stockCode, int num);
-  // When the user selects a customer to buy or sell stocks for, we assign
-  // the selected customer in order to track where to assign the purchased
-  // stock
+
+  bool executeStockSale(Customer customer,
+                        std::tuple<std::string, int, float> transaction);
+  std::vector<float> calculateResultOfSale(Customer customer,
+                                           std::string stockCode, int num);
+  int getNumOfHeldStock(Customer customer, std::string stockCode);
 };
 
 #endif

@@ -50,7 +50,7 @@ private:
   // Display lists for the customer and the stock. This contains display
   // information formated for a custom display class to be sent to the view
   std::vector<CustomerDisplayItem *> customerDisplayList;
-  std::vector<StockDisplayItem *> stockByCustomerDisplayList;
+  std::vector<InvestmentDisplayItem *> stockByCustomerDisplayList;
 
   // Used to get all the customers managed by the employee
   std::vector<Customer> getListOfManagedCustomers(int employeeID);
@@ -89,15 +89,23 @@ public slots:
                                         // button on the PurchaseStockWindow
   void listenForStockSaleInitiation();  // Connected to the Sell Stock button on
                                         // the CustomerManagerView
-  void listenForStockSaleConfirmation(); // Connected to the Confirm Sale button
+  void listenForStockSaleConfirmation(
+      std::tuple<QString, int, QString>
+          transaction);                  // Connected to the Confirm Sale button
                                          // on the SellStockWindow
   void listenForStockSaleCancellation(); // Connected to the Cancel Sale button
                                          // on the SellStockWindow
-  void listenForPriceCalculation(
+  void listenForPurchasePriceCalculation(
       std::tuple<QString, int>
           stockAndNumber); // Connected to the notifyOfPriceCalculation signal
                            // from the PurchaseStockWindow. Used to calculate
                            // the price of purchase that is displayed
+
+  void listenForSalePriceCalculation(
+      std::tuple<QString, int>
+          stockAndNumber); // Connected to notifyOfSaleCalculation in
+                           // SellStockWindow, used to calculate display
+                           // information
 
 signals:
   void informMasterControllerOfLogOut(); // Informs the MasterController that a

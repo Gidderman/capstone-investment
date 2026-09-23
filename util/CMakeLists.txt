@@ -6,6 +6,9 @@ set_target_properties(Utils
 )
 
 target_sources(Utils
+  PRIVATE
+    src/HashTable.cpp
+
   PUBLIC
     FILE_SET HEADERS
     FILES 
@@ -17,4 +20,6 @@ target_sources(Utils
       Credentials.h
       QuickSort.h
       QuickSort.tpp
+      HashTable.h
 )
+

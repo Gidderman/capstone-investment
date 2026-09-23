@@ -52,7 +52,7 @@ private:
 public:
   // We pass in the customer info and the stocks to display upon construction
   CustomerManagerView(std::vector<QString> customerDisplayInfo,
-                      std::vector<StockDisplayItem *> *stocks);
+                      std::vector<InvestmentDisplayItem *> *stocks);
   ~CustomerManagerView();
   void refreshPage();
 

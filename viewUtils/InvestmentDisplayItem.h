@@ -6,8 +6,8 @@
 // THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING AND
 // COMMUNICATION VIA SLOTS AND SIGNALS
 
-#ifndef STOCK_DISPLAY_ITEM_H
-#define STOCK_DISPLAY_ITEM_H
+#ifndef INVESTMENT_DISPLAY_ITEM_H
+#define INVESTMENT_DISPLAY_ITEM_H
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -15,7 +15,7 @@
 #include <QString>
 #include <QWidget>
 
-class StockDisplayItem : public QWidget {
+class InvestmentDisplayItem : public QWidget {
   // Requried to use signals and slots
   Q_OBJECT
 
@@ -35,9 +35,9 @@ protected:
 
 public:
   // Pass in the information to display with the constructor
-  StockDisplayItem(QString stockName, QString stockCode, QString numberHeld,
-                   QString pricePerStock);
-  ~StockDisplayItem();
+  InvestmentDisplayItem(QString stockName, QString stockCode,
+                        QString numberHeld, QString pricePerStock);
+  ~InvestmentDisplayItem();
 
 signals:
   void clicked();

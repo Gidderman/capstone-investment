@@ -7,7 +7,7 @@ target_sources(ViewUtils
     src/ScrollableContainer.cpp
     src/TraderDisplayItem.cpp
     src/CustomerDisplayItem.cpp
-    src/StockDisplayItem.cpp
+    src/InvestmentDisplayItem.cpp
 
   PUBLIC
     FILE_SET HEADERS
@@ -15,7 +15,7 @@ target_sources(ViewUtils
       ScrollableContainer.h
       TraderDisplayItem.h
       CustomerDisplayItem.h
-      StockDisplayItem.h
+      InvestmentDisplayItem.h
 )
 
 target_link_libraries(ViewUtils

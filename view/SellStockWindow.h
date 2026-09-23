@@ -23,7 +23,10 @@ class SellStockWindow : public QWidget {
 private:
   // Display items
   QComboBox *pSelectedStockDisplay;
+  QComboBox *pSelectedStockCodeDisplay;
   QSpinBox *pNumberToSellDisplay;
+  QLabel *pInitialInvestmentDisplay;
+  QLabel *pCurrentWorthDisplay;
   QLabel *pSellProfitOrLossDisplay;
 
   QPushButton *pConfirmSaleButton;
@@ -34,20 +37,33 @@ private:
   QVBoxLayout *pMainLayout;
 
 public:
-  SellStockWindow();
+  SellStockWindow(
+      std::tuple<std::vector<QString>, std::vector<QString>> stockChoices);
   ~SellStockWindow();
+  void run();
+  void setDisplayInfo(std::vector<QString> displayData,
+                      int maxNumberAllowedToSale);
 
 public slots:
   void listenForConfirmSale(); // Connected to the confirm sell button in
                                // SellStockWindow
   void
   listenForCancelSale(); // Connected to the cancel button in SellStockWindow
+  void listenForNumOfStockChange(int number); // Connected to the num of stocks
+                                              // to sell spin box
+
+  // The following two slots are used to match a stock code to the stock name
+  // and vice versa following the user changing a selection.
+  void matchStockCodeAfterChange(int index);
+  void matchStockNameAfterChange(int index);
 
 signals:
-  void
-  notifyOfConfirmSale(); // Notifies the trader controller that a sale was made
+  void notifyOfConfirmSale(
+      std::tuple<QString, int, QString>
+          transaction); // Notifies the trader controller that a sale was made
   void notifyOfCancelSale(); // Notifies the trader controller that a sale was
                              // cancelled
+  void notifyOfSaleCalculation(std::tuple<QString, int> stockAndNumber);
 };
 
 #endif

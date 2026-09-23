@@ -15,6 +15,7 @@
 #include "Credentials.h"
 #include "Customer.h"
 #include "Employee.h"
+#include "HashTable.h"
 
 #include <string>
 #include <tuple>
@@ -22,6 +23,13 @@
 class DataManager {
 private:
   CRUDManager crudManager;
+
+  // Data structure to store stocks for quick access. Due to the limits
+  // of the free API that is used to pull stock information, we will be
+  // dealing with stale stock data (at most approximately 24 hours old)
+  // and as such I have chosen to limit the number of database calls in
+  // this instance, instead opting for speed with "stale" data.
+  Custom::HashTable stockHashTable;
 
   // These private functions format data either into an acceptable format
   // for the CRUDManager to make queries with it, or formats the returning
@@ -32,6 +40,9 @@ private:
   std::vector<std::string> formatEmployeeForQuery(Employee employee,
                                                   Credentials credential);
   std::vector<std::string> formatCustomerForQuery(Customer customer);
+
+  // This pulls all stocks and populates them within the hash table
+  void refreshHashTableStockData();
 
 public:
   DataManager();

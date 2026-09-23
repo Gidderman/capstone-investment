@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <vector> //TODO: REMOVE AFTER TESTING
 
-DataManager::DataManager() {}
+DataManager::DataManager() { refreshHashTableStockData(); }
 
 DataManager::~DataManager() {}
 
@@ -157,22 +157,12 @@ bool DataManager::deleteCustomer(Customer customerToDelete) {
 bool DataManager::updateStoredStocks(std::vector<Stock>) {
   // TODO: store updated stock data into the database, and store into the hash
   // map for quick access.
+  refreshHashTableStockData();
   return true;
 }
 
 std::vector<Stock> DataManager::getAllStoredStocks() {
-  std::vector<Stock> stockVector;
-  std::unordered_map<int, std::vector<std::string>> stockData =
-      crudManager.getAllStocks();
-
-  for (const auto &item : stockData) {
-    Stock newStock = {std::stoi(item.second.at(0)), item.second.at(1),
-                      item.second.at(2), std::stof(item.second.at(3))};
-
-    stockVector.push_back(newStock);
-  }
-
-  return stockVector;
+  return stockHashTable.getAll();
 }
 
 //*******************PRIVATE FUNCTIONS****************************
@@ -357,4 +347,18 @@ DataManager::formatCustomerForQuery(Customer customer) {
   }
 
   return formatedData;
+}
+
+void DataManager::refreshHashTableStockData() {
+  stockHashTable.clear();
+
+  std::unordered_map<int, std::vector<std::string>> stockData =
+      crudManager.getAllStocks();
+
+  for (const auto &item : stockData) {
+    Stock newStock = {std::stoi(item.second.at(0)), item.second.at(1),
+                      item.second.at(2), std::stof(item.second.at(3))};
+
+    stockHashTable.insert(newStock.stockCode, newStock);
+  }
 }
