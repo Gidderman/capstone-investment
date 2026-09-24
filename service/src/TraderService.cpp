@@ -6,6 +6,7 @@
 
 #include "TraderService.h"
 #include "Investment.h"
+#include <iterator>
 #include <ostream>
 #include <string>
 
@@ -91,14 +92,42 @@ float TraderService::calculatePriceOfStockPurchase(std::string stockCode,
 
 // TODO: these
 bool TraderService::executeStockSale(
-    Customer customer, std::tuple<std::string, int, float> transaction) {}
+    int customerId, std::tuple<std::string, int, float> transaction) {
+  Customer customer = dataManager.getCustomer(customerId);
+  Customer editedCustomer = customer;
 
-std::vector<float> TraderService::calculateResultOfSale(Customer customer,
+  for (unsigned int i = 0; i < editedCustomer.investments.size(); i++) {
+    if (editedCustomer.investments.at(i).stock.stockCode ==
+        std::get<0>(transaction)) {
+      // Did the user sell all the held stock?
+      if (editedCustomer.investments.at(i).numHeld <=
+          std::get<1>(transaction)) {
+        editedCustomer.investments.erase(editedCustomer.investments.begin() +
+                                         i);
+      } else {
+        editedCustomer.investments.at(i).numHeld -= std::get<1>(transaction);
+      }
+      editedCustomer.uninvestedFunds += std::get<2>(transaction);
+    }
+  }
+
+  return dataManager.updateCustomer(customer, editedCustomer);
+}
+
+std::vector<float> TraderService::calculateResultOfSale(int customerId,
                                                         std::string stockCode,
                                                         int num) {
   std::vector<float> transactionInfo;
+  Customer customer = dataManager.getCustomer(customerId);
+
+  std::cout
+      << "TraderService::calculateResultOfSale - iterating through stock list:"
+      << std::endl;
   for (Investment investment : customer.investments) {
+
+    std::cout << investment.stock.stockName << std::endl;
     if (investment.stock.stockCode == stockCode) {
+      std::cout << "Stock found: " << investment.stock.stockName << std::endl;
       transactionInfo.push_back(
           investment.initialInvestment); // Initial investment
       transactionInfo.push_back(
@@ -106,6 +135,7 @@ std::vector<float> TraderService::calculateResultOfSale(Customer customer,
           (float)investment.numHeld); // Current investment worth
       transactionInfo.push_back(num * investment.stock.stockPrice -
                                 transactionInfo.at(0)); // Result of transaction
+      std::cout << "Transaction determined" << std::endl;
     }
   }
 

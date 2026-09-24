@@ -267,8 +267,15 @@ void TraderController::listenForStockSaleInitiation() {
 // hides the sell stock screen.
 void TraderController::listenForStockSaleConfirmation(
     std::tuple<QString, int, QString> transaction) {
-  // TODO: Logic for selling a stock
+  traderService.executeStockSale(selectedCustomer.customerID,
+                                 {std::get<0>(transaction).toStdString(),
+                                  std::get<1>(transaction),
+                                  std::get<2>(transaction).toFloat()});
+
+  stockListForSelectedCustomer =
+      getListAndFormatOfCustomerStock(selectedCustomer.customerID);
   pSellStockWindow->hide();
+  pCustomerManagerView->refreshPage();
 }
 
 // This function listens for cancellation of a stock sale, which if performed
@@ -290,7 +297,7 @@ void TraderController::listenForPurchasePriceCalculation(
 void TraderController::listenForSalePriceCalculation(
     std::tuple<QString, int> stockAndNumber) {
   std::vector<float> transactionInfo = traderService.calculateResultOfSale(
-      selectedCustomer, std::get<0>(stockAndNumber).toStdString(),
+      selectedCustomer.customerID, std::get<0>(stockAndNumber).toStdString(),
       std::get<1>(stockAndNumber));
 
   pSellStockWindow->setDisplayInfo(

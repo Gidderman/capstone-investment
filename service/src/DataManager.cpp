@@ -34,6 +34,16 @@ Credentials DataManager::getCredentialsByEmployeeId(int employeeId) {
   return std::get<1>(formatEmployeeQueriedData(returnedVector));
 }
 
+Customer DataManager::getCustomer(int customerId) {
+  return formatCustomerQueriedData(
+      crudManager.runQuery(customerId, true, "read"));
+}
+
+Employee DataManager::getEmployee(int accountId) {
+  return std::get<0>(formatEmployeeQueriedData(
+      crudManager.runQuery(accountId, false, "read")));
+}
+
 std::vector<Employee> DataManager::getAllEmployees() {
   std::unordered_map<int, std::vector<std::string>> allEmployeeData =
       crudManager.getAllEmployees();

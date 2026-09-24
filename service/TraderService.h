@@ -28,9 +28,9 @@ public:
                             std::tuple<std::string, int, float> transaction);
   float calculatePriceOfStockPurchase(std::string stockCode, int num);
 
-  bool executeStockSale(Customer customer,
+  bool executeStockSale(int customerId,
                         std::tuple<std::string, int, float> transaction);
-  std::vector<float> calculateResultOfSale(Customer customer,
+  std::vector<float> calculateResultOfSale(int customerId,
                                            std::string stockCode, int num);
   int getNumOfHeldStock(Customer customer, std::string stockCode);
 };

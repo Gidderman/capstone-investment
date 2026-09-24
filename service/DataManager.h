@@ -57,6 +57,10 @@ public:
   // setting their password after creation.
   Credentials getCredentialsByEmployeeId(int employeeId);
 
+  // Individual get functions
+  Customer getCustomer(int customerId);
+  Employee getEmployee(int accountId);
+
   std::vector<Employee> getAllEmployees();
   std::vector<Customer> getAllCustomers();
   std::vector<Customer> getAllCustomersByTraders(int traderId);
