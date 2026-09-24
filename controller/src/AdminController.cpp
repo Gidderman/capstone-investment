@@ -7,6 +7,7 @@
 #include "Customer.h"
 #include "CustomerDisplayItem.h"
 #include "TraderCreationView.h"
+#include "TraderDisplayItem.h"
 #include "WarningWindow.h"
 
 #include <iostream>
@@ -17,7 +18,7 @@ AdminController::AdminController() {};
 AdminController::~AdminController() {}
 
 // This is the entry point into the class
-void AdminController::run(Authorizer *authorizer) {
+void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
   // The authorizer pointer contains the allowed role based on the logged in
   // user. When we call the authorize user function, pass in the role required
   // to access the admin account, and it compares that to its stored role. If
@@ -26,18 +27,13 @@ void AdminController::run(Authorizer *authorizer) {
     // TODO: Throw and exception
   }
 
-  // Initialize our customer and employee lists
-  customerList = getAllCustomers();
-  employeeList = getAllEmployees();
-
-  // Format the lists for display
-  formatCustomersForDisplay();
-  formatEmployeesForDisplay();
+  this->loggedInAccountId = loggedInAccountId;
 
   // We initialize the three screens that will be accessed, passing in the
   // display lists to the Admin Main View.
-  pAdminMainView =
-      new AdminMainView(&customerDisplayList, &employeeDisplayList);
+  pAdminMainView = new AdminMainView(
+      formatCustomersForDisplay(adminService.getAllCustomers()),
+      formatEmployeesForDisplay(adminService.getAllEmployees()));
   pTraderCreationView = new TraderCreationView();
   pCustomerCreationView = new CustomerCreationView();
 
@@ -152,9 +148,13 @@ void AdminController::executeEmployeeAction(Employee employee) {
   // We determine if this employee is an existing one, or a new one by
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the employee.
+
+  // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
+
   Employee employeeToEdit;
+
   if (employee.accountID != -1) {
-    for (Employee existingEmployee : employeeList) {
+    for (Employee existingEmployee : adminService.getAllEmployees()) {
       if (employee.accountID == existingEmployee.accountID) {
         employeeToEdit = existingEmployee;
       }
@@ -172,12 +172,9 @@ void AdminController::executeEmployeeAction(Employee employee) {
     }
   }
 
-  // Refresh our lists and the display to show up to date information.
-  employeeList = getAllEmployees();
-  customerList = getAllCustomers();
-  formatEmployeesForDisplay();
-  formatCustomersForDisplay();
-  pAdminMainView->refreshPage();
+  // Refresh display to show up to date information.
+  pAdminMainView->refreshEmployees(
+      formatEmployeesForDisplay(adminService.getAllEmployees()));
 }
 
 // We are unlocking and employee account
@@ -192,9 +189,12 @@ void AdminController::executeCustomerAction(Customer customer) {
   // We determine if this customer is an existing one, or a new one by
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the customer.
+
+  // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
+
   Customer customerToEdit;
   if (customer.customerID != -1) {
-    for (Customer existingCustomer : customerList) {
+    for (Customer existingCustomer : adminService.getAllCustomers()) {
       if (customer.customerID == existingCustomer.customerID) {
         customerToEdit = existingCustomer;
       }
@@ -212,34 +212,25 @@ void AdminController::executeCustomerAction(Customer customer) {
     }
   }
 
-  // Refresh our lists and the display to show up to date information.
-  employeeList = getAllEmployees();
-  customerList = getAllCustomers();
-  formatEmployeesForDisplay();
-  formatCustomersForDisplay();
-  pAdminMainView->refreshPage();
+  // Refresh our display to show up to date information.
+  pAdminMainView->refreshCustomers(
+      formatCustomersForDisplay(adminService.getAllCustomers()));
 }
 
 // We have cancelled the creation or edit of an employee
 void AdminController::cancelCustomerAction() { pCustomerCreationView->end(); }
 
 //*********************PRIVATE FUNCTIONS*****************************
-std::vector<Customer> AdminController::getAllCustomers() {
-  return adminService.getAllCustomers();
-}
-
-std::vector<Employee> AdminController::getAllEmployees() {
-  return adminService.getAllEmployees();
-}
 
 // The custom display containers are formated with the customer full
 // name in the top left, customer id below that, current worth on the right
 // and univested funds below the current worth. All these values must be in
 // QStrings.
-void AdminController::formatCustomersForDisplay() {
-  customerDisplayList.clear();
-
-  for (Customer customer : customerList) {
+std::vector<CustomerDisplayItem *>
+AdminController::formatCustomersForDisplay(std::vector<Customer> customers) {
+  // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
+  std::vector<CustomerDisplayItem *> customerDisplayList;
+  for (Customer customer : customers) {
     float currentWorth = 0.0f;
 
     for (Investment investment : customer.investments) {
@@ -256,18 +247,21 @@ void AdminController::formatCustomersForDisplay() {
 
     customerDisplayList.push_back(displayItem);
   }
+
+  return customerDisplayList;
 }
 
 // The custom display contianers for employees consist of their full name
 // on the left with their account ID below it, and the number of customer
 // accounts managed on the right. All in QStrings
-void AdminController::formatEmployeesForDisplay() {
-  employeeDisplayList.clear();
-
-  for (Employee employee : employeeList) {
+std::vector<TraderDisplayItem *>
+AdminController::formatEmployeesForDisplay(std::vector<Employee> employees) {
+  // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
+  std::vector<TraderDisplayItem *> employeeDisplayList;
+  for (Employee employee : employees) {
     int numCustomersManaged = 0;
 
-    for (Customer customer : customerList) {
+    for (Customer customer : adminService.getAllCustomers()) {
       if (customer.accountID == employee.accountID) {
         numCustomersManaged++;
       }
@@ -284,6 +278,8 @@ void AdminController::formatEmployeesForDisplay() {
 
     employeeDisplayList.push_back(displayItem);
   }
+
+  return employeeDisplayList;
 }
 
 // We format an individual employee for display within the Employee Creation
@@ -341,12 +337,8 @@ void AdminController::listenForEmployeeCreation() { executeEmployeeCreation(); }
 // Connected to a double click on an existing employee. We additionally pull the
 // existing employee from our employeeList based on the returned ID.
 void AdminController::listenForEmployeeEdit(int id) {
-  Employee employeeToEdit;
-  for (Employee employee : employeeList) {
-    if (employee.accountID == id) {
-      employeeToEdit = employee;
-    }
-  }
+  Employee employeeToEdit = adminService.getEmployeeById(id);
+
   executeEmployeeEdit(employeeToEdit);
 }
 
@@ -358,12 +350,8 @@ void AdminController::listenForCustomerCreation() { executeCustomerCreation(); }
 
 // Connected to a double click on an existing customer
 void AdminController::listenForCustomerEdit(int id) {
-  Customer customerToEdit;
-  for (Customer customer : customerList) {
-    if (customer.customerID == id) {
-      customerToEdit = customer;
-    }
-  }
+  Customer customerToEdit = adminService.getCustomerById(id);
+
   executeCustomerEdit(customerToEdit);
 }
 

@@ -14,43 +14,47 @@ ScrollableContainer::ScrollableContainer(CONTAINER_TYPE containerType)
 ScrollableContainer::~ScrollableContainer() {}
 
 void ScrollableContainer::addDisplayList(
-    std::vector<CustomerDisplayItem *> *displayList) {
-  this->pCustomerDisplayList = displayList;
-  refreshDisplayList();
+    std::vector<CustomerDisplayItem *> displayList) {
+  this->customerDisplayList = displayList;
+  refreshDisplayList(customerDisplayList);
 }
 
 void ScrollableContainer::addDisplayList(
-    std::vector<TraderDisplayItem *> *displayList) {
-  this->pTraderDisplayList = displayList;
-  refreshDisplayList();
+    std::vector<TraderDisplayItem *> displayList) {
+  this->traderDisplayList = displayList;
+  refreshDisplayList(traderDisplayList);
 }
 
 void ScrollableContainer::addDisplayList(
-    std::vector<InvestmentDisplayItem *> *displayList) {
-  this->pInvestmentDisplayList = displayList;
-  refreshDisplayList();
+    std::vector<InvestmentDisplayItem *> displayList) {
+  this->investmentDisplayList = displayList;
+  refreshDisplayList(investmentDisplayList);
 }
 
-void ScrollableContainer::refreshDisplayList() {
-  clearDisplay();
-  if (containerType == CUSTOMERS) {
-    for (CustomerDisplayItem *displayItem : *pCustomerDisplayList) {
-      pLayout->addWidget(displayItem);
+void ScrollableContainer::refreshDisplayList(
+    std::vector<CustomerDisplayItem *> diplayList) {
+  for (CustomerDisplayItem *displayItem : customerDisplayList) {
+    pLayout->addWidget(displayItem);
 
-      connect(displayItem, &CustomerDisplayItem::clicked, this,
-              &ScrollableContainer::listenForCustomerItemSelection);
-    }
-  } else if (containerType == TRADERS) {
-    for (TraderDisplayItem *displayItem : *pTraderDisplayList) {
-      pLayout->addWidget(displayItem);
-      connect(displayItem, &TraderDisplayItem::clicked, this,
-              &ScrollableContainer::listenForEmployeeItemSelection);
-    }
-  } else {
-    for (InvestmentDisplayItem *displayItem : *pInvestmentDisplayList) {
-      pLayout->addWidget(displayItem);
-      // TODO: stock display click connections
-    }
+    connect(displayItem, &CustomerDisplayItem::clicked, this,
+            &ScrollableContainer::listenForCustomerItemSelection);
+  }
+}
+
+void ScrollableContainer::refreshDisplayList(
+    std::vector<TraderDisplayItem *> displayList) {
+  for (TraderDisplayItem *displayItem : traderDisplayList) {
+    pLayout->addWidget(displayItem);
+    connect(displayItem, &TraderDisplayItem::clicked, this,
+            &ScrollableContainer::listenForEmployeeItemSelection);
+  }
+}
+
+void ScrollableContainer::refreshDisplayList(
+    std::vector<InvestmentDisplayItem *> displayList) {
+  for (InvestmentDisplayItem *displayItem : investmentDisplayList) {
+    pLayout->addWidget(displayItem);
+    // TODO: stock display click connections
   }
 }
 

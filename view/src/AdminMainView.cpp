@@ -6,8 +6,8 @@
 
 #include <QString>
 
-AdminMainView::AdminMainView(std::vector<CustomerDisplayItem *> *totalCustomers,
-                             std::vector<TraderDisplayItem *> *totalTraders) {
+AdminMainView::AdminMainView(std::vector<CustomerDisplayItem *> totalCustomers,
+                             std::vector<TraderDisplayItem *> totalTraders) {
   // Add the customers to the scrollable container for display
   pCustomerList = new ScrollableContainer(CUSTOMERS);
   pCustomerList->addDisplayList(totalCustomers);
@@ -78,10 +78,14 @@ AdminMainView::AdminMainView(std::vector<CustomerDisplayItem *> *totalCustomers,
 AdminMainView::~AdminMainView() {}
 
 // Directs the ScrollableContainers to refresh their display
-void AdminMainView::refreshPage() {
+void AdminMainView::refreshEmployees(
+    std::vector<TraderDisplayItem *> totalTraders) {
+  pTraderList->refreshDisplayList(totalTraders);
+}
 
-  pTraderList->refreshDisplayList();
-  pCustomerList->refreshDisplayList();
+void AdminMainView::refreshCustomers(
+    std::vector<CustomerDisplayItem *> totalCustomers) {
+  pCustomerList->refreshDisplayList(totalCustomers);
 }
 
 // *********************SLOTS*********************************************

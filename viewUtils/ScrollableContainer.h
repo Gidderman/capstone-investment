@@ -33,9 +33,9 @@ private:
   // Lists for display, only one list will be used depending on the type of
   // container constructed. Pointers are used to prevent unnecessary copying of
   // information
-  std::vector<CustomerDisplayItem *> *pCustomerDisplayList;
-  std::vector<TraderDisplayItem *> *pTraderDisplayList;
-  std::vector<InvestmentDisplayItem *> *pInvestmentDisplayList;
+  std::vector<CustomerDisplayItem *> customerDisplayList;
+  std::vector<TraderDisplayItem *> traderDisplayList;
+  std::vector<InvestmentDisplayItem *> investmentDisplayList;
 
   // This private function is used when refreshing the screen to clear
   // out stale displayed widgets.
@@ -48,12 +48,14 @@ public:
 
   // Overloaded functions, each does the same thing of adding the display list
   // to the member variable as appropriate.
-  void addDisplayList(std::vector<CustomerDisplayItem *> *diplayList);
-  void addDisplayList(std::vector<TraderDisplayItem *> *displayList);
-  void addDisplayList(std::vector<InvestmentDisplayItem *> *displayList);
+  void addDisplayList(std::vector<CustomerDisplayItem *> diplayList);
+  void addDisplayList(std::vector<TraderDisplayItem *> displayList);
+  void addDisplayList(std::vector<InvestmentDisplayItem *> displayList);
 
   // Used whenever the display list changes
-  void refreshDisplayList();
+  void refreshDisplayList(std::vector<CustomerDisplayItem *> diplayList);
+  void refreshDisplayList(std::vector<TraderDisplayItem *> displayList);
+  void refreshDisplayList(std::vector<InvestmentDisplayItem *> displayList);
 
 public slots:
   void listenForCustomerItemSelection(

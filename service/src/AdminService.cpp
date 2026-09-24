@@ -6,6 +6,7 @@
 #include "QuickSort.h"
 
 #include <iostream>
+#include <iterator>
 
 AdminService::AdminService() {}
 
@@ -19,12 +20,20 @@ std::vector<Employee> AdminService::getAllEmployees() {
   return employees;
 }
 
+Employee AdminService::getEmployeeById(int id) {
+  return dataManager.getEmployee(id);
+}
+
 std::vector<Customer> AdminService::getAllCustomers() {
   std::vector<Customer> customers = dataManager.getAllCustomers();
 
   Custom::quickSort(customers, Custom::customerName);
 
   return customers;
+}
+
+Customer AdminService::getCustomerById(int id) {
+  return dataManager.getCustomer(id);
 }
 
 // Getting the employee data, we then generate a username which will be the

@@ -37,30 +37,15 @@ private:
 
   // This struct is used for displaying the logged in employee information as
   // well as finding and displaying the associated customers
-  Employee loggedInEmployee;
-  Customer selectedCustomer;
-
-  // Stores a local copy of the customer accounts this employee manages
-  std::vector<Customer> customerList;
-
-  // When selecting a customer, this list will populate with their various stock
-  // info
-  std::vector<Stock> stockListForSelectedCustomer;
-
-  // Display lists for the customer and the stock. This contains display
-  // information formated for a custom display class to be sent to the view
-  std::vector<CustomerDisplayItem *> customerDisplayList;
-  std::vector<InvestmentDisplayItem *> stockByCustomerDisplayList;
-
-  // Used to get all the customers managed by the employee
-  std::vector<Customer> getListOfManagedCustomers(int employeeID);
-
-  // Gets all the stocks for a given customer and formats it for display
-  std::vector<Stock> getListAndFormatOfCustomerStock(int customerID);
+  int loggedInEmployeeId;
+  int selectedCustomerId;
 
   // The following functions format various data for display, which is necessary
   // due to most display items requiring a QString.
-  void formatAllManagedCustomersForDisplay();
+  std::vector<CustomerDisplayItem *>
+  formatAllManagedCustomersForDisplay(std::vector<Customer> customers);
+  std::vector<InvestmentDisplayItem *>
+  formatCustomerInvestmentsForDisplay(std::vector<Investment> investments);
   std::vector<QString> formatLoggedInEmployeeForDisplay();
   std::vector<QString> formatIndividualCustomerForDisplay(Customer customer);
 
@@ -68,7 +53,7 @@ public:
   TraderController();
   ~TraderController();
   // This is the primary entry point into this class.
-  void run(Employee loggedInEmployee, Authorizer *authorizer);
+  void run(int loggedInEmployeeId, Authorizer *authorizer);
 
 public slots:
   void

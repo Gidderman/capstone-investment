@@ -18,7 +18,9 @@ public:
   AdminService();
   ~AdminService();
   std::vector<Employee> getAllEmployees();
+  Employee getEmployeeById(int id);
   std::vector<Customer> getAllCustomers();
+  Customer getCustomerById(int id);
   bool createEmployee(Employee employeeToCreate);
   bool editEmployee(Employee employeeToEdit, Employee edit);
   bool createCustomer(Customer customer);

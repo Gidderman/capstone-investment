@@ -34,32 +34,14 @@ private:
   // Service declaration
   AdminService adminService;
 
-  // The customer and employee list hold a local copy of all employees and
-  // customers. This prevents frequent calls to the database, allowing us to
-  // pull in all the data in one or two calls that then gets formated for
-  // display.
-  std::vector<Customer> customerList;
-  std::vector<Employee> employeeList;
+  // The controller keeps track of the logged in employees id
+  int loggedInAccountId;
 
-  // These lists are the customer and employee lists. They hold the same
-  // customers and employees as the above two lists, but formatted for display
-  // on screen. This is necessary due to the fact that a Customer or Employee
-  // structure uses multiple data types within, but the Qt display system
-  // expects almost exclusively QStrings. Additionally this places the data in a
-  // format that is appropriate for my custom display widget.
-  std::vector<CustomerDisplayItem *> customerDisplayList;
-  std::vector<TraderDisplayItem *> employeeDisplayList;
-
-  // These are the private functions that the AdminController uses to populate
-  // the customerList and employeeList
-  std::vector<Customer> getAllCustomers();
-  std::vector<Employee> getAllEmployees();
-
-  // These private functions are used to format the data within the customerList
-  // and employeeList for display, storing the results in the applicable
-  // displayList.
-  void formatCustomersForDisplay();
-  void formatEmployeesForDisplay();
+  // These private functions are used to format the data
+  std::vector<CustomerDisplayItem *>
+  formatCustomersForDisplay(std::vector<Customer> customers);
+  std::vector<TraderDisplayItem *>
+  formatEmployeesForDisplay(std::vector<Employee> employees);
 
   // This formats an individual employee or customer for display. This is
   // primarily used when editing an employee or customer and it is needed to
@@ -67,13 +49,12 @@ private:
   std::vector<QString> formatIndividualEmployeeForDisplay(Employee employee);
   std::vector<QString> formatIndividualCustomerForDisplay(Customer customer);
 
-  // TODO: Create a function for refreshing displays. One for each list
 public:
   AdminController();
   ~AdminController();
   // This function is the entry into the AdminController and is called by the
   // Master Controller after a successful admin log in.
-  void run(Authorizer *authorizer);
+  void run(int loggedInAccountId, Authorizer *authorizer);
 
   // The below functions communicate with the AdminService to send data back to
   // the database.
