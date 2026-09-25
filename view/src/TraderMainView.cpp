@@ -6,9 +6,8 @@
 #include "TraderMainView.h"
 #include "ScrollableContainer.h"
 
-TraderMainView::TraderMainView(
-    std::vector<QString> employeeDisplayInfo,
-    std::vector<CustomerDisplayItem *> *managedCustomers) {
+TraderMainView::TraderMainView(std::vector<QString> employeeDisplayInfo,
+                               std::vector<Customer> managedCustomers) {
   // Initialize the display variables
   pPageTitleDisplay = new QLabel(QString("Trader"));
   pTraderNameDisplay = new QLabel("Welcome " + employeeDisplayInfo.at(0));

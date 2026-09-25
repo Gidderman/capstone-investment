@@ -35,15 +35,17 @@ private:
   // Service initialization
   TraderService traderService;
 
-  // This struct is used for displaying the logged in employee information as
+  // This id are used for displaying the logged in employee information as
   // well as finding and displaying the associated customers
   int loggedInEmployeeId;
+
+  // This id is used to track the customer being managed when the user
+  // selects the customer from the main trader page.
   int selectedCustomerId;
 
   // The following functions format various data for display, which is necessary
   // due to most display items requiring a QString.
-  std::vector<CustomerDisplayItem *>
-  formatAllManagedCustomersForDisplay(std::vector<Customer> customers);
+  std::vector<CustomerDisplayItem *> formatAllManagedCustomersForDisplay();
   std::vector<InvestmentDisplayItem *>
   formatCustomerInvestmentsForDisplay(std::vector<Investment> investments);
   std::vector<QString> formatLoggedInEmployeeForDisplay();

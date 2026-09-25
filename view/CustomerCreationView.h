@@ -26,6 +26,7 @@ private:
   QLineEdit *pEmailEntry;
   QLineEdit *pInitialInvestmentEntry;
   QComboBox *pAccountTypeEntry;
+  QComboBox *pEmployeeAssignedEntry;
 
   QPushButton *pCreateCustomerButton;
   QPushButton *pCancelCreationButton;
@@ -39,7 +40,7 @@ private:
   void clear();
 
 public:
-  CustomerCreationView();
+  CustomerCreationView(std::vector<QString> employees);
   ~CustomerCreationView();
   // This is the primary entry point for this view
   void run();

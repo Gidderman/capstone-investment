@@ -14,6 +14,10 @@
 #include "InvestmentDisplayItem.h"
 #include "TraderDisplayItem.h"
 
+#include "Customer.h"
+#include "Employee.h"
+#include "Investment.h"
+
 #include <QVBoxLayout>
 #include <QWidget>
 #include <vector>
@@ -34,12 +38,13 @@ private:
   // container constructed. Pointers are used to prevent unnecessary copying of
   // information
   std::vector<CustomerDisplayItem *> customerDisplayList;
-  std::vector<TraderDisplayItem *> traderDisplayList;
+  std::vector<TraderDisplayItem *> employeeDisplayList;
   std::vector<InvestmentDisplayItem *> investmentDisplayList;
 
   // This private function is used when refreshing the screen to clear
   // out stale displayed widgets.
   void clearDisplay();
+  void displayList();
 
 public:
   // Declare the container type upon construction
@@ -48,14 +53,14 @@ public:
 
   // Overloaded functions, each does the same thing of adding the display list
   // to the member variable as appropriate.
-  void addDisplayList(std::vector<CustomerDisplayItem *> diplayList);
-  void addDisplayList(std::vector<TraderDisplayItem *> displayList);
-  void addDisplayList(std::vector<InvestmentDisplayItem *> displayList);
+  void addDisplayList(std::vector<Customer> customers);
+  void addDisplayList(std::vector<Employee> employees);
+  void addDisplayList(std::vector<Investment> investments);
 
   // Used whenever the display list changes
-  void refreshDisplayList(std::vector<CustomerDisplayItem *> diplayList);
-  void refreshDisplayList(std::vector<TraderDisplayItem *> displayList);
-  void refreshDisplayList(std::vector<InvestmentDisplayItem *> displayList);
+  void refreshDisplayList(std::vector<Customer> customers);
+  void refreshDisplayList(std::vector<Employee> employees);
+  void refreshDisplayList(std::vector<Investment> investments);
 
 public slots:
   void listenForCustomerItemSelection(

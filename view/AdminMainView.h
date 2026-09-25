@@ -57,13 +57,13 @@ public:
   // We pass in the two lists used to populate the pTraderList and pCustomerList
   // upon construction. To avoid unnecessary duplicatation of the display data,
   // we pass in pointers.
-  AdminMainView(std::vector<CustomerDisplayItem *> totalCustomers,
-                std::vector<TraderDisplayItem *> totalTraders);
+  AdminMainView(std::vector<Customer> totalCustomers,
+                std::vector<Employee> totalTraders);
   ~AdminMainView();
   // This function is used whenever there is a change to the displayed customers
   // or employees.
-  void refreshEmployees(std::vector<TraderDisplayItem *> totalTraders);
-  void refreshCustomers(std::vector<CustomerDisplayItem *> totalCustomers);
+  void refreshEmployees(std::vector<Employee> totalEmployees);
+  void refreshCustomers(std::vector<Customer> totalCustomers);
 
 public slots:
   void logOutInitiated();         // Connected to the log out button on the

@@ -43,7 +43,7 @@ private:
 public:
   // We pass in the info that we want displayed with the constructor
   TraderMainView(std::vector<QString> employeeDisplayInfo,
-                 std::vector<CustomerDisplayItem *> *managedCustomers);
+                 std::vector<Customer> managedCustomers);
   ~TraderMainView();
 
 public slots:

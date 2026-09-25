@@ -60,6 +60,7 @@ public:
   // Individual get functions
   Customer getCustomer(int customerId);
   Employee getEmployee(int accountId);
+  Employee getEmployeeByLastName(std::string name);
 
   std::vector<Employee> getAllEmployees();
   std::vector<Customer> getAllCustomers();

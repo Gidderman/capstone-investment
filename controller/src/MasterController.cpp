@@ -52,12 +52,12 @@ void MasterController::executeLogin() {
   switch (std::get<1>(logInInformation)) {
   case ADMIN:
     logInView->hide();
-    adminController.run(&authorizer);
+    adminController.run(std::get<0>(logInInformation).accountID, &authorizer);
     break;
 
   case TRADER:
     logInView->hide();
-    traderController.run(std::get<0>(logInInformation), &authorizer);
+    traderController.run(std::get<0>(logInInformation).accountID, &authorizer);
     break;
 
   default:

@@ -16,10 +16,22 @@ TraderService::TraderService() {}
 
 TraderService::~TraderService() {}
 
+std::tuple<Employee, int>
+TraderService::getEmployeeByAndNumManagedCustomersById(int employeeId) {
+  // TODO: DATABASE QUERY OPTIMIZATION
+
+  return {dataManager.getEmployee(employeeId),
+          dataManager.getAllCustomersByTraders(employeeId).size()};
+}
+
 // Directs the dataManager to provide a list of all customers based on the
 // passed in employee id.
 std::vector<Customer> TraderService::getListOfManagedCustomers(int employeeId) {
   return dataManager.getAllCustomersByTraders(employeeId);
+}
+
+Customer TraderService::getCustomerById(int customerId) {
+  return dataManager.getCustomer(customerId);
 }
 
 std::vector<Stock> TraderService::getListOfAvailableStocks() {
@@ -29,36 +41,24 @@ std::vector<Stock> TraderService::getListOfAvailableStocks() {
 // Recieves the stock code, the number of stocks purchased, and the total cost
 // of the transactions as arguments in the tuple
 bool TraderService::executeStockPurchase(
-    Customer customer, std::tuple<std::string, int, float> transaction) {
-  Customer editedCustomer = customer;
+    int customerId, std::tuple<std::string, int, float> transaction) {
 
-  std::cout << "TraderService::executeStockPurchase - Investment size prior to "
-               "update: "
-            << editedCustomer.investments.size() << std::endl;
+  Customer customer = dataManager.getCustomer(customerId);
+  Customer editedCustomer = customer;
 
   for (Investment investment : editedCustomer.investments) {
     if (std::get<0>(transaction) == investment.stock.stockCode) {
-
-      std::cout << "TraderService::executeStockPurchase (existing investment) "
-                   "- running"
-                << std::endl;
 
       investment.numHeld += std::get<1>(transaction);
       investment.initialInvestment += std::get<2>(transaction);
       investment.currentInvestmentWorth =
           (float)investment.numHeld * investment.stock.stockPrice;
 
-      std::cout
-          << "TraderService::executeStockPurchase (existing investment) - end"
-          << std::endl;
       return dataManager.updateCustomer(customer, editedCustomer);
     }
   }
   for (Stock stock : dataManager.getAllStoredStocks()) {
     if (std::get<0>(transaction) == stock.stockCode) {
-      std::cout
-          << "TraderService::executeStockPurchase (new investment) - start"
-          << std::endl;
 
       Investment newInvestment;
       newInvestment.investmentID = -1;
@@ -69,8 +69,6 @@ bool TraderService::executeStockPurchase(
       newInvestment.currentInvestmentWorth = newInvestment.initialInvestment;
       editedCustomer.investments.push_back(newInvestment);
 
-      std::cout << "TraderService::executeStockPurchase (new investment) - end"
-                << std::endl;
       return dataManager.updateCustomer(customer, editedCustomer);
     }
   }
@@ -120,14 +118,9 @@ std::vector<float> TraderService::calculateResultOfSale(int customerId,
   std::vector<float> transactionInfo;
   Customer customer = dataManager.getCustomer(customerId);
 
-  std::cout
-      << "TraderService::calculateResultOfSale - iterating through stock list:"
-      << std::endl;
   for (Investment investment : customer.investments) {
 
-    std::cout << investment.stock.stockName << std::endl;
     if (investment.stock.stockCode == stockCode) {
-      std::cout << "Stock found: " << investment.stock.stockName << std::endl;
       transactionInfo.push_back(
           investment.initialInvestment); // Initial investment
       transactionInfo.push_back(
@@ -135,17 +128,9 @@ std::vector<float> TraderService::calculateResultOfSale(int customerId,
           (float)investment.numHeld); // Current investment worth
       transactionInfo.push_back(num * investment.stock.stockPrice -
                                 transactionInfo.at(0)); // Result of transaction
-      std::cout << "Transaction determined" << std::endl;
+      transactionInfo.push_back((float)investment.numHeld);
     }
   }
 
   return transactionInfo;
-}
-
-int TraderService::getNumOfHeldStock(Customer customer, std::string stockCode) {
-  for (Investment investment : customer.investments) {
-    if (investment.stock.stockCode == stockCode) {
-      return investment.numHeld;
-    }
-  }
 }

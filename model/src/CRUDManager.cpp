@@ -241,6 +241,7 @@ std::vector<std::string> CRUDManager::runLogInQuery(std::string username) {
 
 std::vector<std::string> CRUDManager::runQuery(int id, bool isCustomer,
                                                std::string queryType) {
+
   if (queryType == "read") {
     return readSelection(id, isCustomer);
   } else if (queryType == "delete") {
@@ -255,9 +256,19 @@ std::vector<std::string> CRUDManager::runQuery(int id, bool isCustomer,
 std::vector<std::string> CRUDManager::runQuery(int id, bool isCustomer,
                                                std::string queryType,
                                                std::vector<std::string> data) {
+  std::cout << "CRUDManager::runQuery - entering" << std::endl;
+
   if (queryType == "create") {
+    std::cout << "CRUDManager::runQuery (create) - entering" << std::endl;
+
+    std::cout << "CRUDManager::runQuery (create) - exiting" << std::endl;
+
     return createSelection(id, isCustomer, data);
   } else if (queryType == "update") {
+
+    std::cout << "CRUDManager::runQuery (update) - entering" << std::endl;
+    std::cout << "CRUDManager::runQuery (update) - exiting" << std::endl;
+
     return updateSelection(id, isCustomer, data);
   } else {
     std::cout << "INVALID QUERY" << std::endl;
@@ -290,6 +301,7 @@ CRUDManager::createSelection(int id, bool isCustomer,
 }
 
 std::vector<std::string> CRUDManager::readSelection(int id, bool isCustomer) {
+
   if (isCustomer) {
     return testingCustomerDatabase.at(id);
   } else {
@@ -300,23 +312,16 @@ std::vector<std::string> CRUDManager::readSelection(int id, bool isCustomer) {
 std::vector<std::string>
 CRUDManager::updateSelection(int id, bool isCustomer,
                              std::vector<std::string> update) {
+  std::cout << "CRUDManager::updateSelection - entering" << std::endl;
+
   if (isCustomer) {
+
+    std::cout << "CRUDManager::updateSelection - exiting" << std::endl;
     testingCustomerDatabase.at(id) = update;
     return testingCustomerDatabase.at(id);
   } else {
-    std::cout << "CRUDManager::updateSelection - Update information: "
-              << std::endl;
-    for (std::string item : update) {
-      std::cout << "    " << item << std::endl;
-    }
-    std::cout << "CRUDManager::updateSelection - writing update: " << std::endl;
     testingEmployeeDatabase.at(id) = update;
 
-    std::cout << "CRUDManager::updateSelection - return information: "
-              << std::endl;
-    for (std::string item : testingEmployeeDatabase.at(id)) {
-      std::cout << "    " << item << std::endl;
-    }
     return testingEmployeeDatabase.at(id);
   }
 }
@@ -348,6 +353,9 @@ CRUDManager::getAllEmployees() {
 
 std::unordered_map<int, std::vector<std::string>>
 CRUDManager::getAllCustomers() {
+  std::cout << "CRUDManager::getAllCustomers - entering" << std::endl;
+  std::cout << "CRUDManager::getAllCustomers - exiting" << std::endl;
+
   return testingCustomerDatabase;
 }
 

@@ -22,8 +22,10 @@ DataManager::~DataManager() {}
 
 std::tuple<Employee, Credentials>
 DataManager::getEmployeeByUsername(std::string username) {
+  std::cout << "DataManager::getEmployeeByUsername - entering" << std::endl;
   std::vector<std::string> returnedVector = crudManager.runLogInQuery(username);
 
+  std::cout << "DataManager::getEmployeeByUsername - exiting" << std::endl;
   return formatEmployeeQueriedData(returnedVector);
 }
 
@@ -35,6 +37,7 @@ Credentials DataManager::getCredentialsByEmployeeId(int employeeId) {
 }
 
 Customer DataManager::getCustomer(int customerId) {
+
   return formatCustomerQueriedData(
       crudManager.runQuery(customerId, true, "read"));
 }
@@ -42,6 +45,14 @@ Customer DataManager::getCustomer(int customerId) {
 Employee DataManager::getEmployee(int accountId) {
   return std::get<0>(formatEmployeeQueriedData(
       crudManager.runQuery(accountId, false, "read")));
+}
+
+Employee DataManager::getEmployeeByLastName(std::string name) {
+  for (Employee employee : getAllEmployees()) {
+    if (employee.lastName == name) {
+      return employee;
+    }
+  }
 }
 
 std::vector<Employee> DataManager::getAllEmployees() {
@@ -58,6 +69,8 @@ std::vector<Employee> DataManager::getAllEmployees() {
 }
 
 std::vector<Customer> DataManager::getAllCustomers() {
+  std::cout << "DataManager::getAllCustomers - entering" << std::endl;
+
   std::unordered_map<int, std::vector<std::string>> allCustomerData =
       crudManager.getAllCustomers();
 
@@ -66,21 +79,18 @@ std::vector<Customer> DataManager::getAllCustomers() {
     formattedCustomerData.push_back(formatCustomerQueriedData(customer.second));
   }
 
+  std::cout << "DataManager::getAllCustomers - exiting" << std::endl;
+
   return formattedCustomerData;
 }
 
 std::vector<Customer> DataManager::getAllCustomersByTraders(int traderID) {
   std::vector<Customer> customers = getAllCustomers();
-  std::cout << customers.size() << " total customers" << std::endl;
   for (unsigned int i = 0; i < customers.size(); i++) {
     if (customers.at(i).accountID != traderID) {
-      std::cout << "Erasing customer " << customers.at(i).lastName << " id num "
-                << customers.at(i).accountID << std::endl;
       customers.erase(customers.begin() + i);
     }
   }
-
-  std::cout << "Final list size " << customers.size() << std::endl;
 
   return customers;
 }
@@ -114,38 +124,18 @@ bool DataManager::updateEmployee(Employee employeeToUpdate, Employee update,
   std::vector<std::string> returnedVector = crudManager.runQuery(
       employeeToUpdate.accountID, false, "update", queryFormattedData);
 
-  std::cout << "DataManager::updateEmployee - Data sent to CRUD Manager: "
-            << std::endl;
-  for (std::string item : queryFormattedData) {
-    std::cout << "   " << item << std::endl;
-  }
-
-  std::cout << "DataManager::updateEmployee - Data returned from CRUD Manager: "
-            << std::endl;
-  for (std::string item : returnedVector) {
-    std::cout << "   " << item << std::endl;
-  }
-
   return queryFormattedData == returnedVector;
 }
 
 bool DataManager::updateCustomer(Customer customerToUpdate, Customer update) {
-  std::cout << "DataManager::updateCustomer - beginning update: " << std::endl;
-  std::cout << "Edited data: " << std::endl;
+  std::cout << "DataManager::updateCustomer - entering" << std::endl;
 
   std::vector<std::string> queryFormattedData = formatCustomerForQuery(update);
-
-  for (std::string item : queryFormattedData) {
-    std::cout << item << std::endl;
-  }
 
   std::vector<std::string> returnedVector = crudManager.runQuery(
       customerToUpdate.customerID, true, "update", queryFormattedData);
 
-  std::cout << "Returned vector: " << std::endl;
-  for (std::string item : returnedVector) {
-    std::cout << item << std::endl;
-  }
+  std::cout << "DataManager::updateCustomer - exiting" << std::endl;
 
   return queryFormattedData == returnedVector;
 }
@@ -178,6 +168,13 @@ std::vector<Stock> DataManager::getAllStoredStocks() {
 //*******************PRIVATE FUNCTIONS****************************
 std::tuple<Employee, Credentials>
 DataManager::formatEmployeeQueriedData(std::vector<std::string> queriedData) {
+  std::cout << "DataManager::formatEmployeeQueriedData - entering" << std::endl;
+  std::cout << "QueriedData Size = " << queriedData.size()
+            << " and contains: " << std::endl;
+  for (std::string item : queriedData) {
+    std::cout << "   " << item << std::endl;
+  }
+
   Employee employee;
   Credentials credentials;
 
@@ -202,11 +199,16 @@ DataManager::formatEmployeeQueriedData(std::vector<std::string> queriedData) {
 
   std::tuple<Employee, Credentials> employeeInformation = {employee,
                                                            credentials};
+
+  std::cout << "DataManager::formatEmployeeQueriedData - exiting" << std::endl;
+
   return employeeInformation;
 }
 
 Customer
 DataManager::formatCustomerQueriedData(std::vector<std::string> queriedData) {
+  std::cout << "DataManager::formatCustomerQueriedData - entering" << std::endl;
+
   Customer customer;
 
   customer.customerID = std::stoi(queriedData.at(0));
@@ -268,6 +270,8 @@ DataManager::formatCustomerQueriedData(std::vector<std::string> queriedData) {
     investment.stock = stock;
     customer.investments.push_back(investment);
   }
+  std::cout << "DataManager::formatCustomerQueriedData - exiting" << std::endl;
+
   return customer;
 }
 
@@ -296,6 +300,8 @@ DataManager::formatEmployeeForQuery(Employee employee, Credentials credential) {
 
 std::vector<std::string>
 DataManager::formatCustomerForQuery(Customer customer) {
+  std::cout << "DataManager::FormatCustomerForQuery - entering" << std::endl;
+
   std::vector<std::string> formatedData;
   formatedData.push_back(std::to_string(customer.customerID));
   formatedData.push_back(customer.firstName);
@@ -355,6 +361,8 @@ DataManager::formatCustomerForQuery(Customer customer) {
       }
     }
   }
+
+  std::cout << "DataManager::FormatCustomerForQuery - exiting" << std::endl;
 
   return formatedData;
 }

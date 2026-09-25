@@ -11,7 +11,12 @@
 #include "WarningWindow.h"
 
 #include <iostream>
+#include <ostream>
 #include <string>
+
+// TODO: Fix bug where editing a newly created customer crashes the program
+// TODO: Fix bug where changing managing employee appears to not save
+// TODO: Fix issue where the number of accounts managed does not display
 
 AdminController::AdminController() {};
 
@@ -29,13 +34,25 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
 
   this->loggedInAccountId = loggedInAccountId;
 
+  // This call is stored in a variable to limit the number of database calls
+  // made
+  std::vector<Employee> allEmployees = adminService.getAllEmployees();
+
   // We initialize the three screens that will be accessed, passing in the
   // display lists to the Admin Main View.
-  pAdminMainView = new AdminMainView(
-      formatCustomersForDisplay(adminService.getAllCustomers()),
-      formatEmployeesForDisplay(adminService.getAllEmployees()));
+  pAdminMainView =
+      new AdminMainView(adminService.getAllCustomers(), allEmployees);
   pTraderCreationView = new TraderCreationView();
-  pCustomerCreationView = new CustomerCreationView();
+
+  // We get a list of all the employee names so customer accounts can be
+  // assigned employees to manage them
+  std::vector<QString> employeeNames;
+  for (Employee employee : allEmployees) {
+    employeeNames.push_back(QString::fromStdString(employee.lastName + ", " +
+                                                   employee.firstName.at(0)));
+  }
+
+  pCustomerCreationView = new CustomerCreationView(employeeNames);
 
   // Connect all the Admin Main View signals to the applicable slots.
   connect(pAdminMainView, &AdminMainView::notifyOfLogOut, this,
@@ -173,8 +190,7 @@ void AdminController::executeEmployeeAction(Employee employee) {
   }
 
   // Refresh display to show up to date information.
-  pAdminMainView->refreshEmployees(
-      formatEmployeesForDisplay(adminService.getAllEmployees()));
+  pAdminMainView->refreshEmployees(adminService.getAllEmployees());
 }
 
 // We are unlocking and employee account
@@ -191,6 +207,8 @@ void AdminController::executeCustomerAction(Customer customer) {
   // otherwise we create the customer.
 
   // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
+
+  std::cout << "AdminController::executeCustomerAciton - entered" << std::endl;
 
   Customer customerToEdit;
   if (customer.customerID != -1) {
@@ -213,8 +231,9 @@ void AdminController::executeCustomerAction(Customer customer) {
   }
 
   // Refresh our display to show up to date information.
-  pAdminMainView->refreshCustomers(
-      formatCustomersForDisplay(adminService.getAllCustomers()));
+  pAdminMainView->refreshCustomers(adminService.getAllCustomers());
+
+  std::cout << "AdminController::executeCustomerAciton - exiting" << std::endl;
 }
 
 // We have cancelled the creation or edit of an employee
@@ -306,6 +325,7 @@ AdminController::formatIndividualEmployeeForDisplay(Employee employee) {
 std::vector<QString>
 AdminController::formatIndividualCustomerForDisplay(Customer customer) {
   std::vector<QString> returnData;
+  returnData.push_back(QString::number(customer.customerID));
   returnData.push_back(QString::fromStdString(customer.firstName));
   returnData.push_back(QString::fromStdString(customer.lastName));
   returnData.push_back(QString::fromStdString(customer.phoneNum));
@@ -319,7 +339,9 @@ AdminController::formatIndividualCustomerForDisplay(Customer customer) {
   } else {
     returnData.push_back(QString("Brokerage"));
   }
-  returnData.push_back(QString::number(customer.customerID));
+  Employee managingEmployee = adminService.getEmployeeById(customer.accountID);
+  returnData.push_back(QString::fromStdString(
+      managingEmployee.lastName + ", " + managingEmployee.firstName.at(0)));
 
   return returnData;
 }
@@ -395,22 +417,35 @@ void AdminController::listenForEmployeeAccountUnlock() {
 // Connected to the CreateCustomerView Create Customer/Save Changes button
 void AdminController::listenForCustomerActionConfirmation(
     std::vector<QString> customer) {
+  std::cout << "AdminController::listenForCustomerActionConfirmation - entering"
+            << std::endl;
+
   Customer inputtedCustomer;
-  inputtedCustomer.firstName = customer.at(0).toStdString();
-  inputtedCustomer.lastName = customer.at(1).toStdString();
-  inputtedCustomer.phoneNum = customer.at(2).toStdString();
-  inputtedCustomer.email = customer.at(3).toStdString();
-  inputtedCustomer.uninvestedFunds = customer.at(4).toFloat();
-  if (customer.at(5).toStdString() == "Retirement") {
+  inputtedCustomer.customerID = customer.at(0).toInt();
+  inputtedCustomer.firstName = customer.at(1).toStdString();
+  inputtedCustomer.lastName = customer.at(2).toStdString();
+  inputtedCustomer.phoneNum = customer.at(3).toStdString();
+  inputtedCustomer.email = customer.at(4).toStdString();
+  inputtedCustomer.uninvestedFunds = customer.at(5).toFloat();
+  if (customer.at(6).toStdString() == "Retirement") {
     inputtedCustomer.accountType = RETIREMENT;
   } else {
     inputtedCustomer.accountType = BROKERAGE;
   }
-  inputtedCustomer.customerID = customer.at(6).toInt();
+  std::string employeeLastName = customer.at(7).toStdString().substr(
+      0, customer.at(7).toStdString().find(','));
+
+  std::cout << "Name string: " << employeeLastName << std::endl;
+
+  inputtedCustomer.accountID =
+      adminService.getEmployeeByName(employeeLastName).accountID;
 
   pCustomerCreationView->end();
 
   executeCustomerAction(inputtedCustomer);
+
+  std::cout << "AdminController::listenForCustomerActionConfirmation - exiting"
+            << std::endl;
 }
 
 // Connected to the CreateCustomerView cancel button.

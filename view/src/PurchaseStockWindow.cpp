@@ -6,6 +6,8 @@
 #include <qsizepolicy.h>
 #include <qspinbox.h>
 
+#include <iostream>
+
 PurchaseStockWindow::PurchaseStockWindow(
     std::vector<std::tuple<QString, QString, QString>> stockList) {
   // Initialize display items

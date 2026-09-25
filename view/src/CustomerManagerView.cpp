@@ -6,9 +6,8 @@
 #include <qboxlayout.h>
 #include <qpushbutton.h>
 
-CustomerManagerView::CustomerManagerView(
-    std::vector<QString> customerInfo,
-    std::vector<InvestmentDisplayItem *> *stocks) {
+CustomerManagerView::CustomerManagerView(std::vector<QString> customerInfo,
+                                         std::vector<Investment> stocks) {
 
   // Initialize the display components with the appropriate information
   pCustomerFullName = new QLabel(customerInfo.at(0));
@@ -75,7 +74,18 @@ CustomerManagerView::CustomerManagerView(
 
 CustomerManagerView::~CustomerManagerView() {}
 
-void CustomerManagerView::refreshPage() { pHeldStocks->refreshDisplayList(); }
+void CustomerManagerView::refreshPage(std::vector<QString> customerDisplayInfo,
+                                      std::vector<Investment> stocks) {
+
+  pCustomerFullName->setText(customerDisplayInfo.at(0));
+  pCustomerPhoneNumber->setText(customerDisplayInfo.at(1));
+  pCustomerEmail->setText(customerDisplayInfo.at(2));
+  pDateAccountedOpened->setText(customerDisplayInfo.at(3));
+  pAccountType->setText(customerDisplayInfo.at(4));
+  pUninvestedFunds->setText(customerDisplayInfo.at(5));
+
+  pHeldStocks->refreshDisplayList(stocks);
+}
 
 //***************************SLOTS***********************************
 // Called when the user clicks the back button, tells the trader controller to

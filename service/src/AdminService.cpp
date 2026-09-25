@@ -24,10 +24,21 @@ Employee AdminService::getEmployeeById(int id) {
   return dataManager.getEmployee(id);
 }
 
+Employee AdminService::getEmployeeByName(std::string name) {
+  std::cout << "AdminService::getEmployeeByName - entering" << std::endl;
+  std::cout << "AdminService::getEmployeeByName - exiting" << std::endl;
+  return dataManager.getEmployeeByLastName(name);
+}
+
 std::vector<Customer> AdminService::getAllCustomers() {
+
+  std::cout << "AdminService::getAllCustomers - entering" << std::endl;
+
   std::vector<Customer> customers = dataManager.getAllCustomers();
 
   Custom::quickSort(customers, Custom::customerName);
+
+  std::cout << "AdminService::getAllCustomers - exiting" << std::endl;
 
   return customers;
 }
@@ -95,11 +106,15 @@ bool AdminService::createCustomer(Customer customer) {
 
 // Edit an existing customer
 bool AdminService::editCustomer(Customer customer, Customer edit) {
+  std::cout << "AdminService::editCustomer - entering" << std::endl;
+
   // Populate the fields that are not editable within the edit Customer so they
   // aren't just overwritten to blank values.
   edit.dateAccountOpened = customer.dateAccountOpened;
   edit.investments = customer.investments;
   edit.accountID = customer.accountID;
+
+  std::cout << "AdminService::editCustomer - exiting" << std::endl;
 
   return dataManager.updateCustomer(customer, edit);
 }

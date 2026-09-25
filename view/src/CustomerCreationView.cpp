@@ -4,8 +4,10 @@
 #include "CustomerCreationView.h"
 
 #include <iostream>
+#include <qcombobox.h>
 
-CustomerCreationView::CustomerCreationView() : id(-1) {
+CustomerCreationView::CustomerCreationView(std::vector<QString> employeeNames)
+    : id(-1) {
 
   // Initialize all display items, to include the placeholder text for all entry
   // boxes
@@ -23,6 +25,11 @@ CustomerCreationView::CustomerCreationView() : id(-1) {
   pAccountTypeEntry->addItem("Brokerage");
   pAccountTypeEntry->addItem("Retirement");
 
+  pEmployeeAssignedEntry = new QComboBox();
+  for (QString name : employeeNames) {
+    pEmployeeAssignedEntry->addItem(name);
+  }
+
   pCreateCustomerButton = new QPushButton(QString("Create Customer"));
   pCancelCreationButton = new QPushButton(QString("Cancel"));
 
@@ -35,6 +42,7 @@ CustomerCreationView::CustomerCreationView() : id(-1) {
   layout->addWidget(pEmailEntry);
   layout->addWidget(pInitialInvestmentEntry);
   layout->addWidget(pAccountTypeEntry);
+  layout->addWidget(pEmployeeAssignedEntry);
   layout->addWidget(pCreateCustomerButton);
   layout->addWidget(pCancelCreationButton);
 
@@ -56,13 +64,14 @@ void CustomerCreationView::run() {
 void CustomerCreationView::run(std::vector<QString> customerData) {
   std::cout << "Customer data size " << customerData.size() << std::endl;
 
-  pFirstNameEntry->setText(customerData.at(0));
-  pLastNameEntry->setText(customerData.at(1));
-  pPhoneNumberEntry->setText(customerData.at(2));
-  pEmailEntry->setText(customerData.at(3));
-  pInitialInvestmentEntry->setText(customerData.at(4));
-  pAccountTypeEntry->setCurrentText(customerData.at(5));
-  id = customerData.at(6).toInt();
+  id = customerData.at(0).toInt();
+  pFirstNameEntry->setText(customerData.at(1));
+  pLastNameEntry->setText(customerData.at(2));
+  pPhoneNumberEntry->setText(customerData.at(3));
+  pEmailEntry->setText(customerData.at(4));
+  pInitialInvestmentEntry->setText(customerData.at(5));
+  pAccountTypeEntry->setCurrentText(customerData.at(6));
+  pEmployeeAssignedEntry->setCurrentText(customerData.at(7));
 
   pCreateCustomerButton->setText(QString("Save Changes"));
 
@@ -84,6 +93,7 @@ void CustomerCreationView::clear() {
   pEmailEntry->clear();
   pInitialInvestmentEntry->clear();
   pAccountTypeEntry->setCurrentText("Retirement");
+  pEmployeeAssignedEntry->setCurrentIndex(0);
   id = -1;
 
   pCreateCustomerButton->setText(QString("Create Customer"));
@@ -92,15 +102,20 @@ void CustomerCreationView::clear() {
 //************************SLOTS***********************
 // Connected to the Create Customer button
 void CustomerCreationView::listenForCustomerCreation() {
+  std::cout << "CustomerCreationView::listenForCustomerCreation - entering"
+            << std::endl;
   std::vector<QString> customer;
+  customer.push_back(QString::number(id));
   customer.push_back(pFirstNameEntry->text());
   customer.push_back(pLastNameEntry->text());
   customer.push_back(pPhoneNumberEntry->text());
   customer.push_back(pEmailEntry->text());
   customer.push_back(pInitialInvestmentEntry->text());
   customer.push_back(pAccountTypeEntry->currentText());
-  customer.push_back(QString::number(id));
+  customer.push_back(pEmployeeAssignedEntry->currentText());
 
+  std::cout << "CustomerCreationView::listenForCustomerCreation - exiting"
+            << std::endl;
   emit notifyOfCustomerCreation(customer);
 }
 

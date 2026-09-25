@@ -10,6 +10,7 @@
 #include "SellStockWindow.h"
 #include "TraderMainView.h"
 
+#include <cstdlib>
 #include <iostream>
 
 TraderController::TraderController() {}
@@ -19,7 +20,7 @@ TraderController::~TraderController() {}
 // This is the primary entry point into the trader screen. It initializes my
 // custom containers, performs some of the connections for the slots, and starts
 // with a authorization verification.
-void TraderController::run(Employee loggedInEmployee, Authorizer *authorizer) {
+void TraderController::run(int accountId, Authorizer *authorizer) {
   // The passed in authorizer has a role set by the log in controller. This is
   // the allowable role for the given user, if it doesn't match the role for
   // this screen then the program will not proceed.
@@ -27,15 +28,11 @@ void TraderController::run(Employee loggedInEmployee, Authorizer *authorizer) {
     // TODO: Throw an exception
   }
 
-  this->loggedInEmployee = loggedInEmployee;
+  this->loggedInEmployeeId = accountId;
 
-  // Get the customer list for the logged in employee and format it for display
-  customerList = getListOfManagedCustomers(this->loggedInEmployee.accountID);
-  formatAllManagedCustomersForDisplay();
-
-  pTraderMainView = new TraderMainView(formatLoggedInEmployeeForDisplay(),
-                                       &customerDisplayList);
-  pCustomerManagerView = nullptr;
+  pTraderMainView = new TraderMainView(
+      formatLoggedInEmployeeForDisplay(),
+      traderService.getListOfManagedCustomers(loggedInEmployeeId));
 
   connect(pTraderMainView, &TraderMainView::notifyOfLogOut, this,
           &TraderController::listenForLogOut);
@@ -46,54 +43,15 @@ void TraderController::run(Employee loggedInEmployee, Authorizer *authorizer) {
 }
 
 //*******************PRIVATE FUNCTIONS****************************
-// Uses the passed in employeeID to find all managed customers and returns
-// them in a vector.
-std::vector<Customer>
-TraderController::getListOfManagedCustomers(int employeeID) {
-  return traderService.getListOfManagedCustomers(employeeID);
-}
-
-// Uses a customer ID to find all stocks that customer is invested in and
-// returns them in a vector. This function doesn't make any calls to the
-// database, instead searching through the list of managed customers to find the
-// appropriate one. If nothing is found, it returns an empty vector. We write to
-// two vectors here, one is the returned vector which will be used for any stock
-// information management, the other is the class member variable for the
-// displayStockInformation, which is formatted for displaying the stock on
-// screen.
-std::vector<Stock>
-TraderController::getListAndFormatOfCustomerStock(int customerID) {
-  stockListForSelectedCustomer.clear();
-  stockByCustomerDisplayList.clear();
-
-  // Refresh our customer list
-  customerList = getListOfManagedCustomers(loggedInEmployee.accountID);
-
-  for (Customer customer : customerList) {
-    if (customerID == customer.customerID) {
-      for (Investment investment : customer.investments) {
-        stockListForSelectedCustomer.push_back(investment.stock);
-
-        InvestmentDisplayItem *displayFormat = new InvestmentDisplayItem(
-            QString::fromStdString(investment.stock.stockName),
-            QString::fromStdString(investment.stock.stockCode),
-            QString::number(investment.numHeld),
-            QString::number(investment.stock.stockPrice));
-
-        stockByCustomerDisplayList.push_back(displayFormat);
-      }
-      return stockListForSelectedCustomer;
-    }
-  }
-
-  return stockListForSelectedCustomer;
-}
 
 // We format the customers for display, first clearing the list to ensure we
 // don't double populate.
-void TraderController::formatAllManagedCustomersForDisplay() {
-  customerDisplayList.clear();
+std::vector<CustomerDisplayItem *>
+TraderController::formatAllManagedCustomersForDisplay() {
+  std::vector<Customer> customerList =
+      traderService.getListOfManagedCustomers(loggedInEmployeeId);
 
+  std::vector<CustomerDisplayItem *> customerDisplayList;
   for (Customer customer : customerList) {
     float currentWorth = 0.0f;
 
@@ -111,16 +69,42 @@ void TraderController::formatAllManagedCustomersForDisplay() {
 
     customerDisplayList.push_back(displayItem);
   }
+
+  return customerDisplayList;
+}
+
+std::vector<InvestmentDisplayItem *>
+TraderController::formatCustomerInvestmentsForDisplay(
+    std::vector<Investment> investments) {
+  Customer customer = traderService.getCustomerById(selectedCustomerId);
+  std::vector<InvestmentDisplayItem *> stockByCustomerDisplayList;
+
+  for (Investment investment : customer.investments) {
+
+    InvestmentDisplayItem *displayFormat = new InvestmentDisplayItem(
+        QString::fromStdString(investment.stock.stockName),
+        QString::fromStdString(investment.stock.stockCode),
+        QString::number(investment.numHeld),
+        QString::number(investment.stock.stockPrice));
+
+    stockByCustomerDisplayList.push_back(displayFormat);
+  }
+  return stockByCustomerDisplayList;
 }
 
 // This returns a vector of the logged in employee's information formatted for
 // display on screen.
 std::vector<QString> TraderController::formatLoggedInEmployeeForDisplay() {
+  std::tuple<Employee, int> loggedInEmployeeInfo =
+      traderService.getEmployeeByAndNumManagedCustomersById(loggedInEmployeeId);
+
   std::vector<QString> returnVector;
-  returnVector.push_back(QString::fromStdString(
-      loggedInEmployee.firstName + " " + loggedInEmployee.lastName));
-  returnVector.push_back(QString::number(loggedInEmployee.accountID));
-  returnVector.push_back(QString::number(customerList.size()) +
+  returnVector.push_back(
+      QString::fromStdString(std::get<0>(loggedInEmployeeInfo).firstName + " " +
+                             std::get<0>(loggedInEmployeeInfo).lastName));
+  returnVector.push_back(
+      QString::number(std::get<0>(loggedInEmployeeInfo).accountID));
+  returnVector.push_back(QString::number(std::get<1>(loggedInEmployeeInfo)) +
                          " total accounts managed.");
 
   return returnVector;
@@ -161,15 +145,12 @@ void TraderController::listenForLogOut() {
 // CustomerManagerView screen to the appropriate slots before hiding the
 // TraderMainView and displaying the CustomerManagerView
 void TraderController::listenForCustomerSelection(int id) {
-  stockListForSelectedCustomer = getListAndFormatOfCustomerStock(id);
-  for (Customer customer : customerList) {
-    if (customer.customerID == id) {
-      selectedCustomer = customer;
-    }
-  }
+  selectedCustomerId = id;
+  Customer selectedCustomer = traderService.getCustomerById(id);
+
   pCustomerManagerView = new CustomerManagerView(
       formatIndividualCustomerForDisplay(selectedCustomer),
-      &stockByCustomerDisplayList);
+      selectedCustomer.investments);
 
   connect(pCustomerManagerView, &CustomerManagerView::notifyOfBackButton, this,
           &TraderController::listenForReturnFromCustomerScreen);
@@ -221,15 +202,20 @@ void TraderController::listenForStockPurchaseInitiation() {
 // stock screen.
 void TraderController::listenForStockPurchaseConfirmation(
     std::tuple<QString, int, QString> transaction) {
-  traderService.executeStockPurchase(selectedCustomer,
+
+  traderService.executeStockPurchase(selectedCustomerId,
                                      {std::get<0>(transaction).toStdString(),
                                       std::get<1>(transaction),
                                       std::get<2>(transaction).toFloat()});
 
-  stockListForSelectedCustomer =
-      getListAndFormatOfCustomerStock(selectedCustomer.customerID);
+  // We create a Customer variable here to limit database calls when calling the
+  // refresh page
+  Customer selectedCustomer = traderService.getCustomerById(selectedCustomerId);
+
   pPurchaseStockWindow->hide();
-  pCustomerManagerView->refreshPage();
+  pCustomerManagerView->refreshPage(
+      formatIndividualCustomerForDisplay(selectedCustomer),
+      selectedCustomer.investments);
 }
 
 // This function listens for cancellation of a stock purchase, which if
@@ -244,9 +230,12 @@ void TraderController::listenForStockSaleInitiation() {
   std::vector<QString> availableStockNames;
   std::vector<QString> availableStockCodes;
 
-  for (Stock stock : stockListForSelectedCustomer) {
-    availableStockNames.push_back(QString::fromStdString(stock.stockName));
-    availableStockCodes.push_back(QString::fromStdString(stock.stockCode));
+  for (Investment investment :
+       traderService.getCustomerById(selectedCustomerId).investments) {
+    availableStockNames.push_back(
+        QString::fromStdString(investment.stock.stockName));
+    availableStockCodes.push_back(
+        QString::fromStdString(investment.stock.stockCode));
   }
 
   pSellStockWindow =
@@ -267,15 +256,17 @@ void TraderController::listenForStockSaleInitiation() {
 // hides the sell stock screen.
 void TraderController::listenForStockSaleConfirmation(
     std::tuple<QString, int, QString> transaction) {
-  traderService.executeStockSale(selectedCustomer.customerID,
+  traderService.executeStockSale(selectedCustomerId,
                                  {std::get<0>(transaction).toStdString(),
                                   std::get<1>(transaction),
                                   std::get<2>(transaction).toFloat()});
 
-  stockListForSelectedCustomer =
-      getListAndFormatOfCustomerStock(selectedCustomer.customerID);
+  Customer selectedCustomer = traderService.getCustomerById(selectedCustomerId);
+
   pSellStockWindow->hide();
-  pCustomerManagerView->refreshPage();
+  pCustomerManagerView->refreshPage(
+      formatIndividualCustomerForDisplay(selectedCustomer),
+      selectedCustomer.investments);
 }
 
 // This function listens for cancellation of a stock sale, which if performed
@@ -297,13 +288,12 @@ void TraderController::listenForPurchasePriceCalculation(
 void TraderController::listenForSalePriceCalculation(
     std::tuple<QString, int> stockAndNumber) {
   std::vector<float> transactionInfo = traderService.calculateResultOfSale(
-      selectedCustomer.customerID, std::get<0>(stockAndNumber).toStdString(),
+      selectedCustomerId, std::get<0>(stockAndNumber).toStdString(),
       std::get<1>(stockAndNumber));
 
   pSellStockWindow->setDisplayInfo(
       {QString::number(transactionInfo.at(0), 'f', 2),
        QString::number(transactionInfo.at(1), 'f', 2),
        QString::number(transactionInfo.at(2), 'f', 2)},
-      traderService.getNumOfHeldStock(
-          selectedCustomer, std::get<0>(stockAndNumber).toStdString()));
+      (int)transactionInfo.at(3));
 }
