@@ -46,13 +46,21 @@ bool TraderService::executeStockPurchase(
   Customer customer = dataManager.getCustomer(customerId);
   Customer editedCustomer = customer;
 
-  for (Investment investment : editedCustomer.investments) {
+  for (Investment &investment : editedCustomer.investments) {
     if (std::get<0>(transaction) == investment.stock.stockCode) {
 
       investment.numHeld += std::get<1>(transaction);
       investment.initialInvestment += std::get<2>(transaction);
       investment.currentInvestmentWorth =
           (float)investment.numHeld * investment.stock.stockPrice;
+
+      editedCustomer.uninvestedFunds -= std::get<2>(transaction);
+
+      std::cout << "TraderService::executeStockPurchase - original investments "
+                   "size / final investments size"
+                << std::endl;
+      std::cout << customer.investments.size() << " / "
+                << editedCustomer.investments.size();
 
       return dataManager.updateCustomer(customer, editedCustomer);
     }
@@ -68,6 +76,14 @@ bool TraderService::executeStockPurchase(
       newInvestment.initialInvestment = std::get<2>(transaction);
       newInvestment.currentInvestmentWorth = newInvestment.initialInvestment;
       editedCustomer.investments.push_back(newInvestment);
+
+      editedCustomer.uninvestedFunds -= std::get<2>(transaction);
+
+      std::cout << "TraderService::executeStockPurchase - original investments "
+                   "size / final investments size"
+                << std::endl;
+      std::cout << customer.investments.size() << " / "
+                << editedCustomer.investments.size() << std::endl;
 
       return dataManager.updateCustomer(customer, editedCustomer);
     }
@@ -108,6 +124,12 @@ bool TraderService::executeStockSale(
       editedCustomer.uninvestedFunds += std::get<2>(transaction);
     }
   }
+
+  std::cout << "TraderService::executeStockSale - previous investments / "
+               "edited investmetns"
+            << std::endl;
+  std::cout << customer.investments.size() << " / "
+            << editedCustomer.investments.size() << std::endl;
 
   return dataManager.updateCustomer(customer, editedCustomer);
 }

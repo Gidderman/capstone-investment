@@ -12,9 +12,9 @@ struct Investment {
   int investmentID;
   Stock stock;
   int numHeld;
+  float currentInvestmentWorth;
   float initialInvestment;
   int customerID;
-  float currentInvestmentWorth;
 };
 
 #endif

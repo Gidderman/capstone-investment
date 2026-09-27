@@ -9,6 +9,7 @@
 #ifndef CRUD_MANAGER_H
 #define CRUD_MANAGER_H
 
+#include <optional>
 #include <string>        //TODO: REMOVE AFTER TESTING
 #include <unordered_map> //TODO: REMOVE AFTER TESTING
 #include <vector>        //TODO: REMOVE AFTER TESTING
@@ -23,31 +24,44 @@ private:
   int nextEmployeeId;
   int nextCustomerId;
   int nextInvestmentId;
+  int nextStockId;
 
   std::unordered_map<int, std::vector<std::string>> testingEmployeeDatabase;
+  std::unordered_map<int, std::vector<std::string>> testingCredentialDatabase;
+  std::unordered_map<int, std::string> testingRolesDatabase;
   std::unordered_map<int, std::vector<std::string>> testingCustomerDatabase;
+  std::unordered_map<int, std::vector<std::string>> testingInvestmentDatabase;
   std::unordered_map<int, std::vector<std::string>> testingStockDatabase;
 
-  std::vector<std::string>
-  createSelection(int id, bool isCustomer,
-                  std::vector<std::string> userToCreate);
-  std::vector<std::string> readSelection(int id, bool isCustomer);
-  std::vector<std::string> updateSelection(int id, bool isCustomer,
-                                           std::vector<std::string> update);
-  std::vector<std::string> deleteSelection(int id, bool isCustomer);
+  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
+  createSelection(
+      int id, bool isCustomer,
+      std::unordered_map<std::string, std::vector<std::string>> userToCreate);
+
+  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
+  readSelection(int id, bool isCustomer);
+
+  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
+  updateSelection(
+      int id, bool isCustomer,
+      std::unordered_map<std::string, std::vector<std::string>> update);
+  bool deleteSelection(int id, bool isCustomer);
 
 public:
   CRUDManager();
   ~CRUDManager();
-  std::vector<std::string> runLogInQuery(std::string username);
-  std::vector<std::string> runQuery(int id, bool isCustomer,
-                                    std::string queryType);
-  std::vector<std::string> runQuery(int id, bool isCustomer,
-                                    std::string queryType,
-                                    std::vector<std::string> data);
+  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
+  runLogInQuery(std::string username);
+  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
+  runQuery(int id, bool isCustomer, std::string queryType);
+  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
+  runQuery(int id, bool isCustomer, std::string queryType,
+           std::unordered_map<std::string, std::vector<std::string>> data);
   std::vector<std::string> getCredentialsByEmployeeId(int employeeId);
   std::unordered_map<int, std::vector<std::string>> getAllEmployees();
-  std::unordered_map<int, std::vector<std::string>> getAllCustomers();
+  std::tuple<std::unordered_map<int, std::vector<std::string>>,
+             std::unordered_map<int, std::vector<std::string>>>
+  getAllCustomers();
 
   std::unordered_map<int, std::vector<std::string>> getAllStocks();
 };

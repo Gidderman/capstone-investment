@@ -41,10 +41,9 @@ void ScrollableContainer::addDisplayList(std::vector<Customer> customers) {
 void ScrollableContainer::addDisplayList(std::vector<Employee> employees) {
 
   for (Employee employee : employees) {
-    int numCustomersManaged = 0;
 
     std::string numCustomersManagedDisplayText =
-        std::to_string(numCustomersManaged) + " accounts managed.";
+        std::to_string(employee.numAccountsManaged) + " accounts managed.";
     std::string employeeDisplayName =
         employee.lastName + ", " + employee.firstName.at(0);
 
@@ -104,10 +103,8 @@ void ScrollableContainer::refreshDisplayList(std::vector<Employee> employees) {
   clearDisplay();
 
   for (Employee employee : employees) {
-    int numCustomersManaged = 0;
-
     std::string numCustomersManagedDisplayText =
-        std::to_string(numCustomersManaged) + " accounts managed.";
+        std::to_string(employee.numAccountsManaged) + " accounts managed.";
     std::string employeeDisplayName =
         employee.lastName + ", " + employee.firstName.at(0);
 

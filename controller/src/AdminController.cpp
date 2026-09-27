@@ -14,10 +14,6 @@
 #include <ostream>
 #include <string>
 
-// TODO: Fix bug where editing a newly created customer crashes the program
-// TODO: Fix bug where changing managing employee appears to not save
-// TODO: Fix issue where the number of accounts managed does not display
-
 AdminController::AdminController() {};
 
 AdminController::~AdminController() {}
@@ -232,6 +228,7 @@ void AdminController::executeCustomerAction(Customer customer) {
 
   // Refresh our display to show up to date information.
   pAdminMainView->refreshCustomers(adminService.getAllCustomers());
+  pAdminMainView->refreshEmployees(adminService.getAllEmployees());
 
   std::cout << "AdminController::executeCustomerAciton - exiting" << std::endl;
 }
@@ -439,6 +436,8 @@ void AdminController::listenForCustomerActionConfirmation(
 
   inputtedCustomer.accountID =
       adminService.getEmployeeByName(employeeLastName).accountID;
+  std::cout << "Employee ID now assigned: " << inputtedCustomer.accountID
+            << std::endl;
 
   pCustomerCreationView->end();
 

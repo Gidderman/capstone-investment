@@ -98,8 +98,6 @@ bool AdminService::createCustomer(Customer customer) {
   std::vector<Investment> investments(0);
   customer.dateAccountOpened = "TODAY"; // TODO: populate with an actual date
   customer.investments = investments;
-  customer.accountID = 2; // TODO: when creating/editing a customer there should
-                          // be a field for assigning an employee
 
   return dataManager.createCustomer(customer);
 }
@@ -112,7 +110,6 @@ bool AdminService::editCustomer(Customer customer, Customer edit) {
   // aren't just overwritten to blank values.
   edit.dateAccountOpened = customer.dateAccountOpened;
   edit.investments = customer.investments;
-  edit.accountID = customer.accountID;
 
   std::cout << "AdminService::editCustomer - exiting" << std::endl;
 

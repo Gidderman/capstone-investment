@@ -34,12 +34,18 @@ private:
   // These private functions format data either into an acceptable format
   // for the CRUDManager to make queries with it, or formats the returning
   // data into a format usable to the calling service classes
-  std::tuple<Employee, Credentials>
-  formatEmployeeQueriedData(std::vector<std::string> queriedData);
-  Customer formatCustomerQueriedData(std::vector<std::string> queriedData);
-  std::vector<std::string> formatEmployeeForQuery(Employee employee,
-                                                  Credentials credential);
-  std::vector<std::string> formatCustomerForQuery(Customer customer);
+  Employee formatEmployeeQueriedData(std::vector<std::string> queriedData);
+  Credentials
+  formatCredentialsQueriedData(std::vector<std::string> queriedData);
+  Customer
+  formatCustomerQueriedData(std::vector<std::string> queriedCustomerData);
+  Customer
+  formatInvestmentsForCustomer(Customer customerToFormat,
+                               std::vector<std::string> investmentData);
+  std::unordered_map<std::string, std::vector<std::string>>
+  formatEmployeeForQuery(Employee employee, Credentials credential);
+  std::unordered_map<std::string, std::vector<std::string>>
+  formatCustomerForQuery(Customer customer);
 
   // This pulls all stocks and populates them within the hash table
   void refreshHashTableStockData();

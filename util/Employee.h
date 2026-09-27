@@ -14,6 +14,7 @@ struct Employee {
   std::string firstName;
   std::string lastName;
   ROLE role;
+  int numAccountsManaged;
 };
 
 #endif
