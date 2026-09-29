@@ -71,3 +71,5 @@ Testing/
 #Bash script for common build commands
 rc.sh
 
+# Config file for database passwords and api keys
+config.json
