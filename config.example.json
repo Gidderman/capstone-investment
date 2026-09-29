@@ -1,0 +1,6 @@
+{
+  "database_username": "YOUR DATABASE USERNAME HERE",
+  "database_password": "YOUR DATABASE PASSWORD HERE",
+  "host": "YOUR HOST IP ADDRESS HERE",
+  "database_name": "YOUR DATABASE NAME HERE"
+}

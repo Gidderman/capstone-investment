@@ -1,69 +1,41 @@
 // The CRUDManager is the point of contact with the database. It handles all
 // database interfacing and queries, utilizing Qt::SQL to perform those actions.
 
-// TODO:
-// THIS CLASS IS NOT COMPLETE. CURRENTLY IT IS SIMULATING A DATABASE USING
-// UNORDERED_MAPS FOR TESTING THE REMAINDER OF THE APPLICATION, THERE WILL BE
-// MANY CHANGES TO THIS CLASS
-
 #ifndef CRUD_MANAGER_H
 #define CRUD_MANAGER_H
 
+#include <QJsonObject>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 #include <optional>
-#include <string>        //TODO: REMOVE AFTER TESTING
-#include <unordered_map> //TODO: REMOVE AFTER TESTING
-#include <vector>        //TODO: REMOVE AFTER TESTING
-
-// This class is largely going to be incomplete until I begin the working on the
-// database connectivity, which will happen in a later module. For now, I am
-// using some unordered_maps to simulate the database for testing the rest of
-// the application.
+#include <unordered_map>
 
 class CRUDManager {
 private:
-  int nextEmployeeId;
-  int nextCustomerId;
-  int nextInvestmentId;
-  int nextStockId;
+  QSqlDatabase db;
 
-  std::unordered_map<int, std::vector<std::string>> testingEmployeeDatabase;
-  std::unordered_map<int, std::vector<std::string>> testingCredentialDatabase;
-  std::unordered_map<int, std::string> testingRolesDatabase;
-  std::unordered_map<int, std::vector<std::string>> testingCustomerDatabase;
-  std::unordered_map<int, std::vector<std::string>> testingInvestmentDatabase;
-  std::unordered_map<int, std::vector<std::string>> testingStockDatabase;
+  // This class has lots of operations that are prone to failure due to outside
+  // influences (such as network issues) As such, the runQuery function is
+  // optional, and if something fails then it will return nothing and the
+  // calling function can get the error code and pass that up inform the user of
+  // the issue.
+  std::string errorCode;
 
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-  createSelection(
-      int id, bool isCustomer,
-      std::unordered_map<std::string, std::vector<std::string>> userToCreate);
-
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-  readSelection(int id, bool isCustomer);
-
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-  updateSelection(
-      int id, bool isCustomer,
-      std::unordered_map<std::string, std::vector<std::string>> update);
-  bool deleteSelection(int id, bool isCustomer);
+  // This is used to access our configuration file for database accessing
+  std::optional<QJsonObject> readJsonData(QString fileName);
 
 public:
   CRUDManager();
   ~CRUDManager();
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-  runLogInQuery(std::string username);
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-  runQuery(int id, bool isCustomer, std::string queryType);
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-  runQuery(int id, bool isCustomer, std::string queryType,
-           std::unordered_map<std::string, std::vector<std::string>> data);
-  std::vector<std::string> getCredentialsByEmployeeId(int employeeId);
-  std::unordered_map<int, std::vector<std::string>> getAllEmployees();
-  std::tuple<std::unordered_map<int, std::vector<std::string>>,
-             std::unordered_map<int, std::vector<std::string>>>
-  getAllCustomers();
-
-  std::unordered_map<int, std::vector<std::string>> getAllStocks();
+  // Called to initialize the database
+  bool init();
+  // This is the main function of the CRUDManager. It accepts a QString as the
+  // MySQL query with a unordered_map used to bind the arguments.
+  std::optional<QSqlQuery>
+  runQuery(QString queryText, std::unordered_map<QString, QVariant> queryArgs);
+  // This function returns any error codes encountered during the runQuery
+  // operation.
+  std::string getErrorCode();
 };
 
 #endif

@@ -4,6 +4,6 @@
 #ifndef ROLE_H
 #define ROLE_H
 
-enum ROLE { INVALID, ADMIN, TRADER };
+enum ROLE { INVALID = 0, ADMIN, TRADER };
 
 #endif

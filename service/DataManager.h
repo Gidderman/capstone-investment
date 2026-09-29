@@ -54,6 +54,8 @@ public:
   DataManager();
   ~DataManager();
 
+  std::string errorInfo;
+
   // Used primarily during log in to get employee information and credentials by
   // username
   std::tuple<Employee, Credentials> getEmployeeByUsername(std::string username);
@@ -90,6 +92,8 @@ public:
   // When purchasing a stock, this function is used to get the list of
   // available stocks.
   std::vector<Stock> getAllStoredStocks();
+
+  std::string getErrorInfo();
 };
 
 #endif

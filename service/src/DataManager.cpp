@@ -12,6 +12,8 @@
 #include "Investment.h"
 
 #include <iostream>
+#include <qsqlquery.h>
+#include <qvariant.h>
 #include <string>
 #include <unordered_map>
 #include <vector> //TODO: REMOVE AFTER TESTING
@@ -22,218 +24,273 @@ DataManager::~DataManager() {}
 
 std::tuple<Employee, Credentials>
 DataManager::getEmployeeByUsername(std::string username) {
-  std::cout << "DataManager::getEmployeeByUsername - entering" << std::endl;
-  Employee fetchedEmployee;
-  Credentials fetchedCredentials;
+  Employee employeeToReturn;
+  Credentials employeeCredentials;
 
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedValue = crudManager.runLogInQuery(username);
+  QString query = "SELECT "
+                  "e.account_id, "
+                  "e.first_name, "
+                  "e.last_name, "
+                  "COUNT(cu.customer_id) AS num_customers, "
+                  "e.role_id, "
+                  "c.username, "
+                  "c.password, "
+                  "c.salt, "
+                  "c.account_locked "
+                  "FROM employees e "
+                  "INNER JOIN credentials c ON c.account_id = e.account_id "
+                  "LEFT JOIN customers cu ON cu.account_id = e.account_id "
+                  "WHERE c.username = :username "
+                  "GROUP BY e.account_id";
 
-  if (!returnedValue.has_value()) {
-    return {fetchedEmployee, fetchedCredentials};
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":username", QString::fromStdString(username));
+
+  std::optional<QSqlQuery> employeeAndCredentials =
+      crudManager.runQuery(query, queryArgs);
+
+  if (!employeeAndCredentials.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return {employeeToReturn, employeeCredentials};
   }
 
-  std::vector<std::string> employeeStrings =
-      returnedValue.value().at("employee");
-  std::vector<std::string> credentialStrings =
-      returnedValue.value().at("credentials");
+  if (employeeAndCredentials.value().next()) {
+    employeeToReturn.accountID =
+        employeeAndCredentials.value().value("account_id").toInt();
+    employeeToReturn.firstName = employeeAndCredentials.value()
+                                     .value("first_name")
+                                     .toString()
+                                     .toStdString();
+    employeeToReturn.lastName = employeeAndCredentials.value()
+                                    .value("last_name")
+                                    .toString()
+                                    .toStdString();
+    employeeToReturn.numAccountsManaged =
+        employeeAndCredentials.value().value("num_customers").toInt();
+    employeeToReturn.role =
+        (ROLE)employeeAndCredentials.value().value("role_id").toInt();
 
-  std::cout << "DataManager::getEmployeeByUsername - exiting" << std::endl;
-  return {formatEmployeeQueriedData(employeeStrings),
-          formatCredentialsQueriedData(credentialStrings)};
+    employeeCredentials.accountID =
+        employeeAndCredentials.value().value("account_id").toInt();
+    employeeCredentials.username = employeeAndCredentials.value()
+                                       .value("username")
+                                       .toString()
+                                       .toStdString();
+    employeeCredentials.password = employeeAndCredentials.value()
+                                       .value("password")
+                                       .toString()
+                                       .toStdString();
+    employeeCredentials.salt =
+        employeeAndCredentials.value().value("salt").toString().toStdString();
+    employeeCredentials.accountLocked =
+        employeeAndCredentials.value().value("accountLocked").toBool();
+  }
+
+  return {employeeToReturn, employeeCredentials};
 }
 
 Credentials DataManager::getCredentialsByEmployeeId(int employeeId) {
-  std::vector<std::string> returnedVector =
-      crudManager.getCredentialsByEmployeeId(employeeId);
+  Credentials credentials;
 
-  return formatCredentialsQueriedData(returnedVector);
+  QString query = "SELECT * FROM credentials "
+                  "WHERE account_id = :accound_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":accound_id", employeeId);
+
+  std::optional<QSqlQuery> credentialData =
+      crudManager.runQuery(query, queryArgs);
+
+  if (!credentialData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return credentials;
+  }
+
+  if (credentialData.value().next()) {
+    credentials.accountID = credentialData.value().value("account_id").toInt();
+    credentials.username =
+        credentialData.value().value("username").toString().toStdString();
+    credentials.password =
+        credentialData.value().value("password").toString().toStdString();
+    credentials.salt =
+        credentialData.value().value("salt").toString().toStdString();
+    credentials.accountLocked =
+        credentialData.value().value("account_locked").toBool();
+  }
+
+  return credentials;
 }
 
 Customer DataManager::getCustomer(int customerId) {
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedData = crudManager.runQuery(customerId, true, "read");
   Customer customer;
-  customer.customerID = -1;
 
-  if (!returnedData.has_value()) {
+  QString query = "SELECT *"
+                  "FROM customers "
+                  "WHERE customer_id = :customer_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":customer_id", customerId);
+
+  std::optional<QSqlQuery> customerData =
+      crudManager.runQuery(query, queryArgs);
+
+  if (!customerData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
     return customer;
   }
 
-  customer = formatInvestmentsForCustomer(
-      formatCustomerQueriedData(returnedData.value().at("customer")),
-      returnedData.value().at("investments"));
+  if (customerData.value().next()) {
+    customer.customerID = customerData.value().value("customer_id").toInt();
+    customer.firstName =
+        customerData.value().value("first_name").toString().toStdString();
+    customer.lastName =
+        customerData.value().value("last_name").toString().toStdString();
+    customer.phoneNum =
+        customerData.value().value("phone").toString().toStdString();
+    customer.email =
+        customerData.value().value("email").toString().toStdString();
+    customer.dateAccountOpened = customerData.value()
+                                     .value("date_account_opened")
+                                     .toString()
+                                     .toStdString();
+    if (customerData.value().value("account_type").toString().toStdString() ==
+        "Retirement") {
+      customer.accountType = RETIREMENT;
+    } else {
+      customer.accountType = BROKERAGE;
+    }
+    customer.uninvestedFunds =
+        customerData.value().value("uninvested_funds").toFloat();
+    customer.accountID = customerData.value().value("account_id").toInt();
+  }
+
+  query = "SELECT "
+          "investment_id, "
+          "stock_code, "
+          "number_held, "
+          "initial_investment"
+          "FROM investments "
+          "WHERE customer_id = :customer_id";
+  // We don't need to rewrite queryArgs, as customer_id remains the same
+
+  customerData = crudManager.runQuery(query, queryArgs);
+
+  if (!customerData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    Customer blankCustomer;
+    return blankCustomer;
+  }
+
+  while (customerData.value().next()) {
+    Investment investment;
+    investment.investmentID =
+        customerData.value().value("investment_id").toInt();
+    investment.stock = stockHashTable
+                           .get(customerData.value()
+                                    .value("stock_code")
+                                    .toString()
+                                    .toStdString())
+                           .value();
+    investment.numHeld = customerData.value().value("number_held").toInt();
+    investment.currentInvestmentWorth =
+        investment.numHeld * investment.stock.stockPrice;
+    investment.initialInvestment =
+        customerData.value().value("initial_investment").toFloat();
+    investment.customerID = customerId;
+
+    customer.investments.push_back(investment);
+  }
 
   return customer;
 }
 
 Employee DataManager::getEmployee(int accountId) {
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedData = crudManager.runQuery(accountId, false, "read");
-
-  Employee employee;
-  employee.accountID = -1;
-
-  if (!returnedData.has_value()) {
-    return employee;
-  }
-
-  return formatEmployeeQueriedData(returnedData.value().at("employee"));
+  // TODO: THIS
 }
 
 Employee DataManager::getEmployeeByLastName(std::string name) {
-  for (Employee employee : getAllEmployees()) {
-    if (employee.lastName == name) {
-      return employee;
-    }
-  }
-  return {-1, "", "", INVALID, -1};
+  // TODO: THIS
 }
 
 std::vector<Employee> DataManager::getAllEmployees() {
-  std::unordered_map<int, std::vector<std::string>> allEmployeeData =
-      crudManager.getAllEmployees();
+  std::vector<Employee> allEmployees;
 
-  std::vector<Employee> formatedEmployeeData;
-  for (auto &employee : allEmployeeData) {
-    formatedEmployeeData.push_back(formatEmployeeQueriedData(employee.second));
+  QString query = "SELECT "
+                  "e.account_id, "
+                  "e.first_name, "
+                  "e.last_name, "
+                  "COUNT(c.customer_id) AS num_customers, "
+                  "role_id "
+                  "FROM employees e "
+                  "LEFT JOIN customers c "
+                  "ON c.account_id = e.account_id "
+                  "GROUP BY e.account_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+
+  std::optional<QSqlQuery> employeeData =
+      crudManager.runQuery(query, queryArgs);
+
+  if (!employeeData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return allEmployees; // Empty
   }
 
-  return formatedEmployeeData;
+  while (employeeData.value().next()) {
+    Employee employeeToAdd;
+    employeeToAdd.accountID = employeeData.value().value("account_id").toInt();
+    employeeToAdd.firstName =
+        employeeData.value().value("first_name").toString().toStdString();
+    employeeToAdd.lastName =
+        employeeData.value().value("last_name").toString().toStdString();
+    employeeToAdd.numAccountsManaged =
+        employeeData.value().value("num_customers").toInt();
+    employeeToAdd.role = (ROLE)employeeData.value().value("role_id").toInt();
+
+    allEmployees.push_back(employeeToAdd);
+  }
+
+  return allEmployees;
 }
 
 std::vector<Customer> DataManager::getAllCustomers() {
-  std::cout << "DataManager::getAllCustomers - entering" << std::endl;
-
-  std::tuple<std::unordered_map<int, std::vector<std::string>>,
-             std::unordered_map<int, std::vector<std::string>>>
-      allCustomerAndInvestmentData = crudManager.getAllCustomers();
-
-  std::cout << "Data from database: " << std::endl;
-  std::cout << "Customer size: "
-            << std::get<0>(allCustomerAndInvestmentData).size() << std::endl;
-  std::cout << "Investment size: "
-            << std::get<1>(allCustomerAndInvestmentData).size() << std::endl;
-
-  std::vector<Customer> formattedCustomerData;
-  for (auto &customer : std::get<0>(allCustomerAndInvestmentData)) {
-    Customer formattedCustomer = formatCustomerQueriedData(customer.second);
-
-    std::vector<std::string> customerInvestments;
-    for (auto &investment : std::get<1>(allCustomerAndInvestmentData)) {
-      if (std::stoi(investment.second.at(5)) == formattedCustomer.customerID) {
-        customerInvestments.insert(customerInvestments.end(),
-                                   investment.second.begin(),
-                                   investment.second.end());
-      }
-    }
-    formattedCustomer =
-        formatInvestmentsForCustomer(formattedCustomer, customerInvestments);
-    formattedCustomerData.push_back(formattedCustomer);
-  }
-
-  std::cout << "DataManager::getAllCustomers - exiting" << std::endl;
-  std::cout << "DataMangager::getAllCustomers - customer size "
-            << formattedCustomerData.size() << std::endl;
-
-  return formattedCustomerData;
+  // TODO: THIS
 }
 
 std::vector<Customer> DataManager::getAllCustomersByTraders(int traderID) {
-  std::vector<Customer> customers = getAllCustomers();
-  for (unsigned int i = 0; i < customers.size(); i++) {
-    if (customers.at(i).accountID != traderID) {
-      customers.erase(customers.begin() + i);
-    }
-  }
-
-  return customers;
+  // TODO: THIS
 }
 
 bool DataManager::createEmployee(Employee employeeToCreate,
-                                 Credentials credentials) {
-  std::unordered_map<std::string, std::vector<std::string>> queryFormattedData =
-      formatEmployeeForQuery(employeeToCreate, credentials);
-
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedData = crudManager.runQuery(
-          std::stoi(queryFormattedData.at("employee").at(0)), false, "create",
-          queryFormattedData);
-
-  return returnedData.has_value();
-}
+                                 // TODO: THIS
+                                 Credentials credentials) {}
 
 bool DataManager::createCustomer(Customer customerToCreate) {
-  std::unordered_map<std::string, std::vector<std::string>> queryFormattedData =
-      formatCustomerForQuery(customerToCreate);
-
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedData = crudManager.runQuery(
-          std::stoi(queryFormattedData.at("customer").at(0)), true, "create",
-          queryFormattedData);
-
-  return returnedData.has_value();
+  // TODO: THIS
 }
 
 bool DataManager::updateEmployee(Employee employeeToUpdate, Employee update,
-                                 Credentials updateCredentials) {
-  std::unordered_map<std::string, std::vector<std::string>> queryFormattedData =
-      formatEmployeeForQuery(update, updateCredentials);
-
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedData = crudManager.runQuery(employeeToUpdate.accountID, false,
-                                          "update", queryFormattedData);
-
-  return returnedData.has_value();
-}
+                                 // TODO: THIS
+                                 Credentials updateCredentials) {}
 
 bool DataManager::updateCustomer(Customer customerToUpdate, Customer update) {
-  std::cout << "DataManager::updateCustomer - entering" << std::endl;
-
-  std::unordered_map<std::string, std::vector<std::string>> queryFormattedData =
-      formatCustomerForQuery(update);
-
-  std::cout << "DataManager::updateCustomer - queryFormattedData investment "
-               "size / original size"
-            << std::endl;
-  std::cout << queryFormattedData.at("investments").size() / 6 << " / "
-            << customerToUpdate.investments.size() << std::endl;
-
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedData = crudManager.runQuery(customerToUpdate.customerID, true,
-                                          "update", queryFormattedData);
-
-  std::cout << "DataManager::updateCustomer - exiting" << std::endl;
-
-  return returnedData.has_value();
+  // TODO: THIS
 }
 
 bool DataManager::deleteEmployee(Employee employeeToDelete) {
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedData =
-          crudManager.runQuery(employeeToDelete.accountID, false, "delete");
-
-  return returnedData.has_value();
+  // TODO: THIS
 }
 
 bool DataManager::deleteCustomer(Customer customerToDelete) {
-  std::optional<std::unordered_map<std::string, std::vector<std::string>>>
-      returnedVector =
-          crudManager.runQuery(customerToDelete.customerID, true, "delete");
-
-  return returnedVector.has_value();
+  // TODO: THIS
 }
 
 bool DataManager::updateStoredStocks(std::vector<Stock>) {
-  // TODO: store updated stock data into the database, and store into the hash
-  // map for quick access.
-  refreshHashTableStockData();
-  return true;
+  // TODO: THIS
 }
 
 std::vector<Stock> DataManager::getAllStoredStocks() {
-  return stockHashTable.getAll();
+  // TODO: THIS
 }
+
+std::string DataManager::getErrorInfo() { return errorInfo; }
 
 //*******************PRIVATE FUNCTIONS****************************
 Employee
@@ -445,15 +502,5 @@ DataManager::formatCustomerForQuery(Customer customer) {
 }
 
 void DataManager::refreshHashTableStockData() {
-  stockHashTable.clear();
-
-  std::unordered_map<int, std::vector<std::string>> stockData =
-      crudManager.getAllStocks();
-
-  for (const auto &item : stockData) {
-    Stock newStock = {std::stoi(item.second.at(0)), item.second.at(1),
-                      item.second.at(2), std::stof(item.second.at(3))};
-
-    stockHashTable.insert(newStock.stockCode, newStock);
-  }
+  // TODO: THIS
 }

@@ -9,3 +9,12 @@ target_sources(Models
     FILES
       CRUDManager.h
 )
+
+find_package(Qt6 REQUIRED COMPONENTS Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
+target_link_libraries(Models
+  PUBLIC
+    Qt6::Sql
+    Qt6::Core
+)
