@@ -203,11 +203,79 @@ Customer DataManager::getCustomer(int customerId) {
 }
 
 Employee DataManager::getEmployee(int accountId) {
-  // TODO: THIS
+  Employee fetchedEmployee;
+
+  QString query = "SELECT "
+                  "e.*, "
+                  "COUNT(c.customer_id) AS num_customer "
+                  "FROM employees e "
+                  "LEFT JOIN customers c "
+                  "ON c.account_id = e.account_id "
+                  "WHERE e.account_id = :account_id";
+
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":account_id", accountId);
+
+  std::optional<QSqlQuery> employeeData =
+      crudManager.runQuery(query, queryArgs);
+
+  if (!employeeData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return fetchedEmployee;
+  }
+
+  if (employeeData.value().next()) {
+    fetchedEmployee.accountID =
+        employeeData.value().value("account_id").toInt();
+    fetchedEmployee.firstName =
+        employeeData.value().value("first_name").toString().toStdString();
+    fetchedEmployee.lastName =
+        employeeData.value().value("last_name").toString().toStdString();
+    fetchedEmployee.numAccountsManaged =
+        employeeData.value().value("num_customer").toInt();
+    fetchedEmployee.numAccountsManaged =
+        (ROLE)employeeData.value().value("role_id").toInt();
+  }
+
+  return fetchedEmployee;
 }
 
 Employee DataManager::getEmployeeByLastName(std::string name) {
-  // TODO: THIS
+  Employee fetchedEmployee;
+
+  QString query = "SELECT "
+                  "e.*, "
+                  "COUNT(c.customer_id) AS num_customer "
+                  "FROM employees e "
+                  "LEFT JOIN customers c "
+                  "ON c.account_id = e.account_id "
+                  "WHERE e.last_name = :last_name";
+
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":last_name", QString::fromStdString(name));
+
+  std::optional<QSqlQuery> employeeData =
+      crudManager.runQuery(query, queryArgs);
+
+  if (!employeeData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return fetchedEmployee;
+  }
+
+  if (employeeData.value().next()) {
+    fetchedEmployee.accountID =
+        employeeData.value().value("account_id").toInt();
+    fetchedEmployee.firstName =
+        employeeData.value().value("first_name").toString().toStdString();
+    fetchedEmployee.lastName =
+        employeeData.value().value("last_name").toString().toStdString();
+    fetchedEmployee.numAccountsManaged =
+        employeeData.value().value("num_customer").toInt();
+    fetchedEmployee.numAccountsManaged =
+        (ROLE)employeeData.value().value("role_id").toInt();
+  }
+
+  return fetchedEmployee;
 }
 
 std::vector<Employee> DataManager::getAllEmployees() {
