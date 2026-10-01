@@ -31,22 +31,6 @@ private:
   // this instance, instead opting for speed with "stale" data.
   Custom::HashTable stockHashTable;
 
-  // These private functions format data either into an acceptable format
-  // for the CRUDManager to make queries with it, or formats the returning
-  // data into a format usable to the calling service classes
-  Employee formatEmployeeQueriedData(std::vector<std::string> queriedData);
-  Credentials
-  formatCredentialsQueriedData(std::vector<std::string> queriedData);
-  Customer
-  formatCustomerQueriedData(std::vector<std::string> queriedCustomerData);
-  Customer
-  formatInvestmentsForCustomer(Customer customerToFormat,
-                               std::vector<std::string> investmentData);
-  std::unordered_map<std::string, std::vector<std::string>>
-  formatEmployeeForQuery(Employee employee, Credentials credential);
-  std::unordered_map<std::string, std::vector<std::string>>
-  formatCustomerForQuery(Customer customer);
-
   // This pulls all stocks and populates them within the hash table
   void refreshHashTableStockData();
 
@@ -77,17 +61,20 @@ public:
   bool createEmployee(Employee employeeToCreate,
                       Credentials employeeCredentials);
   bool createCustomer(Customer customerToCreate);
+  bool createInvestment(Investment investment);
 
-  bool updateEmployee(Employee employeeToUpdate, Employee update,
-                      Credentials credential);
-  bool updateCustomer(Customer customerToUpdate, Customer update);
+  bool updateEmployee(int employeeId, Employee update);
+  bool updateEmployeeCredentials(int id, Credentials update);
+  bool updateCustomer(int customerId, Customer update);
+  bool updateInvestment(int investmentId, Investment update);
 
-  bool deleteEmployee(Employee employeeToDelete);
-  bool deleteCustomer(Customer customerToDelete);
+  bool deleteEmployee(int accountId);
+  bool deleteCustomer(int customerId);
+  bool deleteInvestment(int investmentId);
 
   // This function is called upon initialization to get the most up to date
   // stock data into the database.
-  bool updateStoredStocks(std::vector<Stock>);
+  bool updateStoredStocks(std::vector<Stock> stocks);
 
   // When purchasing a stock, this function is used to get the list of
   // available stocks.

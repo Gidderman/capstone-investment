@@ -12,13 +12,20 @@
 #include "Investment.h"
 
 #include <iostream>
+#include <optional>
 #include <qsqlquery.h>
 #include <qvariant.h>
 #include <string>
 #include <unordered_map>
 #include <vector> //TODO: REMOVE AFTER TESTING
 
-DataManager::DataManager() { refreshHashTableStockData(); }
+DataManager::DataManager() {
+  if (!crudManager.init()) {
+    errorInfo = crudManager.getErrorCode();
+    // TODO: some sort of way of notifying the service
+  }
+  refreshHashTableStockData();
+}
 
 DataManager::~DataManager() {}
 
@@ -319,256 +326,513 @@ std::vector<Employee> DataManager::getAllEmployees() {
 }
 
 std::vector<Customer> DataManager::getAllCustomers() {
-  // TODO: THIS
+  std::vector<Customer> customers;
+
+  QString query = "SELECT * FROM customers";
+  std::unordered_map<QString, QVariant> queryArgs;
+
+  std::optional<QSqlQuery> fetchedData = crudManager.runQuery(query, queryArgs);
+
+  if (!fetchedData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return customers;
+  }
+
+  while (fetchedData.value().next()) {
+    Customer customerToAdd;
+    customerToAdd.customerID = fetchedData.value().value("customer_id").toInt();
+    customerToAdd.firstName =
+        fetchedData.value().value("first_name").toString().toStdString();
+    customerToAdd.lastName =
+        fetchedData.value().value("last_name").toString().toStdString();
+    customerToAdd.phoneNum =
+        fetchedData.value().value("phone").toString().toStdString();
+    customerToAdd.dateAccountOpened = fetchedData.value()
+                                          .value("date_account_opened")
+                                          .toString()
+                                          .toStdString();
+    if (fetchedData.value().value("account_type").toString().toStdString() ==
+        "Retirement") {
+      customerToAdd.accountType = RETIREMENT;
+    } else {
+      customerToAdd.accountType = BROKERAGE;
+    }
+    customerToAdd.uninvestedFunds =
+        fetchedData.value().value("uninvested_funds").toFloat();
+    customerToAdd.accountID = fetchedData.value().value("account_id").toInt();
+
+    customers.push_back(customerToAdd);
+  }
+
+  query = "SELECT * FROM investments";
+
+  fetchedData = crudManager.runQuery(query, queryArgs);
+
+  if (!fetchedData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    std::vector<Customer> blankCustomers;
+    return blankCustomers;
+  }
+
+  while (fetchedData.value().next()) {
+    Investment investment;
+    investment.investmentID =
+        fetchedData.value().value("investment_id").toInt();
+    investment.stock = stockHashTable
+                           .get(fetchedData.value()
+                                    .value("stock_code")
+                                    .toString()
+                                    .toStdString())
+                           .value();
+    investment.numHeld = fetchedData.value().value("number_held").toInt();
+    investment.currentInvestmentWorth =
+        investment.numHeld * investment.stock.stockPrice;
+    investment.initialInvestment =
+        fetchedData.value().value("initial_investment").toFloat();
+    investment.customerID = fetchedData.value().value("customer_id").toInt();
+
+    for (Customer &customer : customers) {
+      if (customer.customerID == investment.customerID) {
+        customer.investments.push_back(investment);
+      }
+    }
+  }
+
+  return customers;
 }
 
 std::vector<Customer> DataManager::getAllCustomersByTraders(int traderID) {
-  // TODO: THIS
+  std::vector<Customer> customers;
+
+  QString query = "SELECT * FROM customers "
+                  "WHERE account_id = :account_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":account_id", traderID);
+
+  std::optional<QSqlQuery> fetchedData = crudManager.runQuery(query, queryArgs);
+
+  if (!fetchedData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return customers;
+  }
+
+  while (fetchedData.value().next()) {
+    Customer customerToAdd;
+    customerToAdd.customerID = fetchedData.value().value("customer_id").toInt();
+    customerToAdd.firstName =
+        fetchedData.value().value("first_name").toString().toStdString();
+    customerToAdd.lastName =
+        fetchedData.value().value("last_name").toString().toStdString();
+    customerToAdd.phoneNum =
+        fetchedData.value().value("phone").toString().toStdString();
+    customerToAdd.dateAccountOpened = fetchedData.value()
+                                          .value("date_account_opened")
+                                          .toString()
+                                          .toStdString();
+    if (fetchedData.value().value("account_type").toString().toStdString() ==
+        "Retirement") {
+      customerToAdd.accountType = RETIREMENT;
+    } else {
+      customerToAdd.accountType = BROKERAGE;
+    }
+    customerToAdd.uninvestedFunds =
+        fetchedData.value().value("uninvested_funds").toFloat();
+    customerToAdd.accountID = fetchedData.value().value("account_id").toInt();
+
+    customers.push_back(customerToAdd);
+  }
+
+  query = "SELECT * FROM investments";
+  queryArgs.clear();
+
+  fetchedData = crudManager.runQuery(query, queryArgs);
+
+  if (!fetchedData.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    std::vector<Customer> blankCustomers;
+    return blankCustomers;
+  }
+
+  while (fetchedData.value().next()) {
+    Investment investment;
+
+    for (Customer &customer : customers) {
+      investment.customerID = fetchedData.value().value("customer_id").toInt();
+
+      if (customer.customerID == investment.customerID) {
+        investment.investmentID =
+            fetchedData.value().value("investment_id").toInt();
+        investment.stock = stockHashTable
+                               .get(fetchedData.value()
+                                        .value("stock_code")
+                                        .toString()
+                                        .toStdString())
+                               .value();
+        investment.numHeld = fetchedData.value().value("number_held").toInt();
+        investment.currentInvestmentWorth =
+            investment.numHeld * investment.stock.stockPrice;
+        investment.initialInvestment =
+            fetchedData.value().value("initial_investment").toFloat();
+
+        customer.investments.push_back(investment);
+      }
+    }
+  }
+
+  return customers;
 }
 
 bool DataManager::createEmployee(Employee employeeToCreate,
-                                 // TODO: THIS
-                                 Credentials credentials) {}
+                                 Credentials credentials) {
+  QString query = "INSERT INTO employees "
+                  "(first_name, last_name, role_id)"
+                  "VALUES "
+                  "(:first_name, :last_name, :role_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":first_name",
+                    QString::fromStdString(employeeToCreate.firstName));
+  queryArgs.emplace(":last_name",
+                    QString::fromStdString(employeeToCreate.lastName));
+  queryArgs.emplace(":role_id", employeeToCreate.role);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  query = "SELECT account_id "
+          "FROM employees "
+          "WHERE "
+          "(first_name = :first_name AND"
+          "last_name = :last_name AND"
+          "role_id = :role_id)";
+  queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  credentials.accountID = queryStatus.value().value("account_id").toInt();
+
+  query = "INSERT INTO credentials "
+          "VALUES "
+          "(account_id = :account_id, "
+          "username = :username, "
+          "password = :password, "
+          "salt = :salt, "
+          "account_locked = :account_locked) ";
+  queryArgs.clear();
+  queryArgs.emplace(":account_id", credentials.accountID);
+  queryArgs.emplace(":username", QString::fromStdString(credentials.username));
+  queryArgs.emplace(":password", QString::fromStdString(credentials.password));
+  queryArgs.emplace(":salt", QString::fromStdString(credentials.salt));
+  queryArgs.emplace(":account_locked", credentials.accountLocked);
+
+  queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
+}
 
 bool DataManager::createCustomer(Customer customerToCreate) {
-  // TODO: THIS
+  QString query = "INSERT INTO customers "
+                  "(first_name, "
+                  "last_name, "
+                  "phone, "
+                  "email, "
+                  "date_account_opened, "
+                  "account_type, "
+                  "uninvested_funds, "
+                  "account_id) "
+                  "VALUES "
+                  "(:first_name, "
+                  ":last_name, "
+                  ":phone, "
+                  ":email, "
+                  "CURDATE(), "
+                  ":account_type, "
+                  ":uninvested_funds, "
+                  ":account_id) ";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":first_name",
+                    QString::fromStdString(customerToCreate.firstName));
+  queryArgs.emplace(":last_name",
+                    QString::fromStdString(customerToCreate.lastName));
+  queryArgs.emplace(":phone",
+                    QString::fromStdString(customerToCreate.phoneNum));
+  queryArgs.emplace(":email", QString::fromStdString(customerToCreate.email));
+  if (customerToCreate.accountType == RETIREMENT) {
+    queryArgs.emplace(":account_type", "Retirement");
+  } else {
+    queryArgs.emplace(":account_type", "Brokerage");
+  }
+  queryArgs.emplace(":uninvested_funds", customerToCreate.uninvestedFunds);
+  queryArgs.emplace(":account_id", customerToCreate.accountID);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
 }
 
-bool DataManager::updateEmployee(Employee employeeToUpdate, Employee update,
-                                 // TODO: THIS
-                                 Credentials updateCredentials) {}
+bool DataManager::createInvestment(Investment investment) {
+  QString query = "INSERT INTO investments "
+                  "(stock_code, number_held, current_worth, "
+                  "initial_investment, customer_id) "
+                  "VALUES "
+                  ":stock_code, :number_held, :current_worth, "
+                  ":initial_investment, :customer_id)";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":stock_code",
+                    QString::fromStdString(investment.stock.stockCode));
+  queryArgs.emplace(":number_held", investment.numHeld);
+  queryArgs.emplace(":current_worth", investment.currentInvestmentWorth);
+  queryArgs.emplace(":initial_investment", investment.initialInvestment);
+  queryArgs.emplace(":customer_id", investment.customerID);
 
-bool DataManager::updateCustomer(Customer customerToUpdate, Customer update) {
-  // TODO: THIS
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
 }
 
-bool DataManager::deleteEmployee(Employee employeeToDelete) {
-  // TODO: THIS
+bool DataManager::updateEmployee(int employeeId, Employee update) {
+  QString query = "UPDATE employees "
+                  "SET first_name = :first_name, "
+                  "last_name = :last_name, "
+                  "role_id = :role_id "
+                  "WHERE account_id = :account_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":first_name", QString::fromStdString(update.firstName));
+  queryArgs.emplace(":last_name", QString::fromStdString(update.lastName));
+  queryArgs.emplace(":role_id", (int)update.role);
+  queryArgs.emplace(":account_id", employeeId);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
 }
 
-bool DataManager::deleteCustomer(Customer customerToDelete) {
-  // TODO: THIS
+bool DataManager::updateEmployeeCredentials(int id, Credentials update) {
+  QString query = "UPDATE credentials "
+                  "SET username = :username, "
+                  "password = :password, "
+                  "salt = :salt, "
+                  "account_locked = :account_locked "
+                  "WHERE account_id = :account_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":username", QString::fromStdString(update.username));
+  queryArgs.emplace(":password", QString::fromStdString(update.password));
+  queryArgs.emplace(":salt", QString::fromStdString(update.salt));
+  queryArgs.emplace(":account_locked", update.accountLocked);
+  queryArgs.emplace(":account_id", id);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
 }
 
-bool DataManager::updateStoredStocks(std::vector<Stock>) {
-  // TODO: THIS
+bool DataManager::updateCustomer(int customerId, Customer update) {
+  QString query = "UPDATE customers "
+                  "SET first_name = :first_name, "
+                  "last_name = :last_name, "
+                  "phone = :phone, "
+                  "email = :email, "
+                  "date_account_opened = :date_account_opened, "
+                  "account_type = :account_type, "
+                  "uninvested_funds = :uninvested_funds, "
+                  "account_id = :account_id "
+                  "WHERE customer_id = :customer_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":first_name", QString::fromStdString(update.firstName));
+  queryArgs.emplace(":last_name", QString::fromStdString(update.lastName));
+  queryArgs.emplace(":phone", QString::fromStdString(update.phoneNum));
+  queryArgs.emplace(":email", QString::fromStdString(update.email));
+  queryArgs.emplace(":date_account_opened",
+                    QString::fromStdString(update.dateAccountOpened));
+  if (update.accountType == RETIREMENT) {
+    queryArgs.emplace(":date_account_opened", "Retirement");
+  } else {
+    queryArgs.emplace(":date_account_opened", "Brokerage");
+  }
+  queryArgs.emplace(":uninvested_funds", update.uninvestedFunds);
+  queryArgs.emplace(":account_id", update.accountID);
+  queryArgs.emplace(":customer_id", customerId);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
+}
+
+bool DataManager::updateInvestment(int investmentId, Investment update) {
+  QString query = "UPDATE investments "
+                  "SET stock_code = :stock_code, "
+                  "number_held = :number_held, "
+                  "current_worth = :current_worth, "
+                  "initial_investment = :initial_investment, "
+                  "customer_id = :customer_id, "
+                  "WHERE investment_id = :investment_id";
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":stock_code",
+                    QString::fromStdString(update.stock.stockCode));
+  queryArgs.emplace(":number_held", update.numHeld);
+  queryArgs.emplace(":current_worth", update.currentInvestmentWorth);
+  queryArgs.emplace(":initial_investment", update.initialInvestment);
+  queryArgs.emplace(":customer_id", update.customerID);
+  queryArgs.emplace(":investment_id", update.investmentID);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
+}
+
+bool DataManager::deleteEmployee(int employeeId) {
+  QString query = "DELETE FROM employees "
+                  "WHERE account_id = :account_id";
+
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":account_id", employeeId);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
+}
+
+bool DataManager::deleteCustomer(int customerId) {
+  QString query = "DELETE FROM customers "
+                  "WHERE customer_id = :customer_id";
+
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":customer_id", customerId);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
+}
+
+bool DataManager::deleteInvestment(int investmentId) {
+  QString query = "DELETE FROM investments "
+                  "WHERE investment_id = :investment_id";
+
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":investment_id", investmentId);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
+}
+
+bool DataManager::updateStoredStocks(std::vector<Stock> stocks) {
+  QString query = "UPDATE stocks "
+                  "SET stock_price = :stock_price, "
+                  "SET last_updated = NOW() "
+                  "WHERE stock_code = :stock_code";
+  std::unordered_map<QString, QVariant> queryArgs;
+  std::optional<QSqlQuery> queryStatus;
+
+  // This is used in case an error throws to let the user
+  // know how many stocks were successfully updated
+  int numStocksSuccessfullyUpdated = 0;
+
+  for (Stock stock : stocks) {
+    queryArgs.emplace(":stock_price", stock.stockPrice);
+    queryArgs.emplace(":stock_code", QString::fromStdString(stock.stockCode));
+
+    queryStatus = crudManager.runQuery(query, queryArgs);
+
+    if (!queryStatus.has_value()) {
+      errorInfo = crudManager.getErrorCode() + "\n Successfully updated " +
+                  std::to_string(numStocksSuccessfullyUpdated) + " stocks.";
+
+      return false;
+    }
+
+    queryArgs.clear();
+    numStocksSuccessfullyUpdated++;
+  }
+
+  refreshHashTableStockData();
+
+  return true;
 }
 
 std::vector<Stock> DataManager::getAllStoredStocks() {
-  // TODO: THIS
+  return stockHashTable.getAll();
 }
 
 std::string DataManager::getErrorInfo() { return errorInfo; }
 
 //*******************PRIVATE FUNCTIONS****************************
-Employee
-DataManager::formatEmployeeQueriedData(std::vector<std::string> queriedData) {
-  std::cout << "DataManager::formatEmployeeQueriedData - entering" << std::endl;
-
-  Employee employee;
-
-  employee.accountID = std::stoi(queriedData.at(0));
-  employee.firstName = queriedData.at(1);
-  employee.lastName = queriedData.at(2);
-  if (queriedData.at(3) == "1") {
-    employee.role = ADMIN;
-  } else if (queriedData.at(3) == "2") {
-    employee.role = TRADER;
-  } else {
-    employee.role = INVALID;
-  }
-  employee.numAccountsManaged = 0;
-
-  for (Customer customer : getAllCustomers()) {
-    std::cout << "DataManager::formatEmployeeQueriedData - customer accountID "
-                 "/ employee accountID"
-              << std::endl;
-    std::cout << customer.accountID << " / " << employee.accountID << std::endl;
-    if (customer.accountID == employee.accountID) {
-      employee.numAccountsManaged++;
-    }
-  }
-
-  std::cout << "DataManager::formatEmployeeQueriedData - exiting" << std::endl;
-
-  return employee;
-}
-
-Credentials DataManager::formatCredentialsQueriedData(
-    std::vector<std::string> queriedData) {
-  std::cout << "DataManager::formatCredentialsQueriedData - entering"
-            << std::endl;
-
-  Credentials credentials;
-
-  credentials.accountID = std::stoi(queriedData.at(0));
-  credentials.username = queriedData.at(1);
-  credentials.password = queriedData.at(2);
-  credentials.salt = queriedData.at(3);
-  if (queriedData.at(4) == "0") {
-    credentials.accountLocked = false;
-  } else {
-    credentials.accountLocked = true;
-  }
-
-  std::cout << "DataManager::formatCredentialsQueriedData - exiting"
-            << std::endl;
-
-  return credentials;
-}
-
-Customer
-DataManager::formatCustomerQueriedData(std::vector<std::string> queriedData) {
-  std::cout << "DataManager::formatCustomerQueriedData - entering" << std::endl;
-
-  Customer customer;
-
-  customer.customerID = std::stoi(queriedData.at(0));
-  customer.firstName = queriedData.at(1);
-  customer.lastName = queriedData.at(2);
-  customer.phoneNum = queriedData.at(3);
-  customer.email = queriedData.at(4);
-  customer.dateAccountOpened = queriedData.at(5);
-  if (queriedData.at(6) == "RETIREMENT") {
-
-    customer.accountType = RETIREMENT;
-  } else {
-    customer.accountType = BROKERAGE;
-  }
-  customer.uninvestedFunds = std::stof(queriedData.at(7));
-  customer.accountID = std::stoi(queriedData.at(8));
-
-  std::cout << "DataManager::formatCustomerQueriedData - exiting" << std::endl;
-
-  return customer;
-}
-
-Customer DataManager::formatInvestmentsForCustomer(
-    Customer customerToFormat, std::vector<std::string> investmentData) {
-  Investment investment;
-  investment.investmentID = -1;
-  std::optional<Stock> stock;
-  for (unsigned int i = 0; i < investmentData.size(); i++) {
-    std::cout << "On iteration " << i << " of " << investmentData.size()
-              << std::endl;
-
-    switch (i % 6) {
-    case 0:
-      investment.investmentID = std::stoi(investmentData.at(i));
-      break;
-    case 1:
-      stock = stockHashTable.get(investmentData.at(i));
-      if (!stock.has_value()) {
-        Stock blankStock = {-1, "NOT FOUND", "***", -1.00f};
-        investment.stock = blankStock;
-      }
-      investment.stock = stock.value();
-      break;
-    case 2:
-      investment.numHeld = std::stoi(investmentData.at(i));
-      break;
-    case 3:
-      investment.currentInvestmentWorth = std::stof(investmentData.at(i));
-      break;
-    case 4:
-      investment.initialInvestment = std::stof(investmentData.at(i));
-      break;
-    case 5:
-      investment.customerID = std::stoi(investmentData.at(i));
-
-      if (investment.investmentID != -1) {
-        std::cout << "Should have a complete investment now." << std::endl;
-
-        if (investment.customerID == customerToFormat.customerID) {
-          std::cout << "At " << i
-                    << " iteration, investment is: " << "CustomerID "
-                    << investment.customerID << std::endl
-                    << investment.stock.stockName << std::endl;
-
-          customerToFormat.investments.push_back(investment);
-        }
-        investment.investmentID = -1;
-      }
-    }
-  }
-
-  std::cout << "Total Investments for " << customerToFormat.firstName << " are "
-            << customerToFormat.investments.size() << std::endl;
-
-  return customerToFormat;
-}
-
-std::unordered_map<std::string, std::vector<std::string>>
-DataManager::formatEmployeeForQuery(Employee employee, Credentials credential) {
-  std::unordered_map<std::string, std::vector<std::string>> formatedData;
-  std::vector<std::string> employeeData;
-  std::vector<std::string> credentialsData;
-
-  employeeData.push_back(std::to_string(employee.accountID));
-  employeeData.push_back(employee.firstName);
-  employeeData.push_back(employee.lastName);
-  if (employee.role == ADMIN) {
-    employeeData.push_back("1");
-  } else {
-    employeeData.push_back("2");
-  }
-  formatedData.emplace("employee", employeeData);
-
-  credentialsData.push_back(std::to_string(credential.accountID));
-  credentialsData.push_back(credential.username);
-  credentialsData.push_back(credential.password);
-  credentialsData.push_back(credential.salt);
-  if (!credential.accountLocked) {
-    credentialsData.push_back("0");
-  } else {
-    credentialsData.push_back("1");
-  }
-  formatedData.emplace("credentials", credentialsData);
-
-  return formatedData;
-}
-
-std::unordered_map<std::string, std::vector<std::string>>
-DataManager::formatCustomerForQuery(Customer customer) {
-  std::cout << "DataManager::FormatCustomerForQuery - entering" << std::endl;
-  std::unordered_map<std::string, std::vector<std::string>> formatedData;
-
-  std::vector<std::string> populatingVector;
-  // First format the customer
-  populatingVector.push_back(std::to_string(customer.customerID));
-  populatingVector.push_back(customer.firstName);
-  populatingVector.push_back(customer.lastName);
-  populatingVector.push_back(customer.phoneNum);
-  populatingVector.push_back(customer.email);
-  populatingVector.push_back(customer.dateAccountOpened);
-  if (customer.accountType == RETIREMENT) {
-    populatingVector.push_back("RETIREMENT");
-  } else {
-    populatingVector.push_back("BROKERAGE");
-  }
-  populatingVector.push_back(std::to_string(customer.uninvestedFunds));
-  populatingVector.push_back(std::to_string(customer.accountID));
-
-  formatedData.emplace("customer", populatingVector);
-  populatingVector.clear();
-
-  // Format the investments
-  for (Investment investment : customer.investments) {
-    populatingVector.push_back(std::to_string(investment.investmentID));
-    populatingVector.push_back(investment.stock.stockCode);
-    populatingVector.push_back(std::to_string(investment.numHeld));
-    populatingVector.push_back(
-        std::to_string(investment.currentInvestmentWorth));
-    populatingVector.push_back(std::to_string(investment.initialInvestment));
-    populatingVector.push_back(std::to_string(investment.customerID));
-  }
-
-  formatedData.emplace("investments", populatingVector);
-  populatingVector.clear();
-
-  return formatedData;
-}
 
 void DataManager::refreshHashTableStockData() {
-  // TODO: THIS
+  QString query = "SELECT * FROM stocks";
+  std::unordered_map<QString, QVariant> queryArgs;
+
+  std::optional<QSqlQuery> allStocks = crudManager.runQuery(query, queryArgs);
+
+  if (!allStocks.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    // TODO: figure out how to notify of issue
+  }
+
+  while (allStocks.value().next()) {
+    Stock stock;
+    stock.stockCode =
+        allStocks.value().value("stock_code").toString().toStdString();
+    stock.stockName =
+        allStocks.value().value("stock_name").toString().toStdString();
+    stock.stockPrice = allStocks.value().value("stock_price").toFloat();
+
+    stockHashTable.insert(stock.stockCode, stock);
+  }
 }

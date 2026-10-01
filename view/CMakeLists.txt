@@ -4,7 +4,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 target_sources(Views
   PRIVATE
-    src/AdminMainView.cpp 
+    src/AdminMainView.cpp
     src/CustomerCreationView.cpp
     src/CustomerManagerView.cpp
     src/LogInView.cpp
@@ -13,19 +13,21 @@ target_sources(Views
     src/TraderCreationView.cpp
     src/TraderMainView.cpp
     src/WarningWindow.cpp
+    src/ErrorWindow.cpp
 
   PUBLIC
     FILE_SET HEADERS
-    FILES 
-      AdminMainView.h 
-      CustomerCreationView.h 
-      CustomerManagerView.h 
-      LogInView.h 
-      PurchaseStockWindow.h 
-      SellStockWindow.h 
-      TraderCreationView.h 
-      TraderMainView.h 
-      WarningWindow.h 
+    FILES
+      AdminMainView.h
+      CustomerCreationView.h
+      CustomerManagerView.h
+      LogInView.h
+      PurchaseStockWindow.h
+      SellStockWindow.h
+      TraderCreationView.h
+      TraderMainView.h
+      WarningWindow.h
+      ErrorWindow.h
 )
 
 target_link_libraries(Views

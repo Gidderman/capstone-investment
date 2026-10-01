@@ -6,13 +6,14 @@
 #include <QJsonDocument>
 #include <QSqlError>
 
+#include <iostream>
+
 CRUDManager::CRUDManager() {}
 
 CRUDManager::~CRUDManager() {}
 
 bool CRUDManager::init() {
-  std::optional<QJsonObject> databaseLogInInfo =
-      readJsonData("../../config.json");
+  std::optional<QJsonObject> databaseLogInInfo = readJsonData("config.json");
 
   if (!databaseLogInInfo.has_value()) {
     return false;
@@ -27,9 +28,12 @@ bool CRUDManager::init() {
   db.setPassword(
       databaseLogInInfo.value().value("database_password").toString());
 
-  if (db.open()) {
+  if (!db.open()) {
     errorCode += "ERROR: could not open database. Database reports: \n" +
                  db.lastError().text().toStdString() + "\n";
+
+    std::cout << errorCode << std::endl;
+
     return false;
   }
   return true;
@@ -69,11 +73,19 @@ std::optional<QJsonObject> CRUDManager::readJsonData(QString fileName) {
   if (!configFile.exists(fileName)) {
     errorCode += "ERROR: Could not find " + fileName.toStdString() +
                  " file appears not to exist.\n";
+
+    std::cout << errorCode << std::endl;
+
     return {};
   }
 
+  configFile.setFileName(fileName);
+
   if (!configFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
     errorCode += "ERROR: Could not open file " + fileName.toStdString() + "\n";
+
+    std::cout << errorCode << std::endl;
+
     return {};
   }
 
@@ -85,7 +97,8 @@ std::optional<QJsonObject> CRUDManager::readJsonData(QString fileName) {
   configFile.close();
 
   QJsonDocument jsonDocument;
-  jsonDocument.fromJson(unformatedFileContents);
+  QJsonObject configObject =
+      jsonDocument.fromJson(unformatedFileContents).object();
 
-  return jsonDocument.object();
+  return configObject;
 }

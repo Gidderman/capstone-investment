@@ -162,26 +162,16 @@ void AdminController::executeEmployeeAction(Employee employee) {
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the employee.
 
-  // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
-
   Employee employeeToEdit;
 
   if (employee.accountID != -1) {
-    for (Employee existingEmployee : adminService.getAllEmployees()) {
-      if (employee.accountID == existingEmployee.accountID) {
-        employeeToEdit = existingEmployee;
-      }
-    }
-    if (adminService.editEmployee(employeeToEdit, employee)) {
-      // TODO: successful edit
-    } else {
-      // TODO: unsuccesful edit
+    employeeToEdit = adminService.getEmployeeById(employee.accountID);
+    if (!adminService.editEmployee(employeeToEdit, employee)) {
+      // TODO: unsuccessful edit, flash an error window
     }
   } else {
-    if (adminService.createEmployee(employee)) {
-      // TODO: sucessful edit
-    } else {
-      // TODO: unsuccesful edit
+    if (!adminService.createEmployee(employee)) {
+      // TODO: unsucessful edit flash an error window
     }
   }
 
@@ -202,17 +192,11 @@ void AdminController::executeCustomerAction(Customer customer) {
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the customer.
 
-  // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
-
   std::cout << "AdminController::executeCustomerAciton - entered" << std::endl;
 
   Customer customerToEdit;
   if (customer.customerID != -1) {
-    for (Customer existingCustomer : adminService.getAllCustomers()) {
-      if (customer.customerID == existingCustomer.customerID) {
-        customerToEdit = existingCustomer;
-      }
-    }
+    customerToEdit = adminService.getCustomerById(customer.customerID);
     if (adminService.editCustomer(customerToEdit, customer)) {
       // TODO: successful edit
     } else {
@@ -226,7 +210,8 @@ void AdminController::executeCustomerAction(Customer customer) {
     }
   }
 
-  // Refresh our display to show up to date information.
+  // Refresh our display to show up to date information. Employee display must
+  // be updated as well to update the number of managed accounts
   pAdminMainView->refreshCustomers(adminService.getAllCustomers());
   pAdminMainView->refreshEmployees(adminService.getAllEmployees());
 

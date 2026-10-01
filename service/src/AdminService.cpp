@@ -6,7 +6,6 @@
 #include "QuickSort.h"
 
 #include <iostream>
-#include <iterator>
 
 AdminService::AdminService() {}
 
@@ -74,31 +73,12 @@ bool AdminService::createEmployee(Employee employeeToCreate) {
 // first password upon log in, but is otherwise needed only for data formatting.
 // Returns a boolean indicating whether or not the edit was successful.
 bool AdminService::editEmployee(Employee employeeToEdit, Employee edit) {
-  Credentials employeeCredentials =
-      dataManager.getCredentialsByEmployeeId(employeeToEdit.accountID);
 
-  std::cout << "AdminService::editEmployee - Credentials pulled, username: "
-            << employeeCredentials.username << std::endl;
-  std::cout << "AdminService::editEmployee - Employee to edit: "
-            << employeeToEdit.lastName << std::endl;
-  std::cout << "AdminService::editEmployee - Edit: " << edit.lastName
-            << std::endl;
-
-  if (employeeCredentials.password == "") {
-    // TODO: Initial log in, set password.
-    std::cout << "AdminService::editEmployee - This is an initial log in."
-              << std::endl;
-  }
-
-  return dataManager.updateEmployee(employeeToEdit, edit, employeeCredentials);
+  return dataManager.updateEmployee(employeeToEdit.accountID, edit);
 }
 
-// Create a customer, populating it will a blank investment vector.
+// Create a customer
 bool AdminService::createCustomer(Customer customer) {
-  std::vector<Investment> investments(0);
-  customer.dateAccountOpened = "TODAY"; // TODO: populate with an actual date
-  customer.investments = investments;
-
   return dataManager.createCustomer(customer);
 }
 
@@ -109,9 +89,8 @@ bool AdminService::editCustomer(Customer customer, Customer edit) {
   // Populate the fields that are not editable within the edit Customer so they
   // aren't just overwritten to blank values.
   edit.dateAccountOpened = customer.dateAccountOpened;
-  edit.investments = customer.investments;
 
   std::cout << "AdminService::editCustomer - exiting" << std::endl;
 
-  return dataManager.updateCustomer(customer, edit);
+  return dataManager.updateCustomer(customer.customerID, edit);
 }

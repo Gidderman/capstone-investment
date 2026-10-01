@@ -1,12 +1,8 @@
 // This class implements TraderService.h, refer to that header file for further
 // information
 
-// TODO:
-// THIS CLASS IS LARGELY UNIMPLEMENTED AND REQUIRES MORE WORK.
-
 #include "TraderService.h"
 #include "Investment.h"
-#include <iterator>
 #include <ostream>
 #include <string>
 
@@ -62,7 +58,7 @@ bool TraderService::executeStockPurchase(
       std::cout << customer.investments.size() << " / "
                 << editedCustomer.investments.size();
 
-      return dataManager.updateCustomer(customer, editedCustomer);
+      return dataManager.updateCustomer(customer.customerID, editedCustomer);
     }
   }
   for (Stock stock : dataManager.getAllStoredStocks()) {
@@ -85,7 +81,7 @@ bool TraderService::executeStockPurchase(
       std::cout << customer.investments.size() << " / "
                 << editedCustomer.investments.size() << std::endl;
 
-      return dataManager.updateCustomer(customer, editedCustomer);
+      return dataManager.updateCustomer(customer.customerID, editedCustomer);
     }
   }
   return false;
@@ -131,7 +127,7 @@ bool TraderService::executeStockSale(
   std::cout << customer.investments.size() << " / "
             << editedCustomer.investments.size() << std::endl;
 
-  return dataManager.updateCustomer(customer, editedCustomer);
+  return dataManager.updateCustomer(customer.customerID, editedCustomer);
 }
 
 std::vector<float> TraderService::calculateResultOfSale(int customerId,
