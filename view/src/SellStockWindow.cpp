@@ -73,8 +73,7 @@ void SellStockWindow::setDisplayInfo(std::vector<QString> displayData,
                                      displayData.at(0));
   pCurrentWorthDisplay->setText(QString("Current Investment Worth: $") +
                                 displayData.at(1));
-  pSellProfitOrLossDisplay->setText(QString("Transaction Result: $") +
-                                    displayData.at(2));
+  pSellProfitOrLossDisplay->setText(displayData.at(2));
   pNumberToSellDisplay->setMaximum(maxNumberAllowedToSell);
 }
 

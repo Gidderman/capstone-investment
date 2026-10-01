@@ -61,6 +61,7 @@ void ScrollableContainer::addDisplayList(std::vector<Employee> employees) {
 void ScrollableContainer::addDisplayList(std::vector<Investment> investments) {
   for (Investment investment : investments) {
     InvestmentDisplayItem *investmentDisplay = new InvestmentDisplayItem(
+        investment.investmentID,
         QString::fromStdString(investment.stock.stockName),
         QString::fromStdString(investment.stock.stockCode),
         QString::number(investment.numHeld),
@@ -124,6 +125,7 @@ void ScrollableContainer::refreshDisplayList(
   clearDisplay();
   for (Investment investment : investments) {
     InvestmentDisplayItem *investmentDisplay = new InvestmentDisplayItem(
+        investment.investmentID,
         QString::fromStdString(investment.stock.stockName),
         QString::fromStdString(investment.stock.stockCode),
         QString::number(investment.numHeld),

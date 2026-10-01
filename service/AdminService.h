@@ -6,26 +6,27 @@
 #define ADMIN_SERVICE_H
 
 #include "DataManager.h"
-#include "QuickSort.h"
 
 #include <vector>
 
 class AdminService {
 private:
-  DataManager dataManager;
+  DataManager &dataManager;
+
+  std::string errorInfo;
 
 public:
-  AdminService();
+  AdminService(DataManager &dataManager);
   ~AdminService();
   std::vector<Employee> getAllEmployees();
   Employee getEmployeeById(int id);
   Employee getEmployeeByName(std::string name);
   std::vector<Customer> getAllCustomers();
   Customer getCustomerById(int id);
-  bool createEmployee(Employee employeeToCreate);
-  bool editEmployee(Employee employeeToEdit, Employee edit);
-  bool createCustomer(Customer customer);
-  bool editCustomer(Customer customer, Customer edit);
+  void createEmployee(Employee employeeToCreate);
+  void editEmployee(Employee employeeToEdit, Employee edit);
+  void createCustomer(Customer customer);
+  void editCustomer(Customer customer, Customer edit);
 };
 
 #endif

@@ -9,7 +9,7 @@
 #include "Stock.h"
 
 struct Investment {
-  int investmentID;
+  int investmentID = -1;
   Stock stock;
   int numHeld;
   float currentInvestmentWorth;

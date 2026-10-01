@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[]) {
   QApplication app(argc, argv);
-  MasterController MasterController;
+  MasterController masterController = MasterController();
 
   return app.exec();
 }

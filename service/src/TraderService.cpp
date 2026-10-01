@@ -2,132 +2,168 @@
 // information
 
 #include "TraderService.h"
+#include "DataManager.h"
 #include "Investment.h"
-#include <ostream>
+#include <stdexcept>
 #include <string>
 
 #include <iostream>
 
-TraderService::TraderService() {}
+TraderService::TraderService(DataManager &dataManager)
+    : dataManager(dataManager) {}
 
 TraderService::~TraderService() {}
-
-std::tuple<Employee, int>
-TraderService::getEmployeeByAndNumManagedCustomersById(int employeeId) {
-  // TODO: DATABASE QUERY OPTIMIZATION
-
-  return {dataManager.getEmployee(employeeId),
-          dataManager.getAllCustomersByTraders(employeeId).size()};
-}
 
 // Directs the dataManager to provide a list of all customers based on the
 // passed in employee id.
 std::vector<Customer> TraderService::getListOfManagedCustomers(int employeeId) {
-  return dataManager.getAllCustomersByTraders(employeeId);
+  std::vector<Customer> allCustomers =
+      dataManager.getAllCustomersByTraders(employeeId);
+
+  if (allCustomers.size() == 0) {
+    throw std::logic_error("TraderService::getListOfManagedCustomers -> " +
+                           dataManager.getErrorInfo());
+  }
+
+  return allCustomers;
 }
 
 Customer TraderService::getCustomerById(int customerId) {
-  return dataManager.getCustomer(customerId);
+  Customer fetchedCustomer = dataManager.getCustomer(customerId);
+
+  if (fetchedCustomer.customerID == -1) {
+    throw std::logic_error("TraderService::getCustomerById -> " +
+                           dataManager.getErrorInfo());
+  }
+
+  return fetchedCustomer;
 }
 
 std::vector<Stock> TraderService::getListOfAvailableStocks() {
-  return dataManager.getAllStoredStocks();
+  std::vector<Stock> fetchedStocks = dataManager.getAllStoredStocks();
+
+  if (fetchedStocks.size() == 0) {
+    throw std::logic_error("TraderService::getCustomerById -> " +
+                           dataManager.getErrorInfo());
+  }
+
+  return fetchedStocks;
 }
 
 // Recieves the stock code, the number of stocks purchased, and the total cost
 // of the transactions as arguments in the tuple
-bool TraderService::executeStockPurchase(
+void TraderService::executeStockPurchase(
     int customerId, std::tuple<std::string, int, float> transaction) {
+  Customer fetchedCustomer = dataManager.getCustomer(customerId);
 
-  Customer customer = dataManager.getCustomer(customerId);
-  Customer editedCustomer = customer;
+  if (fetchedCustomer.customerID == -1) {
+    throw std::logic_error(
+        "TraderService::executeStockPurchase -> While fetching customer. \n" +
+        dataManager.getErrorInfo());
+  }
 
-  for (Investment &investment : editedCustomer.investments) {
+  // Determine if this investment already exists.
+  Investment updatedInvestment;
+  for (Investment investment : fetchedCustomer.investments) {
     if (std::get<0>(transaction) == investment.stock.stockCode) {
-
-      investment.numHeld += std::get<1>(transaction);
-      investment.initialInvestment += std::get<2>(transaction);
-      investment.currentInvestmentWorth =
-          (float)investment.numHeld * investment.stock.stockPrice;
-
-      editedCustomer.uninvestedFunds -= std::get<2>(transaction);
-
-      std::cout << "TraderService::executeStockPurchase - original investments "
-                   "size / final investments size"
-                << std::endl;
-      std::cout << customer.investments.size() << " / "
-                << editedCustomer.investments.size();
-
-      return dataManager.updateCustomer(customer.customerID, editedCustomer);
+      updatedInvestment = investment;
     }
   }
-  for (Stock stock : dataManager.getAllStoredStocks()) {
-    if (std::get<0>(transaction) == stock.stockCode) {
 
-      Investment newInvestment;
-      newInvestment.investmentID = -1;
-      newInvestment.customerID = editedCustomer.customerID;
-      newInvestment.stock = stock;
-      newInvestment.numHeld = std::get<1>(transaction);
-      newInvestment.initialInvestment = std::get<2>(transaction);
-      newInvestment.currentInvestmentWorth = newInvestment.initialInvestment;
-      editedCustomer.investments.push_back(newInvestment);
+  if (updatedInvestment.investmentID == -1) {
+    // Investment doesn't exist, so we are creating a new investment
+    updatedInvestment.numHeld = std::get<1>(transaction);
+    updatedInvestment.stock = dataManager.getStock(std::get<0>(transaction));
+    updatedInvestment.initialInvestment = std::get<2>(transaction);
+    updatedInvestment.currentInvestmentWorth =
+        updatedInvestment.numHeld * updatedInvestment.stock.stockPrice;
+    updatedInvestment.customerID = customerId;
 
-      editedCustomer.uninvestedFunds -= std::get<2>(transaction);
+    if (!dataManager.createInvestment(updatedInvestment)) {
+      throw std::logic_error("TraderService::executeStockPurchase -> While "
+                             "creating a new investment.\n" +
+                             dataManager.getErrorInfo());
+    }
 
-      std::cout << "TraderService::executeStockPurchase - original investments "
-                   "size / final investments size"
-                << std::endl;
-      std::cout << customer.investments.size() << " / "
-                << editedCustomer.investments.size() << std::endl;
+  } else {
+    // Investment exists alread, adding to the total
+    updatedInvestment.numHeld += std::get<1>(transaction);
+    updatedInvestment.currentInvestmentWorth =
+        updatedInvestment.numHeld * updatedInvestment.stock.stockPrice;
 
-      return dataManager.updateCustomer(customer.customerID, editedCustomer);
+    if (!dataManager.updateInvestment(updatedInvestment.investmentID,
+                                      updatedInvestment)) {
+      throw std::logic_error("TraderService::executeStockPurchase -> While "
+                             "updating investment.\n" +
+                             dataManager.getErrorInfo());
     }
   }
-  return false;
+
+  std::cout << "Subtracting " << std::to_string(std::get<2>(transaction))
+            << " from " << std::to_string(fetchedCustomer.uninvestedFunds)
+            << std::endl;
+
+  fetchedCustomer.uninvestedFunds -= std::get<2>(transaction);
+  if (!dataManager.updateCustomer(fetchedCustomer.customerID,
+                                  fetchedCustomer)) {
+    throw std::logic_error(
+        "TraderService::executeStockPurchase -> while updating customer.\n" +
+        dataManager.getErrorInfo());
+  }
 }
 
 // Calculate the price of a given number of stocks and return a string for
 // display
 float TraderService::calculatePriceOfStockPurchase(std::string stockCode,
                                                    int num) {
-  for (Stock stock : dataManager.getAllStoredStocks()) {
-    if (stock.stockCode == stockCode) {
-      return (float)stock.stockPrice * num;
-    }
-  }
-  // If the stock code doesn't match, return this display error
-  return 0.0f;
+  Stock stock = dataManager.getStock(stockCode);
+  return stock.stockPrice * num;
 }
 
-// TODO: these
-bool TraderService::executeStockSale(
+void TraderService::executeStockSale(
     int customerId, std::tuple<std::string, int, float> transaction) {
-  Customer customer = dataManager.getCustomer(customerId);
-  Customer editedCustomer = customer;
+  Customer fetchedCustomer = dataManager.getCustomer(customerId);
+  if (fetchedCustomer.customerID == -1) {
+    throw std::logic_error(
+        "TraderService::executeStockSale -> While fetching customer.\n" +
+        dataManager.getErrorInfo());
+  }
 
-  for (unsigned int i = 0; i < editedCustomer.investments.size(); i++) {
-    if (editedCustomer.investments.at(i).stock.stockCode ==
-        std::get<0>(transaction)) {
-      // Did the user sell all the held stock?
-      if (editedCustomer.investments.at(i).numHeld <=
-          std::get<1>(transaction)) {
-        editedCustomer.investments.erase(editedCustomer.investments.begin() +
-                                         i);
-      } else {
-        editedCustomer.investments.at(i).numHeld -= std::get<1>(transaction);
-      }
-      editedCustomer.uninvestedFunds += std::get<2>(transaction);
+  Investment investmentToEdit;
+  for (Investment investment : fetchedCustomer.investments) {
+    if (investment.stock.stockCode == std::get<0>(transaction)) {
+      investmentToEdit = investment;
     }
   }
 
-  std::cout << "TraderService::executeStockSale - previous investments / "
-               "edited investmetns"
-            << std::endl;
-  std::cout << customer.investments.size() << " / "
-            << editedCustomer.investments.size() << std::endl;
+  if (investmentToEdit.numHeld <= std::get<1>(transaction)) {
+    // We have sold all the stock.
+    if (!dataManager.deleteInvestment(investmentToEdit.investmentID)) {
+      throw std::logic_error(
+          "TraderService::executeStockSale -> While deleting investment.\n" +
+          dataManager.getErrorInfo());
+    }
+  } else {
+    // We have only sold some of the investment.
+    investmentToEdit.numHeld -= std::get<1>(transaction);
+    investmentToEdit.currentInvestmentWorth =
+        investmentToEdit.numHeld * investmentToEdit.stock.stockPrice;
 
-  return dataManager.updateCustomer(customer.customerID, editedCustomer);
+    if (!dataManager.updateInvestment(investmentToEdit.investmentID,
+                                      investmentToEdit)) {
+      throw std::logic_error(
+          "TraderService::executeStockSale -> While updating investment.\n" +
+          dataManager.getErrorInfo());
+    }
+  }
+
+  fetchedCustomer.uninvestedFunds += std::get<2>(transaction);
+  if (!dataManager.updateCustomer(fetchedCustomer.customerID,
+                                  fetchedCustomer)) {
+    throw std::logic_error(
+        "TraderService::executeStockSale -> While updating customer.\n" +
+        dataManager.getErrorInfo());
+  }
 }
 
 std::vector<float> TraderService::calculateResultOfSale(int customerId,
@@ -135,6 +171,11 @@ std::vector<float> TraderService::calculateResultOfSale(int customerId,
                                                         int num) {
   std::vector<float> transactionInfo;
   Customer customer = dataManager.getCustomer(customerId);
+  if (customer.customerID == -1) {
+    throw std::logic_error(
+        "TraderService::calculateResultOfSale -> While fetching customer.\n" +
+        dataManager.getErrorInfo());
+  }
 
   for (Investment investment : customer.investments) {
 
@@ -144,8 +185,8 @@ std::vector<float> TraderService::calculateResultOfSale(int customerId,
       transactionInfo.push_back(
           investment.stock.stockPrice *
           (float)investment.numHeld); // Current investment worth
-      transactionInfo.push_back(num * investment.stock.stockPrice -
-                                transactionInfo.at(0)); // Result of transaction
+      // result of the transaction
+      transactionInfo.push_back(num * investment.stock.stockPrice);
       transactionInfo.push_back((float)investment.numHeld);
     }
   }

@@ -13,6 +13,7 @@
 #include "Authorizer.h"
 #include "CustomerDisplayItem.h"
 #include "CustomerManagerView.h"
+#include "ErrorWindow.h"
 #include "PurchaseStockWindow.h"
 #include "SellStockWindow.h"
 #include "TraderMainView.h"
@@ -33,11 +34,11 @@ private:
   SellStockWindow *pSellStockWindow;
 
   // Service initialization
-  TraderService traderService;
+  TraderService &traderService;
 
-  // This id are used for displaying the logged in employee information as
-  // well as finding and displaying the associated customers
-  int loggedInEmployeeId;
+  // Used for displaying the logged in employee information as
+  // well as finding and displaying the associated customers.
+  Employee loggedInEmployee;
 
   // This id is used to track the customer being managed when the user
   // selects the customer from the main trader page.
@@ -45,17 +46,15 @@ private:
 
   // The following functions format various data for display, which is necessary
   // due to most display items requiring a QString.
-  std::vector<CustomerDisplayItem *> formatAllManagedCustomersForDisplay();
-  std::vector<InvestmentDisplayItem *>
-  formatCustomerInvestmentsForDisplay(std::vector<Investment> investments);
   std::vector<QString> formatLoggedInEmployeeForDisplay();
   std::vector<QString> formatIndividualCustomerForDisplay(Customer customer);
+  void displayError(QString errorText);
 
 public:
-  TraderController();
+  TraderController(TraderService &traderService);
   ~TraderController();
   // This is the primary entry point into this class.
-  void run(int loggedInEmployeeId, Authorizer *authorizer);
+  void run(Employee loggedInEmployee, Authorizer *authorizer);
 
 public slots:
   void

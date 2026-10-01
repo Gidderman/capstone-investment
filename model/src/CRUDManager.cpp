@@ -8,11 +8,16 @@
 
 #include <iostream>
 
-CRUDManager::CRUDManager() {}
+CRUDManager::CRUDManager() {
+  std::cout << "CRUDManager::CRUDManager - entering/exiting" << std::endl;
+  init();
+}
 
 CRUDManager::~CRUDManager() {}
 
 bool CRUDManager::init() {
+  std::cout << "CRUDManager::init - entering" << std::endl;
+
   std::optional<QJsonObject> databaseLogInInfo = readJsonData("config.json");
 
   if (!databaseLogInInfo.has_value()) {
@@ -28,6 +33,8 @@ bool CRUDManager::init() {
   db.setPassword(
       databaseLogInInfo.value().value("database_password").toString());
 
+  std::cout << "CRUDManager::init - exiting" << std::endl;
+
   if (!db.open()) {
     errorCode += "ERROR: could not open database. Database reports: \n" +
                  db.lastError().text().toStdString() + "\n";
@@ -42,11 +49,15 @@ bool CRUDManager::init() {
 std::optional<QSqlQuery>
 CRUDManager::runQuery(QString queryText,
                       std::unordered_map<QString, QVariant> queryArgs) {
+  std::cout << "CRUDManager::runQuery - entering" << std::endl;
+
   QSqlQuery query;
   query.prepare(queryText);
   for (auto &qArg : queryArgs) {
     query.bindValue(qArg.first, qArg.second);
   }
+
+  std::cout << "CRUDManager::runQuery - exiting" << std::endl;
 
   if (!query.exec()) {
     errorCode +=
@@ -67,6 +78,7 @@ std::string CRUDManager::getErrorCode() {
 //********************PRIVATE FUNCITONS**************************************
 
 std::optional<QJsonObject> CRUDManager::readJsonData(QString fileName) {
+  std::cout << "CRUDManager::readJsonData - entering" << std::endl;
 
   QFile configFile;
 
@@ -99,6 +111,8 @@ std::optional<QJsonObject> CRUDManager::readJsonData(QString fileName) {
   QJsonDocument jsonDocument;
   QJsonObject configObject =
       jsonDocument.fromJson(unformatedFileContents).object();
+
+  std::cout << "CRUDManager::readJsonData - exiting" << std::endl;
 
   return configObject;
 }

@@ -6,10 +6,13 @@
 
 #include "InvestmentDisplayItem.h"
 
-InvestmentDisplayItem::InvestmentDisplayItem(QString stockName,
+InvestmentDisplayItem::InvestmentDisplayItem(int investmentId,
+                                             QString stockName,
                                              QString stockCode,
                                              QString numberHeld,
                                              QString pricePerStock) {
+  this->investmentId = investmentId;
+
   // Initialize the display variables
   this->pStockName = new QLabel(stockName);
   this->pStockCode = new QLabel(stockCode);

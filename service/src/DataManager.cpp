@@ -15,14 +15,17 @@
 #include <optional>
 #include <qsqlquery.h>
 #include <qvariant.h>
+#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include <vector> //TODO: REMOVE AFTER TESTING
 
-DataManager::DataManager() {
-  if (!crudManager.init()) {
+// We pass in by reference the CRUD Manager to prevent multiple copies and
+//  multiple database connections
+DataManager::DataManager(CRUDManager &crudManager) : crudManager(crudManager) {
+  if (!updateStoredStocks(getAllStoredStocks())) {
     errorInfo = crudManager.getErrorCode();
-    // TODO: some sort of way of notifying the service
+    // TODO: notify of error
   }
   refreshHashTableStockData();
 }
@@ -31,6 +34,8 @@ DataManager::~DataManager() {}
 
 std::tuple<Employee, Credentials>
 DataManager::getEmployeeByUsername(std::string username) {
+  std::cout << "DataManager::getEmployeeByUsername - entering" << std::endl;
+
   Employee employeeToReturn;
   Credentials employeeCredentials;
 
@@ -90,8 +95,10 @@ DataManager::getEmployeeByUsername(std::string username) {
     employeeCredentials.salt =
         employeeAndCredentials.value().value("salt").toString().toStdString();
     employeeCredentials.accountLocked =
-        employeeAndCredentials.value().value("accountLocked").toBool();
+        employeeAndCredentials.value().value("account_locked").toBool();
   }
+
+  std::cout << "DataManager::getEmployeeByUsername - exiting" << std::endl;
 
   return {employeeToReturn, employeeCredentials};
 }
@@ -173,7 +180,7 @@ Customer DataManager::getCustomer(int customerId) {
           "investment_id, "
           "stock_code, "
           "number_held, "
-          "initial_investment"
+          "initial_investment "
           "FROM investments "
           "WHERE customer_id = :customer_id";
   // We don't need to rewrite queryArgs, as customer_id remains the same
@@ -256,7 +263,8 @@ Employee DataManager::getEmployeeByLastName(std::string name) {
                   "FROM employees e "
                   "LEFT JOIN customers c "
                   "ON c.account_id = e.account_id "
-                  "WHERE e.last_name = :last_name";
+                  "WHERE e.last_name = :last_name "
+                  "GROUP BY e.account_id";
 
   std::unordered_map<QString, QVariant> queryArgs;
   queryArgs.emplace(":last_name", QString::fromStdString(name));
@@ -283,6 +291,16 @@ Employee DataManager::getEmployeeByLastName(std::string name) {
   }
 
   return fetchedEmployee;
+}
+
+Stock DataManager::getStock(std::string stockCode) {
+  std::optional<Stock> fetchedStock = stockHashTable.get(stockCode);
+
+  if (!fetchedStock.has_value()) {
+    throw std::logic_error("DataManager::getStock -> stock not found.");
+  }
+
+  return fetchedStock.value();
 }
 
 std::vector<Employee> DataManager::getAllEmployees() {
@@ -485,9 +503,9 @@ std::vector<Customer> DataManager::getAllCustomersByTraders(int traderID) {
 bool DataManager::createEmployee(Employee employeeToCreate,
                                  Credentials credentials) {
   QString query = "INSERT INTO employees "
-                  "(first_name, last_name, role_id)"
+                  "(first_name, last_name, role_id) "
                   "VALUES "
-                  "(:first_name, :last_name, :role_id";
+                  "(:first_name, :last_name, :role_id)";
   std::unordered_map<QString, QVariant> queryArgs;
   queryArgs.emplace(":first_name",
                     QString::fromStdString(employeeToCreate.firstName));
@@ -502,28 +520,15 @@ bool DataManager::createEmployee(Employee employeeToCreate,
     return false;
   }
 
-  query = "SELECT account_id "
-          "FROM employees "
-          "WHERE "
-          "(first_name = :first_name AND"
-          "last_name = :last_name AND"
-          "role_id = :role_id)";
-  queryStatus = crudManager.runQuery(query, queryArgs);
-
-  if (!queryStatus.has_value()) {
-    errorInfo = crudManager.getErrorCode();
-    return false;
-  }
-
-  credentials.accountID = queryStatus.value().value("account_id").toInt();
+  credentials.accountID = queryStatus.value().lastInsertId().toInt();
 
   query = "INSERT INTO credentials "
           "VALUES "
-          "(account_id = :account_id, "
-          "username = :username, "
-          "password = :password, "
-          "salt = :salt, "
-          "account_locked = :account_locked) ";
+          "(:account_id, "
+          ":username, "
+          ":password, "
+          ":salt, "
+          ":account_locked)";
   queryArgs.clear();
   queryArgs.emplace(":account_id", credentials.accountID);
   queryArgs.emplace(":username", QString::fromStdString(credentials.username));
@@ -591,7 +596,7 @@ bool DataManager::createInvestment(Investment investment) {
                   "(stock_code, number_held, current_worth, "
                   "initial_investment, customer_id) "
                   "VALUES "
-                  ":stock_code, :number_held, :current_worth, "
+                  "(:stock_code, :number_held, :current_worth, "
                   ":initial_investment, :customer_id)";
   std::unordered_map<QString, QVariant> queryArgs;
   queryArgs.emplace(":stock_code",
@@ -700,7 +705,7 @@ bool DataManager::updateInvestment(int investmentId, Investment update) {
                   "number_held = :number_held, "
                   "current_worth = :current_worth, "
                   "initial_investment = :initial_investment, "
-                  "customer_id = :customer_id, "
+                  "customer_id = :customer_id "
                   "WHERE investment_id = :investment_id";
   std::unordered_map<QString, QVariant> queryArgs;
   queryArgs.emplace(":stock_code",

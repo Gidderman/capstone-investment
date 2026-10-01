@@ -10,10 +10,12 @@
 
 #include "AdminController.h"
 #include "Authorizer.h"
+#include "ErrorWindow.h"
 #include "InitService.h"
 #include "LogInService.h"
 #include "LogInView.h"
 #include "TraderController.h"
+#include "TraderService.h"
 
 #include <QObject>
 #include <tuple>
@@ -23,15 +25,24 @@ class MasterController : public QObject {
   Q_OBJECT
 
 private:
-  // Screen initialization
-  LogInView *logInView;
+  CRUDManager crudManager;
+  DataManager dataManager;
 
   // Service initializations
   LogInService logInService;
 
+  // Other services
+  AdminService adminService;
+  TraderService traderService;
+
   // Other controllers
   AdminController adminController;
   TraderController traderController;
+
+  // Screen initialization
+  LogInView *logInView;
+
+  void displayError(QString errorInfo);
 
 public:
   MasterController();
@@ -45,8 +56,10 @@ public:
   void executeLogOut();
 
 public slots:
+  void detectUsernameEntry(QString username);
   // Used to determine when the user clicks the log in button.
-  void detectLogin();
+  void detectLogin(QString password);
+  void detectPasswordCreation(QString password, QString passwordVerification);
   // Used to detect when the adminController or traderController log out
   void listenForLogOut();
 };

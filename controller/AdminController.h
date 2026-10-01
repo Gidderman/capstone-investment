@@ -32,16 +32,10 @@ private:
   WarningWindow *pDeleteWarning;
 
   // Service declaration
-  AdminService adminService;
+  AdminService &adminService;
 
   // The controller keeps track of the logged in employees id
   int loggedInAccountId;
-
-  // These private functions are used to format the data
-  std::vector<CustomerDisplayItem *>
-  formatCustomersForDisplay(std::vector<Customer> customers);
-  std::vector<TraderDisplayItem *>
-  formatEmployeesForDisplay(std::vector<Employee> employees);
 
   // This formats an individual employee or customer for display. This is
   // primarily used when editing an employee or customer and it is needed to
@@ -49,8 +43,10 @@ private:
   std::vector<QString> formatIndividualEmployeeForDisplay(Employee employee);
   std::vector<QString> formatIndividualCustomerForDisplay(Customer customer);
 
+  void displayError(QString errorText);
+
 public:
-  AdminController();
+  AdminController(AdminService &adminService);
   ~AdminController();
   // This function is the entry into the AdminController and is called by the
   // Master Controller after a successful admin log in.

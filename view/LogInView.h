@@ -13,6 +13,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <qboxlayout.h>
+#include <qpushbutton.h>
 
 class LogInView : public QWidget {
   // Necessary macro for using signals and slots
@@ -22,32 +23,46 @@ class LogInView : public QWidget {
   // to pass log in information to the controller
 private:
   // These variables will be removed
-  QString enteredUsername;
-  QString enteredPassword;
   QString title;
 
   // Display componenets
   QLabel *pTitleLabel;
+  QLabel *pDescriptionText;
+  QLabel *pWarningText;
   QLineEdit *pUsernameEntryField;
   QLineEdit *pPasswordEntryField;
+  QLineEdit *pPasswordVerificationField;
+
+  QPushButton *pNextButton;
   QPushButton *pAttemptLoginButton;
-  QVBoxLayout *pScreenLayout;
+  QPushButton *pCreatePasswordButton;
+
+  QVBoxLayout *pUsernameScreenLayout;
+  QVBoxLayout *pPasswordEntryLayout;
+  QVBoxLayout *pCreatePasswordLayout;
 
 public:
   LogInView();
   ~LogInView();
   // TODO: remove these functions after implementing signal
   // functionality
-  QString getEnteredUsername();
-  QString getEnteredPassword();
+  void runUsernameScreen();
+  void runPasswordScreen();
+  void runCreatePasswordScreen();
+  void displayWarningText(QString text);
   void clear();
 
 public slots:
+  void usernameEntered();
   void logInAttempted(); // Connected to the Log In button
+  void initiatePasswordCreation();
 
 signals:
-  void notifyOfLogInAttempt(); // Informs the LogInController that a log in
-                               // attempt was made.
+  void notifyOfUsernameEntry(QString username);
+  void
+  notifyOfLogInAttempt(QString password); // Informs the LogInController that a
+                                          // log in attempt was made.
+  void notifyOfPasswordCreation(QString password, QString passwordVerification);
 };
 
 #endif

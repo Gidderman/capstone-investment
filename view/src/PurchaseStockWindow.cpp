@@ -73,13 +73,18 @@ void PurchaseStockWindow::run() {
 }
 
 void PurchaseStockWindow::setDisplayPrice(QString price) {
-  pTotalPriceOfPurchase->setText(QString("Total Price: $") + price);
+  pTotalPriceOfPurchase->setText(price);
 }
 
 //**********************SLOTS**************************
 // This is called when the user clicks the confirm purchase button,
 // which then notifies the TraderController that a stock purchase occured
 void PurchaseStockWindow::listenForConfirmPurchase() {
+
+  std::cout << "Stock price sending for purchase "
+            << std::to_string(pTotalPriceOfPurchase->text().toFloat())
+            << std::endl;
+
   emit notifyOfConfirmPurchase({pSelectedStockCodeDisplay->currentText(),
                                 pNumberOfStockToPurchaseDisplay->value(),
                                 pTotalPriceOfPurchase->text()});

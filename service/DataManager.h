@@ -22,7 +22,7 @@
 
 class DataManager {
 private:
-  CRUDManager crudManager;
+  CRUDManager &crudManager;
 
   // Data structure to store stocks for quick access. Due to the limits
   // of the free API that is used to pull stock information, we will be
@@ -35,7 +35,7 @@ private:
   void refreshHashTableStockData();
 
 public:
-  DataManager();
+  DataManager(CRUDManager &crudManager);
   ~DataManager();
 
   std::string errorInfo;
@@ -53,6 +53,7 @@ public:
   Customer getCustomer(int customerId);
   Employee getEmployee(int accountId);
   Employee getEmployeeByLastName(std::string name);
+  Stock getStock(std::string stockCode);
 
   std::vector<Employee> getAllEmployees();
   std::vector<Customer> getAllCustomers();

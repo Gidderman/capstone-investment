@@ -6,20 +6,27 @@
 #include "Authorizer.h"
 #include "Customer.h"
 #include "CustomerDisplayItem.h"
+#include "ErrorWindow.h"
 #include "TraderCreationView.h"
 #include "TraderDisplayItem.h"
 #include "WarningWindow.h"
 
+#include <exception>
 #include <iostream>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 
-AdminController::AdminController() {};
+AdminController::AdminController(AdminService &adminService)
+    : adminService(adminService) {};
 
 AdminController::~AdminController() {}
 
 // This is the entry point into the class
 void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
+
+  std::cout << "AdminController::run - entering" << std::endl;
+
   // The authorizer pointer contains the allowed role based on the logged in
   // user. When we call the authorize user function, pass in the role required
   // to access the admin account, and it compares that to its stored role. If
@@ -28,17 +35,33 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
     // TODO: Throw and exception
   }
 
+  std::cout << "AdminController::run - authrized user confirmed" << std::endl;
+
   this->loggedInAccountId = loggedInAccountId;
 
-  // This call is stored in a variable to limit the number of database calls
-  // made
-  std::vector<Employee> allEmployees = adminService.getAllEmployees();
+  std::vector<Employee> allEmployees;
+  std::vector<Customer> allCustomers;
+
+  try {
+    allEmployees = adminService.getAllEmployees();
+    allCustomers = adminService.getAllCustomers();
+  } catch (std::logic_error &e) {
+    displayError(QString::fromStdString(e.what()));
+  } catch (std::exception &e) {
+    displayError(QString::fromStdString(e.what()));
+  }
+
+  std::cout << "AdminController::run - fetched employees and customers"
+            << std::endl;
 
   // We initialize the three screens that will be accessed, passing in the
   // display lists to the Admin Main View.
-  pAdminMainView =
-      new AdminMainView(adminService.getAllCustomers(), allEmployees);
+  pAdminMainView = new AdminMainView(allCustomers, allEmployees);
   pTraderCreationView = new TraderCreationView();
+
+  std::cout << "AdminController::run - initialized admin main view and trader "
+               "creation view"
+            << std::endl;
 
   // We get a list of all the employee names so customer accounts can be
   // assigned employees to manage them
@@ -49,6 +72,9 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
   }
 
   pCustomerCreationView = new CustomerCreationView(employeeNames);
+
+  std::cout << "AdminController::run - Initialized customer creation view"
+            << std::endl;
 
   // Connect all the Admin Main View signals to the applicable slots.
   connect(pAdminMainView, &AdminMainView::notifyOfLogOut, this,
@@ -77,19 +103,34 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
   connect(pCustomerCreationView, &CustomerCreationView::notifyOfCreationCancel,
           this, &AdminController::listenForCustomerActionCancel);
 
+  std::cout << "AdminController::run - connected all signals and slots"
+            << std::endl;
+
   // TODO: Check these signal and slot names and make sure they make sense and
   // aren't redundent.
 
   pAdminMainView->show(); // Display the main screen
+
+  std::cout << "AdminController::run - exiting" << std::endl;
 }
 
 // We are creating a new employee.
-void AdminController::executeEmployeeCreation() { pTraderCreationView->run(); }
+void AdminController::executeEmployeeCreation() {
+  try {
+    pTraderCreationView->run();
+  } catch (std::exception &e) {
+    displayError(QString::fromStdString(e.what()));
+  }
+}
 
-// We are editing a new employee.
+// We are editing a employee.
 void AdminController::executeEmployeeEdit(Employee employeeToBeEdited) {
-  pTraderCreationView->run(
-      formatIndividualEmployeeForDisplay(employeeToBeEdited));
+  try {
+    pTraderCreationView->run(
+        formatIndividualEmployeeForDisplay(employeeToBeEdited));
+  } catch (std::exception &e) {
+    displayError(QString::fromStdString(e.what()));
+  }
 }
 
 // We are deleteing an existing employee, first throwing a warning window.
@@ -99,10 +140,8 @@ void AdminController::executeEmployeeDeletion() {
   int warningWindowChoice = pDeleteWarning->exec();
   switch (warningWindowChoice) {
   case QMessageBox::Cancel:
-    // User cancelled...
-    // TODO: Actual functionality
     std::cout << warningWindowChoice << " DID NOT DELETE" << std::endl;
-    break;
+    return;
   case QMessageBox::Apply:
     // User confirmed deletion.
     // TODO: Actual functionality
@@ -121,15 +160,23 @@ void AdminController::executeEmployeeDeletion() {
 
 // We are creating a new customer
 void AdminController::executeCustomerCreation() {
-  pCustomerCreationView->run();
+  try {
+    pCustomerCreationView->run();
+  } catch (std::exception &e) {
+    displayError(QString::fromStdString(e.what()));
+  }
 }
 
 // We are editing an existing customer
 void AdminController::executeCustomerEdit(Customer customer) {
-  pCustomerCreationView->run(formatIndividualCustomerForDisplay(customer));
+  try {
+    pCustomerCreationView->run(formatIndividualCustomerForDisplay(customer));
+  } catch (std::exception &e) {
+    displayError(QString::fromStdString(e.what()));
+  }
 }
 
-// We are deleting an exiting customer, first throwing a waring window
+// We are deleting an existing customer, first throwing a warning window
 void AdminController::executeCustomerDeletion() {
   pDeleteWarning = new WarningWindow();
 
@@ -161,22 +208,27 @@ void AdminController::executeEmployeeAction(Employee employee) {
   // We determine if this employee is an existing one, or a new one by
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the employee.
+  try {
+    Employee employeeToEdit;
 
-  Employee employeeToEdit;
+    if (employee.accountID != -1) {
+      employeeToEdit = adminService.getEmployeeById(employee.accountID);
+      adminService.editEmployee(employeeToEdit, employee);
 
-  if (employee.accountID != -1) {
-    employeeToEdit = adminService.getEmployeeById(employee.accountID);
-    if (!adminService.editEmployee(employeeToEdit, employee)) {
-      // TODO: unsuccessful edit, flash an error window
+    } else {
+      adminService.createEmployee(employee);
     }
-  } else {
-    if (!adminService.createEmployee(employee)) {
-      // TODO: unsucessful edit flash an error window
-    }
+
+    // TODO: Update the list of assignable employees for customer creation after
+    // a new employee is created.
+
+    // Refresh display to show up to date information.
+    pAdminMainView->refreshEmployees(adminService.getAllEmployees());
+  } catch (std::logic_error &e) {
+    displayError(QString::fromStdString(e.what()));
+  } catch (std::exception &e) {
+    displayError(QString::fromStdString(e.what()));
   }
-
-  // Refresh display to show up to date information.
-  pAdminMainView->refreshEmployees(adminService.getAllEmployees());
 }
 
 // We are unlocking and employee account
@@ -191,31 +243,28 @@ void AdminController::executeCustomerAction(Customer customer) {
   // We determine if this customer is an existing one, or a new one by
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the customer.
+  try {
+    std::cout << "AdminController::executeCustomerAciton - entered"
+              << std::endl;
 
-  std::cout << "AdminController::executeCustomerAciton - entered" << std::endl;
+    Customer customerToEdit;
+    if (customer.customerID != -1) {
+      customerToEdit = adminService.getCustomerById(customer.customerID);
+      adminService.editCustomer(customerToEdit, customer);
+    } else {
+      adminService.createCustomer(customer);
+    }
 
-  Customer customerToEdit;
-  if (customer.customerID != -1) {
-    customerToEdit = adminService.getCustomerById(customer.customerID);
-    if (adminService.editCustomer(customerToEdit, customer)) {
-      // TODO: successful edit
-    } else {
-      // TODO: unsuccesful edit
-    }
-  } else {
-    if (adminService.createCustomer(customer)) {
-      // TODO: sucessful edit
-    } else {
-      // TODO: unsuccesful edit
-    }
+    // Refresh our display to show up to date information. Employee display must
+    // be updated as well to update the number of managed accounts
+    pAdminMainView->refreshCustomers(adminService.getAllCustomers());
+    pAdminMainView->refreshEmployees(adminService.getAllEmployees());
+
+  } catch (std::logic_error &e) {
+    displayError(QString::fromStdString(e.what()));
+  } catch (std::exception &e) {
+    displayError(QString::fromStdString(e.what()));
   }
-
-  // Refresh our display to show up to date information. Employee display must
-  // be updated as well to update the number of managed accounts
-  pAdminMainView->refreshCustomers(adminService.getAllCustomers());
-  pAdminMainView->refreshEmployees(adminService.getAllEmployees());
-
-  std::cout << "AdminController::executeCustomerAciton - exiting" << std::endl;
 }
 
 // We have cancelled the creation or edit of an employee
@@ -223,71 +272,10 @@ void AdminController::cancelCustomerAction() { pCustomerCreationView->end(); }
 
 //*********************PRIVATE FUNCTIONS*****************************
 
-// The custom display containers are formated with the customer full
-// name in the top left, customer id below that, current worth on the right
-// and univested funds below the current worth. All these values must be in
-// QStrings.
-std::vector<CustomerDisplayItem *>
-AdminController::formatCustomersForDisplay(std::vector<Customer> customers) {
-  // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
-  std::vector<CustomerDisplayItem *> customerDisplayList;
-  for (Customer customer : customers) {
-    float currentWorth = 0.0f;
-
-    for (Investment investment : customer.investments) {
-      currentWorth += investment.currentInvestmentWorth;
-    }
-
-    std::string customerDisplayName =
-        customer.lastName + ", " + customer.firstName.at(0);
-
-    CustomerDisplayItem *displayItem = new CustomerDisplayItem(
-        QString::fromStdString(customerDisplayName),
-        QString::number(customer.customerID), QString::number(currentWorth),
-        QString::number(customer.uninvestedFunds));
-
-    customerDisplayList.push_back(displayItem);
-  }
-
-  return customerDisplayList;
-}
-
-// The custom display contianers for employees consist of their full name
-// on the left with their account ID below it, and the number of customer
-// accounts managed on the right. All in QStrings
-std::vector<TraderDisplayItem *>
-AdminController::formatEmployeesForDisplay(std::vector<Employee> employees) {
-  // TODO: OPTIMIZE QUERIES WHEN IMPLEMENTING DATABASE
-  std::vector<TraderDisplayItem *> employeeDisplayList;
-  for (Employee employee : employees) {
-    int numCustomersManaged = 0;
-
-    for (Customer customer : adminService.getAllCustomers()) {
-      if (customer.accountID == employee.accountID) {
-        numCustomersManaged++;
-      }
-    }
-    std::string numCustomersManagedDisplayText =
-        std::to_string(numCustomersManaged) + " accounts managed.";
-    std::string employeeDisplayName =
-        employee.lastName + ", " + employee.firstName.at(0);
-
-    TraderDisplayItem *displayItem = new TraderDisplayItem(
-        QString::fromStdString(employeeDisplayName),
-        QString::number(employee.accountID),
-        QString::fromStdString(numCustomersManagedDisplayText));
-
-    employeeDisplayList.push_back(displayItem);
-  }
-
-  return employeeDisplayList;
-}
-
 // We format an individual employee for display within the Employee Creation
 // Window. All values must be in QStrings.
 std::vector<QString>
 AdminController::formatIndividualEmployeeForDisplay(Employee employee) {
-
   std::vector<QString> returnData;
   returnData.push_back(QString::fromStdString(employee.firstName));
   returnData.push_back(QString::fromStdString(employee.lastName));
@@ -326,6 +314,12 @@ AdminController::formatIndividualCustomerForDisplay(Customer customer) {
       managingEmployee.lastName + ", " + managingEmployee.firstName.at(0)));
 
   return returnData;
+}
+
+void AdminController::displayError(QString errorText) {
+  ErrorWindow *errorWindow = new ErrorWindow(errorText);
+  int windowAcknowledged = errorWindow->exec();
+  delete errorWindow;
 }
 
 //*********************SLOTS**************************************

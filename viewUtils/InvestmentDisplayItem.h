@@ -29,13 +29,15 @@ private:
 
   QHBoxLayout *pLayout;
 
+  int investmentId;
+
 protected:
   // Overrided function to make this widget clickable.
   void mousePressEvent(QMouseEvent *event) override;
 
 public:
   // Pass in the information to display with the constructor
-  InvestmentDisplayItem(QString stockName, QString stockCode,
+  InvestmentDisplayItem(int investmentId, QString stockName, QString stockCode,
                         QString numberHeld, QString pricePerStock);
   ~InvestmentDisplayItem();
 

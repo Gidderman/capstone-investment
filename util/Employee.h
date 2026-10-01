@@ -10,7 +10,7 @@
 #include <string>
 
 struct Employee {
-  int accountID;
+  int accountID = -1;
   std::string firstName;
   std::string lastName;
   ROLE role;

@@ -14,7 +14,7 @@
 enum ACCOUNT_TYPE { BROKERAGE, RETIREMENT };
 
 struct Customer {
-  int customerID;
+  int customerID = -1;
   std::string firstName;
   std::string lastName;
   std::string phoneNum;
