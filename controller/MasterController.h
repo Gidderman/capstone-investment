@@ -51,7 +51,7 @@ public:
   // functions
   void executeMainFunctions();
   // Directs the log in service to begin a log in.
-  void executeLogin();
+  void executeLogin(std::string enteredPassword);
   // Shows the log in screen upon log out.
   void executeLogOut();
 
@@ -59,9 +59,12 @@ public slots:
   void detectUsernameEntry(QString username);
   // Used to determine when the user clicks the log in button.
   void detectLogin(QString password);
+  void listenForPasswordVerificationFieldChange(QString password,
+                                                QString passwordVerification);
   void detectPasswordCreation(QString password, QString passwordVerification);
   // Used to detect when the adminController or traderController log out
   void listenForLogOut();
+  void listenForGoBack();
 };
 
 #endif

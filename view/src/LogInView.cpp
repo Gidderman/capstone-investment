@@ -4,6 +4,8 @@
 #include <qboxlayout.h>
 #include <qpushbutton.h>
 
+#include <iostream>
+
 // TODO: Format for populating the proper screen size and the various other
 // widgets within, and passing data via signals
 
@@ -25,12 +27,14 @@ LogInView::LogInView() : title("Investment Company") {
   QString descriptorText = "Welcome, this is your first time logging in.\n"
                            "Passwords must be 8 to 12 characters in length,\n"
                            "and only be comprised of these characters: \n"
-                           "'a-z, A-Z, 1-9, ! @ # $ % & *'";
+                           "'a-z, A-Z, 0-9, ! @ # $ % & *'";
   pDescriptionText = new QLabel(descriptorText);
   pPasswordVerificationField = new QLineEdit();
   pPasswordVerificationField->setPlaceholderText(QString("Re-enter password"));
   pPasswordVerificationField->setEchoMode(QLineEdit::Password);
   pCreatePasswordButton = new QPushButton(QString("Create Password"));
+
+  pBackButton = new QPushButton("Back");
 
   pWarningText = new QLabel();
 
@@ -42,50 +46,92 @@ LogInView::LogInView() : title("Investment Company") {
           &LogInView::logInAttempted);
   connect(pCreatePasswordButton, &QPushButton::clicked, this,
           &LogInView::initiatePasswordCreation);
+  connect(pBackButton, &QPushButton::clicked, this, &LogInView::goBack);
 
-  // Set up the layout for the enter username screen.
-  pUsernameScreenLayout = new QVBoxLayout(this);
-  pUsernameScreenLayout->addWidget(pTitleLabel);
-  pUsernameScreenLayout->addWidget(pUsernameEntryField);
-  pUsernameScreenLayout->addWidget(pNextButton);
-  pUsernameScreenLayout->addWidget(pWarningText);
+  connect(pPasswordVerificationField, &QLineEdit::textChanged, this,
+          &LogInView::passwordVerificationFieldChanged);
 
-  pPasswordEntryLayout = new QVBoxLayout(this);
-  pPasswordEntryLayout->addWidget(pTitleLabel);
-  pPasswordEntryLayout->addWidget(pPasswordEntryField);
-  pPasswordEntryLayout->addWidget(pAttemptLoginButton);
-  pPasswordEntryLayout->addWidget(pWarningText);
-
-  pCreatePasswordLayout = new QVBoxLayout(this);
-  pCreatePasswordLayout->addWidget(pTitleLabel);
-  pCreatePasswordLayout->addWidget(pDescriptionText);
-  pCreatePasswordLayout->addWidget(pPasswordEntryField);
-  pCreatePasswordLayout->addWidget(pPasswordVerificationField);
-  pCreatePasswordLayout->addWidget(pCreatePasswordButton);
-  pCreatePasswordLayout->addWidget(pWarningText);
-
-  setLayout(pUsernameScreenLayout);
+  pLayout = new QVBoxLayout(this);
+  pLayout->addWidget(pTitleLabel);
+  pLayout->addWidget(pDescriptionText);
+  pLayout->addWidget(pUsernameEntryField);
+  pLayout->addWidget(pPasswordEntryField);
+  pLayout->addWidget(pPasswordVerificationField);
+  pLayout->addWidget(pAttemptLoginButton);
+  pLayout->addWidget(pCreatePasswordButton);
+  pLayout->addWidget(pNextButton);
+  pLayout->addWidget(pBackButton);
+  pLayout->addWidget(pWarningText);
 }
 
 LogInView::~LogInView() {}
 
 void LogInView::runUsernameScreen() {
-  setLayout(pUsernameScreenLayout);
+  pTitleLabel->show();
+  pUsernameEntryField->show();
+  pNextButton->show();
+
+  pPasswordEntryField->hide();
+  pAttemptLoginButton->hide();
+  pBackButton->hide();
+
+  pDescriptionText->hide();
+  pPasswordEntryField->hide();
+  pPasswordVerificationField->hide();
+  pCreatePasswordButton->hide();
+  pBackButton->hide();
+  pWarningText->hide();
+
+  pUsernameEntryField->setReadOnly(false);
+  adjustSize();
   this->show();
 }
 
 void LogInView::runPasswordScreen() {
-  setLayout(pPasswordEntryLayout);
+
+  pNextButton->hide();
+
+  pTitleLabel->show();
+  pUsernameEntryField->show();
+  pPasswordEntryField->show();
+  pAttemptLoginButton->show();
+  pBackButton->show();
+
+  pPasswordVerificationField->hide();
+  pCreatePasswordButton->hide();
+  pWarningText->hide();
+
+  pUsernameEntryField->setReadOnly(true);
+  pPasswordEntryField->setFocus();
+
+  adjustSize();
   this->show();
 }
 
 void LogInView::runCreatePasswordScreen() {
-  setLayout(pCreatePasswordLayout);
+
+  pNextButton->hide();
+
+  pAttemptLoginButton->hide();
+
+  pTitleLabel->show();
+  pDescriptionText->show();
+  pUsernameEntryField->show();
+  pPasswordEntryField->show();
+  pPasswordVerificationField->show();
+  pCreatePasswordButton->show();
+  pBackButton->show();
+  pWarningText->hide();
+
+  pUsernameEntryField->setReadOnly(true);
+  pPasswordEntryField->setFocus();
+  adjustSize();
   this->show();
 }
 
 void LogInView::displayWarningText(QString text) {
   pWarningText->setText(text);
+  pWarningText->show();
 }
 
 void LogInView::clear() {
@@ -93,6 +139,8 @@ void LogInView::clear() {
   pPasswordEntryField->setText("");
   pWarningText->setText("");
 }
+
+//*******************PRIVATE FUNCTIONS***************************
 
 //**********************SLOTS************************************
 void LogInView::usernameEntered() {
@@ -106,4 +154,11 @@ void LogInView::logInAttempted() {
 void LogInView::initiatePasswordCreation() {
   emit notifyOfPasswordCreation(pPasswordEntryField->text(),
                                 pPasswordVerificationField->text());
+}
+
+void LogInView::goBack() { emit userRequestsGoingBack(); }
+
+void LogInView::passwordVerificationFieldChanged() {
+  emit notifyOfPasswordVerificationFieldChange(
+      pPasswordEntryField->text(), pPasswordVerificationField->text());
 }

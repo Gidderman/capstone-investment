@@ -9,7 +9,7 @@
 #include <string>
 
 struct Credentials {
-  int accountID;
+  int accountID = -1;
   std::string username;
   std::string password;
   std::string salt;

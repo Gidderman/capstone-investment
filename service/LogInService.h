@@ -25,6 +25,10 @@ class LogInService {
 private:
   DataManager &dataManager;
   int logInAttempts;
+  bool countAttemptedLogIns;
+
+  Employee employeeAttemptingToLogIn;
+  Credentials credentialsForAttemptingToLogInEmployee;
 
   // This function hashes the password provided by the password, utilizing the
   // salt stored within the database that is associated with the entered
@@ -40,12 +44,19 @@ public:
   ~LogInService();
   // Returns two bools, one for if the account has a valid password or needs
   // to make one, the second bool is for if the account is locked.
-  std::tuple<bool, bool> doesAccountHaveValidCredentials(std::string username);
+  std::tuple<bool, bool, bool>
+  doesAccountHaveValidCredentials(std::string username);
   // This is the entry point into this class, accepting the entered username and
   // password. If the login attempt is valid, it returns a tuple of the employee
   // and the associated role.
-  std::tuple<Employee, ROLE> handleLogInAttempt(std::string enteredUsername,
-                                                std::string enteredPassword);
+  std::optional<std::tuple<Employee, ROLE>>
+  handleLogInAttempt(std::string enteredPassword);
+  bool verifyPasswordsMatch(std::string enteredPassword,
+                            std::string verificationPassword);
+  bool verifyPasswordComplexityRequirements(std::string enteredPassword,
+                                            std::string verificationPassword);
+  void createPassword(std::string enteredPassword);
+  void setLogAttemptedLogIns(bool countLogIns);
 };
 
 #endif

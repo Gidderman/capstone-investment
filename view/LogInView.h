@@ -36,10 +36,9 @@ private:
   QPushButton *pNextButton;
   QPushButton *pAttemptLoginButton;
   QPushButton *pCreatePasswordButton;
+  QPushButton *pBackButton;
 
-  QVBoxLayout *pUsernameScreenLayout;
-  QVBoxLayout *pPasswordEntryLayout;
-  QVBoxLayout *pCreatePasswordLayout;
+  QVBoxLayout *pLayout;
 
 public:
   LogInView();
@@ -56,13 +55,24 @@ public slots:
   void usernameEntered();
   void logInAttempted(); // Connected to the Log In button
   void initiatePasswordCreation();
+  void goBack();
+
+  void passwordVerificationFieldChanged();
 
 signals:
   void notifyOfUsernameEntry(QString username);
   void
   notifyOfLogInAttempt(QString password); // Informs the LogInController that a
                                           // log in attempt was made.
+
+  // This is emmitted when the user clicks create password
   void notifyOfPasswordCreation(QString password, QString passwordVerification);
+  void userRequestsGoingBack();
+
+  // Emitted whenever the password verification field changes for a quick
+  // verification on if the entered passwords match.
+  void notifyOfPasswordVerificationFieldChange(QString password,
+                                               QString passwordVerification);
 };
 
 #endif
