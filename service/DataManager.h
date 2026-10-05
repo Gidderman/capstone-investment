@@ -3,11 +3,6 @@
 // way that the various Service classes can use it. It is the bridge between our
 // service classes and the model layer in the architecture.
 
-// TODO:
-// CURRENTLY THIS CLASS FORMATS DATA IN A WAY THAT MY SIMULATED DATABASE CAN
-// INTERFACE WITH IT, I.E. MOSTLY INTO VECTORS OF STRINGS. THERE WILL BE
-// REFACTORING REQUIRED WHEN AN ACTUAL DATABASE CONNECTION IS MADE
-
 #ifndef DATA_MANAGER_H
 #define DATA_MANAGER_H
 

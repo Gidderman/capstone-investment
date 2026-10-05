@@ -2,10 +2,6 @@
 // It handls the input necessary for that function as well, passing information
 // to the TraderController.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATING AND
-// FUNCTIONALITY FOR SEEING AVAILABLE STOCKS TO BUY
-
 #ifndef PURCHASE_STOCK_WINDOW_H
 #define PURCHASE_STOCK_WINDOW_H
 

@@ -63,8 +63,6 @@ void CustomerCreationView::run() {
 
 // Called when editing a customer
 void CustomerCreationView::run(std::vector<QString> customerData) {
-  std::cout << "Customer data size " << customerData.size() << std::endl;
-
   id = customerData.at(0).toInt();
   pFirstNameEntry->setText(customerData.at(1));
   pLastNameEntry->setText(customerData.at(2));
@@ -103,8 +101,6 @@ void CustomerCreationView::clear() {
 //************************SLOTS***********************
 // Connected to the Create Customer button
 void CustomerCreationView::listenForCustomerCreation() {
-  std::cout << "CustomerCreationView::listenForCustomerCreation - entering"
-            << std::endl;
   std::vector<QString> customer;
   customer.push_back(QString::number(id));
   customer.push_back(pFirstNameEntry->text());
@@ -115,8 +111,6 @@ void CustomerCreationView::listenForCustomerCreation() {
   customer.push_back(pAccountTypeEntry->currentText());
   customer.push_back(pEmployeeAssignedEntry->currentText());
 
-  std::cout << "CustomerCreationView::listenForCustomerCreation - exiting"
-            << std::endl;
   emit notifyOfCustomerCreation(customer);
 }
 

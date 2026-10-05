@@ -3,8 +3,6 @@
 
 #include "CustomerManagerView.h"
 #include "ScrollableContainer.h"
-#include <qboxlayout.h>
-#include <qpushbutton.h>
 
 CustomerManagerView::CustomerManagerView(std::vector<QString> customerInfo,
                                          std::vector<Investment> stocks) {

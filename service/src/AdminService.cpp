@@ -6,7 +6,6 @@
 #include "QuickSort.h"
 
 #include <cmath>
-#include <iostream>
 #include <stdexcept>
 
 AdminService::AdminService(DataManager &dataManager)
@@ -127,7 +126,6 @@ void AdminService::createCustomer(Customer customer) {
 
 // Edit an existing customer
 void AdminService::editCustomer(Customer customer, Customer edit) {
-  std::cout << "AdminService::editCustomer - entering" << std::endl;
   // Populate the fields that are not editable within the edit Customer so they
   // aren't just overwritten to blank values.
   edit.dateAccountOpened = customer.dateAccountOpened;

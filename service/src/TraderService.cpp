@@ -4,10 +4,9 @@
 #include "TraderService.h"
 #include "DataManager.h"
 #include "Investment.h"
+
 #include <stdexcept>
 #include <string>
-
-#include <iostream>
 
 TraderService::TraderService(DataManager &dataManager)
     : dataManager(dataManager) {}
@@ -98,10 +97,6 @@ void TraderService::executeStockPurchase(
                              dataManager.getErrorInfo());
     }
   }
-
-  std::cout << "Subtracting " << std::to_string(std::get<2>(transaction))
-            << " from " << std::to_string(fetchedCustomer.uninvestedFunds)
-            << std::endl;
 
   fetchedCustomer.uninvestedFunds -= std::get<2>(transaction);
   if (!dataManager.updateCustomer(fetchedCustomer.customerID,

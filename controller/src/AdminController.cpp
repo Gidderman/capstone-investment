@@ -5,15 +5,10 @@
 #include "AdminMainView.h"
 #include "Authorizer.h"
 #include "Customer.h"
-#include "CustomerDisplayItem.h"
 #include "ErrorWindow.h"
 #include "TraderCreationView.h"
-#include "TraderDisplayItem.h"
-#include "WarningWindow.h"
 
 #include <exception>
-#include <iostream>
-#include <ostream>
 #include <stdexcept>
 #include <string>
 
@@ -25,8 +20,6 @@ AdminController::~AdminController() {}
 // This is the entry point into the class
 void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
 
-  std::cout << "AdminController::run - entering" << std::endl;
-
   // The authorizer pointer contains the allowed role based on the logged in
   // user. When we call the authorize user function, pass in the role required
   // to access the admin account, and it compares that to its stored role. If
@@ -34,8 +27,6 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
   if (!authorizer->authorizeUser(ADMIN)) {
     // TODO: Throw and exception
   }
-
-  std::cout << "AdminController::run - authrized user confirmed" << std::endl;
 
   this->loggedInAccountId = loggedInAccountId;
 
@@ -51,17 +42,10 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
     displayError(QString::fromStdString(e.what()));
   }
 
-  std::cout << "AdminController::run - fetched employees and customers"
-            << std::endl;
-
   // We initialize the three screens that will be accessed, passing in the
   // display lists to the Admin Main View.
   pAdminMainView = new AdminMainView(allCustomers, allEmployees);
   pTraderCreationView = new TraderCreationView();
-
-  std::cout << "AdminController::run - initialized admin main view and trader "
-               "creation view"
-            << std::endl;
 
   // We get a list of all the employee names so customer accounts can be
   // assigned employees to manage them
@@ -72,9 +56,6 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
   }
 
   pCustomerCreationView = new CustomerCreationView(employeeNames);
-
-  std::cout << "AdminController::run - Initialized customer creation view"
-            << std::endl;
 
   // Connect all the Admin Main View signals to the applicable slots.
   connect(pAdminMainView, &AdminMainView::notifyOfLogOut, this,
@@ -111,15 +92,10 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
   connect(pCustomerCreationView, &CustomerCreationView::notifyOfCreationCancel,
           this, &AdminController::listenForCustomerActionCancel);
 
-  std::cout << "AdminController::run - connected all signals and slots"
-            << std::endl;
-
   // TODO: Check these signal and slot names and make sure they make sense and
   // aren't redundent.
 
   pAdminMainView->show(); // Display the main screen
-
-  std::cout << "AdminController::run - exiting" << std::endl;
 }
 
 // We are creating a new employee.
@@ -288,9 +264,6 @@ void AdminController::executeCustomerAction(Customer customer) {
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the customer.
   try {
-    std::cout << "AdminController::executeCustomerAciton - entered"
-              << std::endl;
-
     Customer customerToEdit;
     if (customer.customerID != -1) {
       customerToEdit = adminService.getCustomerById(customer.customerID);
@@ -449,8 +422,6 @@ void AdminController::listenForEmployeePasswordReset(int id) {
 // Connected to the CreateCustomerView Create Customer/Save Changes button
 void AdminController::listenForCustomerActionConfirmation(
     std::vector<QString> customer) {
-  std::cout << "AdminController::listenForCustomerActionConfirmation - entering"
-            << std::endl;
 
   Customer inputtedCustomer;
   inputtedCustomer.customerID = customer.at(0).toInt();
@@ -467,19 +438,12 @@ void AdminController::listenForCustomerActionConfirmation(
   std::string employeeLastName = customer.at(7).toStdString().substr(
       0, customer.at(7).toStdString().find(','));
 
-  std::cout << "Name string: " << employeeLastName << std::endl;
-
   inputtedCustomer.accountID =
       adminService.getEmployeeByName(employeeLastName).accountID;
-  std::cout << "Employee ID now assigned: " << inputtedCustomer.accountID
-            << std::endl;
 
   pCustomerCreationView->end();
 
   executeCustomerAction(inputtedCustomer);
-
-  std::cout << "AdminController::listenForCustomerActionConfirmation - exiting"
-            << std::endl;
 }
 
 // Connected to the CreateCustomerView cancel button.

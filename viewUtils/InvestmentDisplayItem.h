@@ -2,10 +2,6 @@
 // Each instance of the class is a singular Stock that needs to be displayed
 // in a specific format.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING AND
-// COMMUNICATION VIA SLOTS AND SIGNALS
-
 #ifndef INVESTMENT_DISPLAY_ITEM_H
 #define INVESTMENT_DISPLAY_ITEM_H
 

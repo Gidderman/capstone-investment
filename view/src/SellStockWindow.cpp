@@ -1,11 +1,6 @@
 // This class implements SellStockWindow.h, see the header file for more info
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING AND INFORMATION
-// POPULATION FOR THE AVAILABLE STOCKS TO SELL
-
 #include "SellStockWindow.h"
-#include <qcombobox.h>
 
 SellStockWindow::SellStockWindow(
     std::tuple<std::vector<QString>, std::vector<QString>> stockChoices) {

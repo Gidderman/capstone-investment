@@ -12,10 +12,7 @@
 #ifndef ADMIN_MAIN_VIEW_H
 #define ADMIN_MAIN_VIEW_H
 
-#include "CustomerDisplayItem.h"
 #include "ScrollableContainer.h"
-#include "TraderDisplayItem.h"
-#include "WarningWindow.h"
 
 #include <QHBoxLayout>
 #include <QLabel>

@@ -8,10 +8,6 @@
 // the controllers. Additionally, if it is the users first time loggin in,
 // then it will have the user create a password.
 
-// TODO:
-// THIS CLASS CURRENTLY DOES NOT PERFORM ANY PASSWORD HASHING AND REQUIRES MORE
-// WORK, NOR DOES IT HANDLE FIRST TIME LOG INS.
-
 #ifndef LOG_IN_SERVICE_H
 #define LOG_IN_SERVICE_H
 

@@ -6,8 +6,6 @@
 #include <qsizepolicy.h>
 #include <qspinbox.h>
 
-#include <iostream>
-
 PurchaseStockWindow::PurchaseStockWindow(
     std::vector<std::tuple<QString, QString, QString>> stockList) {
   // Initialize display items
@@ -80,11 +78,6 @@ void PurchaseStockWindow::setDisplayPrice(QString price) {
 // This is called when the user clicks the confirm purchase button,
 // which then notifies the TraderController that a stock purchase occured
 void PurchaseStockWindow::listenForConfirmPurchase() {
-
-  std::cout << "Stock price sending for purchase "
-            << std::to_string(pTotalPriceOfPurchase->text().toFloat())
-            << std::endl;
-
   emit notifyOfConfirmPurchase({pSelectedStockCodeDisplay->currentText(),
                                 pNumberOfStockToPurchaseDisplay->value(),
                                 pTotalPriceOfPurchase->text()});

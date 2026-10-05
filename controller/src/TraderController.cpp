@@ -5,6 +5,7 @@
 #include "Authorizer.h"
 #include "Customer.h"
 #include "CustomerManagerView.h"
+#include "ErrorWindow.h"
 #include "PurchaseStockWindow.h"
 #include "SellStockWindow.h"
 #include "TraderMainView.h"
@@ -13,7 +14,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <exception>
-#include <iostream>
 #include <stdexcept>
 
 TraderController::TraderController(TraderService &traderService)

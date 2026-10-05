@@ -1,10 +1,6 @@
 // This class implements TraderMainView.h, see the header file for more info.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING
-
 #include "TraderMainView.h"
-#include "ScrollableContainer.h"
 
 TraderMainView::TraderMainView(std::vector<QString> employeeDisplayInfo,
                                std::vector<Customer> managedCustomers) {

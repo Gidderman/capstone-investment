@@ -3,10 +3,6 @@
 // It is scrollable, ensuring that for large amounts of data to display, it
 // will not go past the limits of the window.
 
-// TODO:
-// THIS CLASS IS NOT YET FINISHED, REQUIRING FORMATING AND SCROLL FUNCTIONALITY.
-// Additionally considering turning this into a template class
-
 #ifndef SCROLLABLE_CONTAINER_H
 #define SCROLLABLE_CONTAINER_H
 

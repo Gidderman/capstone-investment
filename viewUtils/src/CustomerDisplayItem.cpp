@@ -1,8 +1,5 @@
 // This class implements CustomerDisplayItem.h, see header file for more info
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING
-
 #include "CustomerDisplayItem.h"
 
 CustomerDisplayItem::CustomerDisplayItem(QString name, QString id,

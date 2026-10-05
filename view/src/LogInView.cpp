@@ -1,13 +1,6 @@
 // This class implements LogInView.h, see the header file for more information
 
 #include "LogInView.h"
-#include <qboxlayout.h>
-#include <qpushbutton.h>
-
-#include <iostream>
-
-// TODO: Format for populating the proper screen size and the various other
-// widgets within, and passing data via signals
 
 LogInView::LogInView() : title("Investment Company") {
 

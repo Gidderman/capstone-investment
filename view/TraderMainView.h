@@ -2,13 +2,9 @@
 // from the log in screen. It handles all input, which includes logging out and
 // selecting a given displayed customer.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING
-
 #ifndef TRADER_MAIN_VIEW_H
 #define TRADER_MAIN_VIEW_H
 
-#include "CustomerDisplayItem.h"
 #include "ScrollableContainer.h"
 
 #include <QHBoxLayout>

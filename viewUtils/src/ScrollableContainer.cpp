@@ -1,13 +1,7 @@
 // This class implements ScrollableContainer.h, see header file for more info
 
-// TODO:
-// THIS CLASS IS NOT YET FINISHED, REQUIRING FORMATING AND SCROLL FUNCTIONALITY.
-// Additionally considering turning this into a template class
-
 #include "ScrollableContainer.h"
 #include "InvestmentDisplayItem.h"
-
-#include <iostream>
 
 ScrollableContainer::ScrollableContainer(CONTAINER_TYPE containerType)
     : containerType(containerType) {
@@ -74,8 +68,6 @@ void ScrollableContainer::addDisplayList(std::vector<Investment> investments) {
 }
 
 void ScrollableContainer::refreshDisplayList(std::vector<Customer> customers) {
-  std::cout << "ScrollableContainer::refreshDisplayList - entering"
-            << std::endl;
 
   clearDisplay();
   for (Customer customer : customers) {
@@ -96,8 +88,6 @@ void ScrollableContainer::refreshDisplayList(std::vector<Customer> customers) {
     this->customerDisplayList.push_back(displayItem);
   }
   displayList();
-
-  std::cout << "ScrollableContainer::refreshDisplayList - exiting" << std::endl;
 }
 
 void ScrollableContainer::refreshDisplayList(std::vector<Employee> employees) {
@@ -138,7 +128,6 @@ void ScrollableContainer::refreshDisplayList(
 
 //****************************PRIVATE FUNCTIONS*******************************
 void ScrollableContainer::clearDisplay() {
-  std::cout << "ScrollableContainer::clearDisplay - entering" << std::endl;
 
   QLayoutItem *item;
   // We always take item 0 because as we remove one, the next one slides into
@@ -162,12 +151,9 @@ void ScrollableContainer::clearDisplay() {
   employeeDisplayList.clear();
   customerDisplayList.clear();
   investmentDisplayList.clear();
-
-  std::cout << "ScrollableContainer::clearDisplay - exiting" << std::endl;
 }
 
 void ScrollableContainer::displayList() {
-  std::cout << "ScrollableContainer::displayList - entering" << std::endl;
 
   if (containerType == CUSTOMERS) {
     for (CustomerDisplayItem *displayItem : customerDisplayList) {
@@ -195,8 +181,6 @@ void ScrollableContainer::displayList() {
       // TODO: stock display click connections
     }
   }
-
-  std::cout << "ScrollableContainer::displayList - exiting" << std::endl;
 }
 
 //****************************SLOTS*******************************************

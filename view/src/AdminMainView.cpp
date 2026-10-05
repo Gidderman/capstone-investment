@@ -6,8 +6,6 @@
 
 #include <QString>
 
-#include <iostream>
-
 AdminMainView::AdminMainView(std::vector<Customer> totalCustomers,
                              std::vector<Employee> totalTraders) {
   // Add the customers to the scrollable container for display
@@ -89,11 +87,7 @@ void AdminMainView::refreshEmployees(std::vector<Employee> totalEmployees) {
 }
 
 void AdminMainView::refreshCustomers(std::vector<Customer> totalCustomers) {
-  std::cout << "AdminMainView::refreshCustomers - entering" << std::endl;
-
   pCustomerList->refreshDisplayList(totalCustomers);
-
-  std::cout << "AdminMainView::refreshCustomers - exiting" << std::endl;
 }
 
 // *********************SLOTS*********************************************

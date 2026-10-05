@@ -11,9 +11,7 @@
 #define TRADER_CONTROLLER_H
 
 #include "Authorizer.h"
-#include "CustomerDisplayItem.h"
 #include "CustomerManagerView.h"
-#include "ErrorWindow.h"
 #include "PurchaseStockWindow.h"
 #include "SellStockWindow.h"
 #include "TraderMainView.h"

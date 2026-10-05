@@ -1,17 +1,11 @@
 // This class implements LogInService.h, see that header file for further
 // information.
 
-// TODO:
-// THIS CLASS CURRENTLY DOES NOT PERFORM ANY PASSWORD HASHING AND REQUIRES MORE
-// WORK, NOR DOES IT HANDLE FIRST TIME LOG INS.
-
 #include "LogInService.h"
 #include "Credentials.h"
 #include "Employee.h"
 
-#include <iostream>
 #include <sodium.h>
-#include <sodium/crypto_pwhash.h>
 
 LogInService::LogInService(DataManager &dataManager)
     : dataManager(dataManager), logInAttempts(0), countAttemptedLogIns(true),

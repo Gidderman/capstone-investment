@@ -3,16 +3,10 @@
 // the customer information. This window is only accessible from the
 // TraderMainView window and reports to the TraderController.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING MORE WORK FOR FORMATING AND ACTUAL
-// STOCK MANAGEMENT FUNCTIONALITY
-
 #ifndef CUSTOMER_MANAGER_VIEW_H
 #define CUSTOMER_MANAGER_VIEW_H
 
-#include "PurchaseStockWindow.h"
 #include "ScrollableContainer.h"
-#include "SellStockWindow.h"
 
 #include <QHBoxLayout>
 #include <QLabel>

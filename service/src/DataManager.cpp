@@ -1,24 +1,16 @@
 // This class implements DataManager.h, see that header file for details
 // regarding the purpose of this class.
 
-// TODO:
-// CURRENTLY THIS CLASS FORMATS DATA IN A WAY THAT MY SIMULATED DATABASE CAN
-// INTERFACE WITH IT, I.E. MOSTLY INTO VECTORS OF STRINGS. THERE WILL BE
-// REFACTORING REQUIRED WHEN AN ACTUAL DATABASE CONNECTION IS MADE
-
 #include "DataManager.h"
 #include "Credentials.h"
 #include "Customer.h"
 #include "Investment.h"
 
-#include <iostream>
 #include <optional>
-#include <qsqlquery.h>
-#include <qvariant.h>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
-#include <vector> //TODO: REMOVE AFTER TESTING
+#include <vector>
 
 // We pass in by reference the CRUD Manager to prevent multiple copies and
 //  multiple database connections
@@ -34,7 +26,6 @@ DataManager::~DataManager() {}
 
 std::tuple<Employee, Credentials>
 DataManager::getEmployeeByUsername(std::string username) {
-  std::cout << "DataManager::getEmployeeByUsername - entering" << std::endl;
 
   Employee employeeToReturn;
   Credentials employeeCredentials;
@@ -94,8 +85,6 @@ DataManager::getEmployeeByUsername(std::string username) {
     employeeCredentials.accountLocked =
         employeeAndCredentials.value().value("account_locked").toBool();
   }
-
-  std::cout << "DataManager::getEmployeeByUsername - exiting" << std::endl;
 
   return {employeeToReturn, employeeCredentials};
 }

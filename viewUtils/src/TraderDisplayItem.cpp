@@ -1,8 +1,5 @@
 // This class implements TraderDisplayItem.h, see header file for more info
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING
-
 #include "TraderDisplayItem.h"
 #include <qboxlayout.h>
 #include <qevent.h>

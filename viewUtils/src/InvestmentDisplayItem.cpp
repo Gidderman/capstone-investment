@@ -1,9 +1,5 @@
 // This class implements StockDisplayItem.h, see header for more information
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING AND
-// COMMUNICATION VIA SLOTS AND SIGNALS
-
 #include "InvestmentDisplayItem.h"
 
 InvestmentDisplayItem::InvestmentDisplayItem(int investmentId,

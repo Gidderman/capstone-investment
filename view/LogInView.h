@@ -1,9 +1,6 @@
 // This class handles the display of the log in screen, accepting a username and
 // password as inputs.
 
-// TODO:
-// THIS CLASS IS NOT COMPLETE, REQUIRES WORK FOR DISPLAY FORMATTING
-
 #ifndef LOG_IN_VIEW_H
 #define LOG_IN_VIEW_H
 
@@ -12,8 +9,6 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <qboxlayout.h>
-#include <qpushbutton.h>
 
 class LogInView : public QWidget {
   // Necessary macro for using signals and slots

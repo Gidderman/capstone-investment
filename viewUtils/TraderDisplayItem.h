@@ -2,9 +2,6 @@
 // Each instance of the class is a singular Trader that needs to be displayed
 // in a specific format.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING
-
 #ifndef TRADER_DISPLAY_ITEM_H
 #define TRADER_DISPLAY_ITEM_H
 

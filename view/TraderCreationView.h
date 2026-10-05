@@ -2,9 +2,6 @@
 // handles the input and output for that window, reporting results to the admin
 // controller.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE AND REQUIRES MORE WORK FOR FORMATTING
-
 #ifndef TRADER_CREATION_VIEW_H
 #define TRADER_CREATION_VIEW_H
 

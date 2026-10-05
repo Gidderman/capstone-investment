@@ -9,16 +9,12 @@
 #define MASTER_CONTROLLER_H
 
 #include "AdminController.h"
-#include "Authorizer.h"
-#include "ErrorWindow.h"
-#include "InitService.h"
 #include "LogInService.h"
 #include "LogInView.h"
 #include "TraderController.h"
 #include "TraderService.h"
 
 #include <QObject>
-#include <tuple>
 
 class MasterController : public QObject {
   // Necessary macro for using signals and slots

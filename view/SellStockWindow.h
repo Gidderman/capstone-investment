@@ -1,10 +1,6 @@
 // This class handles the display of the Sell Stock pop up window, as well as
 // any input made, passing said input to the TraderController.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING AND INFORMATION
-// POPULATION FOR THE AVAILABLE STOCKS TO SELL
-
 #ifndef SELL_STOCK_WINDOW_H
 #define SELL_STOCK_WINDOW_H
 

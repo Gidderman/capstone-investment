@@ -13,6 +13,7 @@
 #include "Authorizer.h"
 #include "CustomerCreationView.h"
 #include "TraderCreationView.h"
+#include "WarningWindow.h"
 
 #include <QObject>
 

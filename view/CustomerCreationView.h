@@ -1,10 +1,6 @@
 // This class handles the display for the Customer Creation Window. It accepts
 // input for the customer information.
 
-// TODO:
-// THIS CLASS IS YET INCOMPLETE, REQUIRING MORE FORMATING AND THE ADDITION
-// A WAY TO ASSIGN A CUSTOMER TO AN EMPLOYEE
-
 #ifndef CUSTOMER_CREATION_VIEW_H
 #define CUSTOMER_CREATION_VIEW_H
 

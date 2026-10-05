@@ -2,11 +2,10 @@
 #include "AdminController.h"
 #include "Authorizer.h"
 #include "CRUDManager.h"
+#include "ErrorWindow.h"
 #include "LogInView.h"
 #include "TraderController.h"
 
-#include <iostream>
-#include <ostream>
 #include <stdexcept>
 
 // Initializes the view and makes the connections between the log out buttons
@@ -23,8 +22,6 @@ MasterController::MasterController()
       traderService(TraderService(dataManager)),
       adminController(AdminController(adminService)),
       traderController(TraderController(traderService)) {
-
-  std::cout << "MasterController::MasterController - entering" << std::endl;
 
   logInView = new LogInView();
 
@@ -72,9 +69,6 @@ void MasterController::executeLogin(std::string enteredPassword) {
     displayError(e.what());
   }
 
-  std::cout << "MasterController::executeLogIn - returned from LogInService"
-            << std::endl;
-
   // An invalid log in was attempted, we exit the function.
   if (!logInInformation.has_value()) {
     logInView->displayWarningText(
@@ -100,8 +94,6 @@ void MasterController::executeLogin(std::string enteredPassword) {
   // the log in window.
   switch (std::get<1>(logInInformation.value())) {
   case ADMIN:
-    std::cout << "MasterController::executeLogIn - attempting admin log in"
-              << std::endl;
 
     logInView->hide();
     adminController.run(std::get<0>(logInInformation.value()).accountID,
@@ -114,7 +106,7 @@ void MasterController::executeLogin(std::string enteredPassword) {
     break;
 
   default:
-    std::cout << "INVALID LOG IN!" << std::endl;
+    break;
   }
 };
 

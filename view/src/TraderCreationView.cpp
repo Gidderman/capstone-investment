@@ -1,13 +1,7 @@
 // This class implements TraderCreationView.h, see header file for further
 // information
 
-// TODO:
-// THIS CLASS IS INCOMPLETE AND REQUIRES MORE WORK FOR FORMATTING
-
 #include "TraderCreationView.h"
-
-#include <iostream>
-#include <qpushbutton.h>
 
 TraderCreationView::TraderCreationView() : id(-1) {
   // Initialize display components
@@ -69,8 +63,6 @@ void TraderCreationView::run(std::vector<QString> employee) {
   pFirstNameEntry->setText(employee.at(0));
   pLastNameEntry->setText(employee.at(1));
   pRoleSelection->setCurrentText(employee.at(2));
-  std::cout << "Setting role to " << employee.at(2).toStdString() << " for "
-            << employee.at(1).toStdString() << std::endl;
   if (employee.size() == 4) {
     id = employee.at(3).toInt();
   }
