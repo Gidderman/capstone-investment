@@ -22,7 +22,7 @@ AdminMainView::AdminMainView(std::vector<Customer> totalCustomers,
   pTitle = new QLabel(QString("ADMINISTRATOR"));
 
   pCreateTraderButton = new QPushButton(QString("Add Trader"));
-  pDeleteTraderButton = new QPushButton(QString("Remove Trader"));
+  pDeactivateTraderButton = new QPushButton(QString("Deactivate Trader"));
   pCreateCustomerButton = new QPushButton(QString("Add Customer"));
   pDeleteCustomerButton = new QPushButton(QString("Remove Customer"));
   pLogOutButton = new QPushButton(QString("Log Out"));
@@ -48,7 +48,7 @@ AdminMainView::AdminMainView(std::vector<Customer> totalCustomers,
   pTitleAndTraderLayout->addWidget(pTitle);
   pTitleAndTraderLayout->addWidget(pTraderList);
   pTraderButtonLayout->addWidget(pCreateTraderButton);
-  pTraderButtonLayout->addWidget(pDeleteTraderButton);
+  pTraderButtonLayout->addWidget(pDeactivateTraderButton);
   pTitleAndTraderLayout->addLayout(pTraderButtonLayout);
 
   pLogOutAndCustomerLayout->addWidget(pLogOutButton);
@@ -65,13 +65,17 @@ AdminMainView::AdminMainView(std::vector<Customer> totalCustomers,
           &AdminMainView::logOutInitiated);
   connect(pCreateTraderButton, &QPushButton::clicked, this,
           &AdminMainView::createEmployeeInitiated);
-  connect(pTraderList, &ScrollableContainer::notifyOfEmployeeItemSelection,
+  connect(pTraderList, &ScrollableContainer::notifyOfEmployeeItemSingleClick,
+          this, &AdminMainView::employeeSelected);
+  connect(pTraderList, &ScrollableContainer::notifyOfEmployeeItemDoubleClick,
           this, &AdminMainView::editEmployeeInitiated);
-  connect(pDeleteTraderButton, &QPushButton::clicked, this,
+  connect(pDeactivateTraderButton, &QPushButton::clicked, this,
           &AdminMainView::notifyOfEmployeeDeletion);
   connect(pCreateCustomerButton, &QPushButton::clicked, this,
           &AdminMainView::notifyOfCustomerCreation);
-  connect(pCustomerList, &ScrollableContainer::notifyOfCustomerItemSelection,
+  connect(pCustomerList, &ScrollableContainer::notifyOfCustomerItemSingleClick,
+          this, &AdminMainView::customerSelected);
+  connect(pCustomerList, &ScrollableContainer::notifyOfCustomerItemDoubleClick,
           this, &AdminMainView::editCustomerInitiated);
   connect(pDeleteCustomerButton, &QPushButton::clicked, this,
           &AdminMainView::notifyOfCustomerDeletion);
@@ -130,4 +134,12 @@ void AdminMainView::editCustomerInitiated(int id) {
 // AdminController to display the warning window
 void AdminMainView::deleteCustomerInitiated() {
   emit notifyOfCustomerDeletion();
+}
+
+void AdminMainView::customerSelected(int id) {
+  emit notifyOfCustomerSelection(id);
+}
+
+void AdminMainView::employeeSelected(int id) {
+  emit notifyOfEmployeeSelection(id);
 }

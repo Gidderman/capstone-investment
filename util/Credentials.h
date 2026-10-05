@@ -12,7 +12,6 @@ struct Credentials {
   int accountID = -1;
   std::string username;
   std::string password;
-  std::string salt;
   bool accountLocked;
 };
 

@@ -28,6 +28,7 @@ private:
   QPushButton *pCancelCreationButton;
 
   QPushButton *pUnlockAccountButton;
+  QPushButton *pResetPasswordButton;
 
   QVBoxLayout *layout;
 
@@ -52,6 +53,7 @@ public slots:
                                         // changes button
   void listenForCreationCancellation(); // connected to the cancel button
   void listenForAccountUnlock(); // Connected to the unlock account button
+  void listenForPasswordReset(); // Connected to the reset password button
 
 signals:
   void notifyOfEmployeeCreation(
@@ -59,8 +61,9 @@ signals:
                                       // sort of action has taken place
   void notifyOfCancellation();        // Lets AdminController know that the user
                                       // cancelled an action
-  void notifyOfAccountUnlock(); // Lets the AdminController know that the user
-                                // is trying to unlock an account
+  void notifyOfAccountUnlock(int id); // Lets the AdminController know that the
+                                      // user is trying to unlock an account
+  void notifyOfPasswordReset(int id);
 };
 
 #endif

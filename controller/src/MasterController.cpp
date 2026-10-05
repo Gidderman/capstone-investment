@@ -185,7 +185,6 @@ void MasterController::detectLogin(QString password) {
 
 void MasterController::listenForPasswordVerificationFieldChange(
     QString password, QString passwordVerification) {
-  std::cout << "Checking that passwords match..." << std::endl;
   if (!logInService.verifyPasswordsMatch(password.toStdString(),
                                          passwordVerification.toStdString())) {
     logInView->displayWarningText("Passwords do not match.");
@@ -203,6 +202,7 @@ void MasterController::detectPasswordCreation(QString password,
   } else {
     try {
       logInService.createPassword(password.toStdString());
+      logInView->clear();
       logInView->runUsernameScreen();
     } catch (std::logic_error &e) {
       displayError(e.what());

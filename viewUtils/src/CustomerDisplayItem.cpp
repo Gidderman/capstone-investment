@@ -42,13 +42,13 @@ CustomerDisplayItem::~CustomerDisplayItem() {}
 
 void CustomerDisplayItem::mousePressEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
-    // TODO: highlight this widget
+    emit clicked(this->id);
   }
 }
 
 // When the item is double clicked, tell the scrollable container
 void CustomerDisplayItem::mouseDoubleClickEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
-    emit clicked(this->id);
+    emit doubleClicked(this->id);
   }
 }

@@ -63,18 +63,20 @@ public:
   void refreshDisplayList(std::vector<Investment> investments);
 
 public slots:
-  void listenForCustomerItemSelection(
+  void listenForCustomerItemSingleClick(int id);
+  void listenForCustomerItemDoubleClick(
       int id); // Connected to each customer display item
-  void listenForEmployeeItemSelection(
+  void listenForEmployeeItemSingleClick(int id);
+  void listenForEmployeeItemDoubleClick(
       int id); // Connected to each employee display item
-  // TODO: Stock display items
 
 signals:
-  void notifyOfCustomerItemSelection(
+  void notifyOfCustomerItemSingleClick(int id);
+  void notifyOfCustomerItemDoubleClick(
       int id); // Notifies the appropriate controller that an item was selected
-  void notifyOfEmployeeItemSelection(
+  void notifyOfEmployeeItemSingleClick(int id);
+  void notifyOfEmployeeItemDoubleClick(
       int id); // Notifies the appropirate controller that an item was selected
-  // TODO: stock display items
 };
 
 #endif

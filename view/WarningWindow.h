@@ -13,7 +13,7 @@ private:
   QString warningText;
 
 public:
-  WarningWindow();
+  WarningWindow(QString warningText);
   ~WarningWindow();
 };
 

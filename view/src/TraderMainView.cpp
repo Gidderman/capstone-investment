@@ -43,7 +43,7 @@ TraderMainView::TraderMainView(std::vector<QString> employeeDisplayInfo,
   connect(pLogOutButton, &QPushButton::clicked, this,
           &TraderMainView::listenForLogOut);
   connect(pManagedCustomersList,
-          &ScrollableContainer::notifyOfCustomerItemSelection, this,
+          &ScrollableContainer::notifyOfCustomerItemDoubleClick, this,
           &TraderMainView::listenForCustomerSelection);
 }
 

@@ -69,9 +69,12 @@ public:
   bool updateCustomer(int customerId, Customer update);
   bool updateInvestment(int investmentId, Investment update);
 
-  bool deleteEmployee(int accountId);
+  bool deactivateEmployee(int accountId);
   bool deleteCustomer(int customerId);
   bool deleteInvestment(int investmentId);
+
+  bool unlockAccount(int accountId);
+  bool resetPassword(int accountId);
 
   // This function is called upon initialization to get the most up to date
   // stock data into the database.

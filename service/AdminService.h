@@ -13,6 +13,8 @@ class AdminService {
 private:
   DataManager &dataManager;
 
+  int currentlySelectedId;
+
   std::string errorInfo;
 
 public:
@@ -25,8 +27,14 @@ public:
   Customer getCustomerById(int id);
   void createEmployee(Employee employeeToCreate);
   void editEmployee(Employee employeeToEdit, Employee edit);
+  void deactivateSelectedEmployee();
   void createCustomer(Customer customer);
   void editCustomer(Customer customer, Customer edit);
+  void deleteSelectedCustomer();
+  void unlockAccount(int id);
+  void resetPassword(int id);
+
+  void setCurrentlySelectedId(int id);
 };
 
 #endif

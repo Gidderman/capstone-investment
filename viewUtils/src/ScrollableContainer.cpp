@@ -174,7 +174,9 @@ void ScrollableContainer::displayList() {
       pLayout->addWidget(displayItem);
 
       connect(displayItem, &CustomerDisplayItem::clicked, this,
-              &ScrollableContainer::listenForCustomerItemSelection);
+              &ScrollableContainer::listenForCustomerItemSingleClick);
+      connect(displayItem, &CustomerDisplayItem::doubleClicked, this,
+              &ScrollableContainer::listenForCustomerItemDoubleClick);
     }
   } else if (containerType == TRADERS) {
 
@@ -183,7 +185,9 @@ void ScrollableContainer::displayList() {
       pLayout->addWidget(displayItem);
 
       connect(displayItem, &TraderDisplayItem::clicked, this,
-              &ScrollableContainer::listenForEmployeeItemSelection);
+              &ScrollableContainer::listenForEmployeeItemSingleClick);
+      connect(displayItem, &TraderDisplayItem::doubleClicked, this,
+              &ScrollableContainer::listenForEmployeeItemDoubleClick);
     }
   } else {
     for (InvestmentDisplayItem *displayItem : investmentDisplayList) {
@@ -196,12 +200,21 @@ void ScrollableContainer::displayList() {
 }
 
 //****************************SLOTS*******************************************
+
+void ScrollableContainer::listenForCustomerItemSingleClick(int id) {
+  emit notifyOfCustomerItemSingleClick(id);
+}
+
 // Called when a customer item has been double clicked
-void ScrollableContainer::listenForCustomerItemSelection(int id) {
-  emit notifyOfCustomerItemSelection(id);
+void ScrollableContainer::listenForCustomerItemDoubleClick(int id) {
+  emit notifyOfCustomerItemDoubleClick(id);
+}
+
+void ScrollableContainer::listenForEmployeeItemSingleClick(int id) {
+  emit notifyOfEmployeeItemSingleClick(id);
 }
 
 // Called when an employee item has been double clicked
-void ScrollableContainer::listenForEmployeeItemSelection(int id) {
-  emit notifyOfEmployeeItemSelection(id);
+void ScrollableContainer::listenForEmployeeItemDoubleClick(int id) {
+  emit notifyOfEmployeeItemDoubleClick(id);
 }

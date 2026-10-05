@@ -10,6 +10,8 @@
 #include "Employee.h"
 
 #include <iostream>
+#include <sodium.h>
+#include <sodium/crypto_pwhash.h>
 
 LogInService::LogInService(DataManager &dataManager)
     : dataManager(dataManager), logInAttempts(0), countAttemptedLogIns(true),
@@ -55,14 +57,15 @@ LogInService::doesAccountHaveValidCredentials(std::string username) {
 // if the log in was successful.
 std::optional<std::tuple<Employee, ROLE>>
 LogInService::handleLogInAttempt(std::string enteredPassword) {
-  std::cout << "LogInService::handleLogInAttempt - attempting log in"
-            << std::endl;
 
-  if (authenticate(hashPassword(enteredPassword),
+  if (authenticate(enteredPassword,
                    credentialsForAttemptingToLogInEmployee.password)) {
     if (countAttemptedLogIns) {
       logInAttempts = 0;
     }
+
+    // We seccussfully logged in, and no longer need to hold the credentials.
+    credentialsForAttemptingToLogInEmployee = Credentials();
 
     return std::tuple<Employee, ROLE>{employeeAttemptingToLogIn,
                                       employeeAttemptingToLogIn.role};
@@ -83,11 +86,16 @@ LogInService::handleLogInAttempt(std::string enteredPassword) {
                                dataManager.getErrorInfo());
       }
 
+      // The account was locked, we no longer need to hold the credentials
+      credentialsForAttemptingToLogInEmployee = Credentials();
+
       // We return a blank employee with an invalid role to notify the
       // MasterController to start displaying error messages.
       return std::tuple<Employee, ROLE>{Employee(), INVALID};
     }
 
+    // There was an invalid log in attempt, so we return nothing but
+    // hold on to the credentials.
     return {};
   }
 }
@@ -123,12 +131,16 @@ bool LogInService::verifyPasswordComplexityRequirements(
 }
 
 void LogInService::createPassword(std::string enteredPassword) {
-  std::string newSalt = "123"; // TODO: GENERATE A SALT;
-  credentialsForAttemptingToLogInEmployee.salt = newSalt;
 
-  std::string saltedPassword = enteredPassword; // TODO: salt the password
-  credentialsForAttemptingToLogInEmployee.password =
-      hashPassword(saltedPassword);
+  unsigned char
+      hashedPassword[crypto_pwhash_STRBYTES]; // holds our hashed password
+
+  if (!hashPassword(enteredPassword, hashedPassword)) {
+    return;
+  }
+
+  credentialsForAttemptingToLogInEmployee.password = std::string(
+      reinterpret_cast<char const *>(hashedPassword), crypto_pwhash_STRBYTES);
 
   if (!dataManager.updateEmployeeCredentials(
           credentialsForAttemptingToLogInEmployee.accountID,
@@ -144,14 +156,28 @@ void LogInService::setLogAttemptedLogIns(bool countLogIns) {
 
 //******************PRIVATE FUNCTIONS************************************
 // Hashes the entered password using the stored salt value
-std::string LogInService::hashPassword(std::string rawPassword) {
-  // TODO: Actually salt and hash the password
-  return rawPassword;
+bool LogInService::hashPassword(std::string &rawPassword,
+                                unsigned char *hashedPasswordArray) {
+  unsigned char
+      salt[crypto_pwhash_SALTBYTES]; // holds the randomly generated salt
+
+  randombytes_buf(salt, sizeof(salt)); // Generate a salt for the passwords
+
+  if (crypto_pwhash_str((char *)hashedPasswordArray, rawPassword.c_str(),
+                        rawPassword.size(), crypto_pwhash_OPSLIMIT_INTERACTIVE,
+                        crypto_pwhash_MEMLIMIT_INTERACTIVE) != 0) {
+    throw std::logic_error(
+        "LogInService::hashPassword -> unable to hash password.");
+  }
+
+  return true;
 }
 
-// Authenticates the hashed, salted password against the stored salted, hashed
+// Authenticates the entered password against the stored salted, hashed
 // password
 bool LogInService::authenticate(std::string enteredPassword,
                                 std::string validPassword) {
-  return enteredPassword == validPassword;
+  return crypto_pwhash_str_verify(validPassword.c_str(),
+                                  enteredPassword.c_str(),
+                                  enteredPassword.size()) == 0;
 }

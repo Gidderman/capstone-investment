@@ -47,7 +47,8 @@ public:
   ~CustomerDisplayItem();
 
 signals:
-  void clicked(int id); // Connected to the scrollable container.
+  void clicked(int id);
+  void doubleClicked(int id); // Connected to the scrollable container.
 };
 
 #endif

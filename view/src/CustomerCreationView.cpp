@@ -26,6 +26,7 @@ CustomerCreationView::CustomerCreationView(std::vector<QString> employeeNames)
   pAccountTypeEntry->addItem("Retirement");
 
   pEmployeeAssignedEntry = new QComboBox();
+  pEmployeeAssignedEntry->addItem("None");
   for (QString name : employeeNames) {
     pEmployeeAssignedEntry->addItem(name);
   }

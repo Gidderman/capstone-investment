@@ -81,22 +81,30 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
           &AdminController::listenForLogOut);
   connect(pAdminMainView, &AdminMainView::notifyOfEmployeeCreation, this,
           &AdminController::listenForEmployeeCreation);
+  connect(pAdminMainView, &AdminMainView::notifyOfEmployeeSelection, this,
+          &AdminController::listenForEmployeeSelection);
   connect(pAdminMainView, &AdminMainView::notifyOfEmployeeEdit, this,
           &AdminController::listenForEmployeeEdit);
   connect(pAdminMainView, &AdminMainView::notifyOfEmployeeDeletion, this,
           &AdminController::listenForEmployeeDeletion);
   connect(pAdminMainView, &AdminMainView::notifyOfCustomerCreation, this,
           &AdminController::listenForCustomerCreation);
+  connect(pAdminMainView, &AdminMainView::notifyOfCustomerSelection, this,
+          &AdminController::listenForCustomerSelection);
   connect(pAdminMainView, &AdminMainView::notifyOfCustomerEdit, this,
           &AdminController::listenForCustomerEdit);
   connect(pAdminMainView, &AdminMainView::notifyOfCustomerDeletion, this,
           &AdminController::listenForCustomerDeletion);
+
   connect(pTraderCreationView, &TraderCreationView::notifyOfEmployeeCreation,
           this, &AdminController::listenForEmployeeActionConfirmation);
   connect(pTraderCreationView, &TraderCreationView::notifyOfCancellation, this,
           &AdminController::listenForEmployeeActionCancel);
   connect(pTraderCreationView, &TraderCreationView::notifyOfAccountUnlock, this,
           &AdminController::listenForEmployeeAccountUnlock);
+  connect(pTraderCreationView, &TraderCreationView::notifyOfPasswordReset, this,
+          &AdminController::listenForEmployeePasswordReset);
+
   connect(pCustomerCreationView,
           &CustomerCreationView::notifyOfCustomerCreation, this,
           &AdminController::listenForCustomerActionConfirmation);
@@ -133,23 +141,34 @@ void AdminController::executeEmployeeEdit(Employee employeeToBeEdited) {
   }
 }
 
-// We are deleteing an existing employee, first throwing a warning window.
-void AdminController::executeEmployeeDeletion() {
-  pDeleteWarning = new WarningWindow();
+// We are deactivating an existing employee, first throwing a warning window.
+// We deactivate instead of deleting to maintain any logs that may be implements
+// as well as historic integrity of actions taken by this employee.
+void AdminController::executeEmployeeDeactivation() {
+  pDeleteWarning = new WarningWindow(
+      QString("WARNING: You are about to deactivate an employee account. They "
+              "will be unable to log in after this operation."));
 
   int warningWindowChoice = pDeleteWarning->exec();
   switch (warningWindowChoice) {
   case QMessageBox::Cancel:
-    std::cout << warningWindowChoice << " DID NOT DELETE" << std::endl;
     return;
   case QMessageBox::Apply:
     // User confirmed deletion.
-    // TODO: Actual functionality
-    std::cout << warningWindowChoice << " DELETED" << std::endl;
+    try {
+      adminService.deactivateSelectedEmployee();
+
+      pAdminMainView->refreshEmployees(adminService.getAllEmployees());
+      pAdminMainView->refreshCustomers(adminService.getAllCustomers());
+
+    } catch (std::logic_error &e) {
+      displayError(e.what());
+    } catch (std::exception &e) {
+      displayError(e.what());
+    }
+
     break;
   default:
-    // TODO: Actual functionality
-    std::cout << warningWindowChoice << " HIT THE DEFAULT" << std::endl;
     break;
   }
 
@@ -178,23 +197,31 @@ void AdminController::executeCustomerEdit(Customer customer) {
 
 // We are deleting an existing customer, first throwing a warning window
 void AdminController::executeCustomerDeletion() {
-  pDeleteWarning = new WarningWindow();
+  pDeleteWarning =
+      new WarningWindow(QString("WARNING: You are about to permanently delete "
+                                "a customer. This action cannot be undone."));
 
   int warningWindowChoice = pDeleteWarning->exec();
   switch (warningWindowChoice) {
   case QMessageBox::Cancel:
     // User cancelled...
-    // TODO: actual functionality
-    std::cout << warningWindowChoice << " DID NOT DELETE" << std::endl;
     break;
   case QMessageBox::Apply:
     // User confirmed deletion.
-    // TODO: actual functionality
-    std::cout << warningWindowChoice << " DELETED" << std::endl;
+    try {
+      adminService.deleteSelectedCustomer();
+
+      pAdminMainView->refreshEmployees(adminService.getAllEmployees());
+      pAdminMainView->refreshCustomers(adminService.getAllCustomers());
+
+    } catch (std::logic_error &e) {
+      displayError(e.what());
+    } catch (std::exception &e) {
+      displayError(e.what());
+    }
+
     break;
   default:
-    // TODO: actual functionality
-    std::cout << warningWindowChoice << " HIT THE DEFAULT" << std::endl;
     break;
   }
 
@@ -219,11 +246,11 @@ void AdminController::executeEmployeeAction(Employee employee) {
       adminService.createEmployee(employee);
     }
 
-    // TODO: Update the list of assignable employees for customer creation after
-    // a new employee is created.
-
     // Refresh display to show up to date information.
     pAdminMainView->refreshEmployees(adminService.getAllEmployees());
+    // We refresh customer display as well so it will display updated lists of
+    // available employees to assign to the account
+    pAdminMainView->refreshCustomers(adminService.getAllCustomers());
   } catch (std::logic_error &e) {
     displayError(QString::fromStdString(e.what()));
   } catch (std::exception &e) {
@@ -231,8 +258,25 @@ void AdminController::executeEmployeeAction(Employee employee) {
   }
 }
 
-// We are unlocking and employee account
-void AdminController::executeEmployeeAccountUnlock() {} // TODO: this
+void AdminController::executeEmployeeAccountUnlock(int id) {
+  try {
+    adminService.unlockAccount(id);
+  } catch (std::logic_error &e) {
+    displayError(e.what());
+  } catch (std::exception &e) {
+    displayError(e.what());
+  }
+}
+
+void AdminController::executeEmployeePasswordReset(int id) {
+  try {
+    adminService.resetPassword(id);
+  } catch (std::logic_error &e) {
+    displayError(e.what());
+  } catch (std::exception &e) {
+    displayError(e.what());
+  }
+}
 
 // We are cancelling the creation or edit of an employee
 void AdminController::cancelEmployeeAction() { pTraderCreationView->end(); }
@@ -309,9 +353,14 @@ AdminController::formatIndividualCustomerForDisplay(Customer customer) {
   } else {
     returnData.push_back(QString("Brokerage"));
   }
-  Employee managingEmployee = adminService.getEmployeeById(customer.accountID);
-  returnData.push_back(QString::fromStdString(
-      managingEmployee.lastName + ", " + managingEmployee.firstName.at(0)));
+  if (customer.accountID != 0) {
+    Employee managingEmployee =
+        adminService.getEmployeeById(customer.accountID);
+    returnData.push_back(QString::fromStdString(
+        managingEmployee.lastName + ", " + managingEmployee.firstName.at(0)));
+  } else {
+    returnData.push_back(QString("None"));
+  }
 
   return returnData;
 }
@@ -341,7 +390,9 @@ void AdminController::listenForEmployeeEdit(int id) {
 }
 
 // Connected to the Admin Main View Delete Employee button
-void AdminController::listenForEmployeeDeletion() { executeEmployeeDeletion(); }
+void AdminController::listenForEmployeeDeletion() {
+  executeEmployeeDeactivation();
+}
 
 // Connected to the AdminMainView create customer button.
 void AdminController::listenForCustomerCreation() { executeCustomerCreation(); }
@@ -385,9 +436,14 @@ void AdminController::listenForEmployeeActionCancel() {
 }
 
 // Connected to the CreateTraderView unlock account button
-void AdminController::listenForEmployeeAccountUnlock() {
+void AdminController::listenForEmployeeAccountUnlock(int id) {
   pTraderCreationView->end();
-  executeEmployeeAccountUnlock();
+  executeEmployeeAccountUnlock(id);
+}
+
+void AdminController::listenForEmployeePasswordReset(int id) {
+  pTraderCreationView->end();
+  executeEmployeePasswordReset(id);
 }
 
 // Connected to the CreateCustomerView Create Customer/Save Changes button
@@ -429,4 +485,12 @@ void AdminController::listenForCustomerActionConfirmation(
 // Connected to the CreateCustomerView cancel button.
 void AdminController::listenForCustomerActionCancel() {
   cancelCustomerAction();
+}
+
+void AdminController::listenForCustomerSelection(int id) {
+  adminService.setCurrentlySelectedId(id);
+}
+
+void AdminController::listenForEmployeeSelection(int id) {
+  adminService.setCurrentlySelectedId(id);
 }

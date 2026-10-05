@@ -38,7 +38,7 @@ private:
   // Below are the various components of the screen
   QLabel *pTitle;
   QPushButton *pCreateTraderButton;
-  QPushButton *pDeleteTraderButton;
+  QPushButton *pDeactivateTraderButton;
   QPushButton *pCreateCustomerButton;
   QPushButton *pDeleteCustomerButton;
   QPushButton *pLogOutButton;
@@ -81,6 +81,9 @@ public slots:
   void deleteCustomerInitiated(); // Connected to the Delete Customer button in
                                   // the MainAdminView
 
+  void customerSelected(int id);
+  void employeeSelected(int id);
+
 signals:
   void
   notifyOfLogOut(); // Connected to AdminController to notify of log out request
@@ -96,6 +99,9 @@ signals:
       int id); // Informs adminController that we are editing a customer
   void notifyOfCustomerDeletion(); // informs the AdminController that the user
                                    // is trying to delete a customer
+
+  void notifyOfCustomerSelection(int id);
+  void notifyOfEmployeeSelection(int id);
 };
 
 #endif

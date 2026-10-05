@@ -33,7 +33,8 @@ private:
   // This function hashes the password provided by the password, utilizing the
   // salt stored within the database that is associated with the entered
   // username.
-  std::string hashPassword(std::string rawPassword);
+  bool hashPassword(std::string &rawPassword,
+                    unsigned char *hashedPasswordArray);
 
   // This function authenticates the user based on the entered password and the
   // stored password.

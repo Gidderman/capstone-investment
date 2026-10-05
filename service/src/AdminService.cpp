@@ -90,7 +90,6 @@ void AdminService::createEmployee(Employee employeeToCreate) {
   newEmployeeCredentials.username =
       employeeToCreate.firstName.at(0) + employeeToCreate.lastName;
   newEmployeeCredentials.password = "NEW_PASSWORD_NEEDED";
-  newEmployeeCredentials.salt = "NEW_SALT_NEEDED";
 
   if (!dataManager.createEmployee(employeeToCreate, newEmployeeCredentials)) {
     errorInfo = "AdminService::createEmployee -> " + dataManager.getErrorInfo();
@@ -106,7 +105,15 @@ void AdminService::createEmployee(Employee employeeToCreate) {
 void AdminService::editEmployee(Employee employeeToEdit, Employee edit) {
   if (!dataManager.updateEmployee(employeeToEdit.accountID, edit)) {
     errorInfo = dataManager.getErrorInfo();
-    throw std::logic_error(errorInfo);
+    throw std::logic_error("AdminService::editEmployee -> " + errorInfo);
+  }
+}
+
+void AdminService::deactivateSelectedEmployee() {
+  if (!dataManager.deactivateEmployee(currentlySelectedId)) {
+    errorInfo = dataManager.getErrorInfo();
+    throw std::logic_error("AdminService::deactivateSelectedEmployee -> " +
+                           errorInfo);
   }
 }
 
@@ -130,3 +137,27 @@ void AdminService::editCustomer(Customer customer, Customer edit) {
     throw std::logic_error(errorInfo);
   }
 }
+
+void AdminService::deleteSelectedCustomer() {
+  if (!dataManager.deleteCustomer(currentlySelectedId)) {
+    errorInfo = dataManager.getErrorInfo();
+    throw std::logic_error("AdminService::deleteSelectedCustomer -> " +
+                           errorInfo);
+  }
+}
+
+void AdminService::unlockAccount(int id) {
+  if (!dataManager.unlockAccount(id)) {
+    throw std::logic_error("AdminService::unlockAccount -> " +
+                           dataManager.getErrorInfo());
+  }
+}
+
+void AdminService::resetPassword(int id) {
+  if (!dataManager.resetPassword(id)) {
+    throw std::logic_error("AdminService::resetPassword -> " +
+                           dataManager.getErrorInfo());
+  }
+}
+
+void AdminService::setCurrentlySelectedId(int id) { currentlySelectedId = id; }

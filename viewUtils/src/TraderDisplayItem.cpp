@@ -37,13 +37,13 @@ TraderDisplayItem::~TraderDisplayItem() {}
 
 void TraderDisplayItem::mousePressEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
-    // TODO: Change widget color
+    emit clicked(this->id);
   }
 }
 
 // When the item is double clicked, tell the scrollable container
 void TraderDisplayItem::mouseDoubleClickEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
-    emit clicked(this->id);
+    emit doubleClicked(this->id);
   }
 }

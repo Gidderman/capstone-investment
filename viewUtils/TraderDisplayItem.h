@@ -44,6 +44,7 @@ public:
 
 signals:
   void clicked(int id); // Connected to the scrollable container.
+  void doubleClicked(int id);
 };
 
 #endif

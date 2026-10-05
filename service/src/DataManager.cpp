@@ -47,7 +47,6 @@ DataManager::getEmployeeByUsername(std::string username) {
                   "e.role_id, "
                   "c.username, "
                   "c.password, "
-                  "c.salt, "
                   "c.account_locked "
                   "FROM employees e "
                   "INNER JOIN credentials c ON c.account_id = e.account_id "
@@ -92,8 +91,6 @@ DataManager::getEmployeeByUsername(std::string username) {
                                        .value("password")
                                        .toString()
                                        .toStdString();
-    employeeCredentials.salt =
-        employeeAndCredentials.value().value("salt").toString().toStdString();
     employeeCredentials.accountLocked =
         employeeAndCredentials.value().value("account_locked").toBool();
   }
@@ -125,8 +122,6 @@ Credentials DataManager::getCredentialsByEmployeeId(int employeeId) {
         credentialData.value().value("username").toString().toStdString();
     credentials.password =
         credentialData.value().value("password").toString().toStdString();
-    credentials.salt =
-        credentialData.value().value("salt").toString().toStdString();
     credentials.accountLocked =
         credentialData.value().value("account_locked").toBool();
   }
@@ -527,13 +522,11 @@ bool DataManager::createEmployee(Employee employeeToCreate,
           "(:account_id, "
           ":username, "
           ":password, "
-          ":salt, "
           ":account_locked)";
   queryArgs.clear();
   queryArgs.emplace(":account_id", credentials.accountID);
   queryArgs.emplace(":username", QString::fromStdString(credentials.username));
   queryArgs.emplace(":password", QString::fromStdString(credentials.password));
-  queryArgs.emplace(":salt", QString::fromStdString(credentials.salt));
   queryArgs.emplace(":account_locked", credentials.accountLocked);
 
   queryStatus = crudManager.runQuery(query, queryArgs);
@@ -642,13 +635,11 @@ bool DataManager::updateEmployeeCredentials(int id, Credentials update) {
   QString query = "UPDATE credentials "
                   "SET username = :username, "
                   "password = :password, "
-                  "salt = :salt, "
                   "account_locked = :account_locked "
                   "WHERE account_id = :account_id";
   std::unordered_map<QString, QVariant> queryArgs;
   queryArgs.emplace(":username", QString::fromStdString(update.username));
   queryArgs.emplace(":password", QString::fromStdString(update.password));
-  queryArgs.emplace(":salt", QString::fromStdString(update.salt));
   queryArgs.emplace(":account_locked", update.accountLocked);
   queryArgs.emplace(":account_id", id);
 
@@ -726,11 +717,13 @@ bool DataManager::updateInvestment(int investmentId, Investment update) {
   return true;
 }
 
-bool DataManager::deleteEmployee(int employeeId) {
-  QString query = "DELETE FROM employees "
+bool DataManager::deactivateEmployee(int employeeId) {
+  QString query = "UPDATE credentials "
+                  "SET account_locked = :account_locked "
                   "WHERE account_id = :account_id";
 
   std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":account_locked", true);
   queryArgs.emplace(":account_id", employeeId);
 
   std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
@@ -766,6 +759,44 @@ bool DataManager::deleteInvestment(int investmentId) {
 
   std::unordered_map<QString, QVariant> queryArgs;
   queryArgs.emplace(":investment_id", investmentId);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
+}
+
+bool DataManager::unlockAccount(int accountId) {
+  QString query = "UPDATE credentials "
+                  "SET account_locked = :account_locked "
+                  "WHERE account_id = :account_id";
+
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":account_locked", false);
+  queryArgs.emplace(":account_id", accountId);
+
+  std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
+
+  if (!queryStatus.has_value()) {
+    errorInfo = crudManager.getErrorCode();
+    return false;
+  }
+
+  return true;
+}
+
+bool DataManager::resetPassword(int accountId) {
+  QString query = "UPDATE credentials "
+                  "SET password = :password "
+                  "WHERE account_id = :account_id";
+
+  std::unordered_map<QString, QVariant> queryArgs;
+  queryArgs.emplace(":password", "NEW_PASSWORD_NEEDED");
+  queryArgs.emplace(":account_id", accountId);
 
   std::optional<QSqlQuery> queryStatus = crudManager.runQuery(query, queryArgs);
 

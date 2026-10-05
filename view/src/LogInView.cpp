@@ -137,6 +137,7 @@ void LogInView::displayWarningText(QString text) {
 void LogInView::clear() {
   pUsernameEntryField->setText("");
   pPasswordEntryField->setText("");
+  pPasswordVerificationField->setText("");
   pWarningText->setText("");
 }
 

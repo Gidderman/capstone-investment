@@ -56,7 +56,7 @@ public:
   // the database.
   void executeEmployeeCreation();
   void executeEmployeeEdit(Employee employeeToBeEdited);
-  void executeEmployeeDeletion();
+  void executeEmployeeDeactivation();
   void executeCustomerCreation();
   void executeCustomerEdit(Customer customer);
   void executeCustomerDeletion();
@@ -66,7 +66,8 @@ public:
   //'Unlock Account' for executeEmployeeAccountUnlock(), and 'Cancel' for
   // cancelEmployeeAction()
   void executeEmployeeAction(Employee employee);
-  void executeEmployeeAccountUnlock();
+  void executeEmployeeAccountUnlock(int id);
+  void executeEmployeePasswordReset(int id);
   void cancelEmployeeAction();
 
   // These functions perform the same as above but for the CustomerCreationView.
@@ -95,13 +96,17 @@ public slots:
   void listenForEmployeeActionConfirmation(
       std::vector<QString> employee);   // Connected to the confirm button
   void listenForEmployeeActionCancel(); // Connected to the cancel button
-  void
-  listenForEmployeeAccountUnlock(); // Connected to the Unlock account button
+  void listenForEmployeeAccountUnlock(
+      int id); // Connected to the Unlock account button
+  void listenForEmployeePasswordReset(int id);
 
   // These slots are for the CreateCustomerView
   void listenForCustomerActionConfirmation(
       std::vector<QString> customer);   // Connected to the confirm button
   void listenForCustomerActionCancel(); // Connected to the cancel button
+
+  void listenForCustomerSelection(int id);
+  void listenForEmployeeSelection(int id);
 
 signals:
   void informMasterControllerOfLogOut();

@@ -7,6 +7,7 @@
 #include "TraderCreationView.h"
 
 #include <iostream>
+#include <qpushbutton.h>
 
 TraderCreationView::TraderCreationView() : id(-1) {
   // Initialize display components
@@ -21,6 +22,7 @@ TraderCreationView::TraderCreationView() : id(-1) {
   pCreateEmployeeButton = new QPushButton(QString("Create Employee"));
   pCancelCreationButton = new QPushButton(QString("Cancel"));
 
+  pResetPasswordButton = new QPushButton(QString("Reset Password"));
   pUnlockAccountButton = new QPushButton(QString("Unlock Account"));
 
   // Set up the layout. Components are displayed from top to bottom in the order
@@ -32,8 +34,7 @@ TraderCreationView::TraderCreationView() : id(-1) {
   layout->addWidget(pRoleSelection);
   layout->addWidget(pCreateEmployeeButton);
   layout->addWidget(pCancelCreationButton);
-  // TODO: configure so this is only shown for existing accounts and greyed out
-  // if locked
+  layout->addWidget(pResetPasswordButton);
   layout->addWidget(pUnlockAccountButton);
 
   // Make connections
@@ -43,12 +44,22 @@ TraderCreationView::TraderCreationView() : id(-1) {
           &TraderCreationView::listenForCreationCancellation);
   connect(pUnlockAccountButton, &QPushButton::clicked, this,
           &TraderCreationView::listenForAccountUnlock);
+  connect(pResetPasswordButton, &QPushButton::clicked, this,
+          &TraderCreationView::listenForPasswordReset);
 }
 
 TraderCreationView::~TraderCreationView() {}
 
+// Called when creating a new employee
 void TraderCreationView::run() {
   this->clear();
+
+  // Neither of these buttons are applicable to creating an account
+  pResetPasswordButton->hide();
+  pUnlockAccountButton->hide();
+
+  adjustSize();
+
   this->show();
 }
 
@@ -65,6 +76,11 @@ void TraderCreationView::run(std::vector<QString> employee) {
   }
 
   pCreateEmployeeButton->setText("Save Changes");
+
+  pResetPasswordButton->show();
+  pUnlockAccountButton->show();
+
+  adjustSize();
 
   this->show();
 }
@@ -108,5 +124,9 @@ void TraderCreationView::listenForCreationCancellation() {
 // Called when the Unlock account button is clicked. Informs the Admin
 // Controller
 void TraderCreationView::listenForAccountUnlock() {
-  emit notifyOfAccountUnlock();
+  emit notifyOfAccountUnlock(this->id);
+}
+
+void TraderCreationView::listenForPasswordReset() {
+  emit notifyOfPasswordReset(this->id);
 }
