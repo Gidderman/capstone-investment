@@ -1,0 +1,20 @@
+QLabel#TraderMainTitle { font-size: 32px; font: bold; }
+
+QLabel#TraderMainLabel { color: gray; font-size: 20px; }
+
+QLabel#TraderMainContent { font-size: 16px; }
+
+QLabel#CustomerManagerTitle { font-size: 32px; font: bold; }
+
+QLabel#CustomerManagerLabel { color: gray; font-size: 20px; }
+
+QLabel#CustomerManagerContent { font-size: 16px; }
+
+QLabel#PurchaseStockLabel { color: gray; }
+
+QLabel#PurchaseStockContent { font-size: 18px; font: bold; }
+
+QLabel#SellStockLabel { color: gray; }
+
+QLabel#SellStockContent { font-size: 18px; font: bold; }
+

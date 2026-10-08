@@ -850,6 +850,8 @@ void DataManager::refreshHashTableStockData() {
     // TODO: figure out how to notify of issue
   }
 
+  stockHashTable.clear();
+
   while (allStocks.value().next()) {
     Stock stock;
     stock.stockCode =

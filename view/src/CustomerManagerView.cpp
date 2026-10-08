@@ -4,16 +4,53 @@
 #include "CustomerManagerView.h"
 #include "ScrollableContainer.h"
 
+#include <QPainter>
+
 CustomerManagerView::CustomerManagerView(std::vector<QString> customerInfo,
                                          std::vector<Investment> stocks) {
 
+  this->setObjectName("CustomerManagerView");
+
+  this->setMinimumSize(1024, 640);
+
+  QSize MIN_BUTTON_SIZE = {185, 30};
+
   // Initialize the display components with the appropriate information
   pCustomerFullName = new QLabel(customerInfo.at(0));
+  pCustomerFullName->setObjectName("CustomerManagerTitle");
+
+  pCustomerPhoneNumberLabel = new QLabel("Phone Number");
+  pCustomerPhoneNumberLabel->setObjectName("CustomerManagerLabel");
+
+  pCustomerEmailLabel = new QLabel("E-Mail Address");
+  pCustomerEmailLabel->setObjectName("CustomerManagerLabel");
+
+  pDateAccountedOpenedLabel = new QLabel("Date Account Opened");
+  pDateAccountedOpenedLabel->setObjectName("CustomerManagerLabel");
+
+  pAccountTypeLabel = new QLabel("Account Type");
+  pAccountTypeLabel->setObjectName("CustomerManagerLabel");
+
+  pUninvestedFundsLabel = new QLabel("Available Funds");
+  pUninvestedFundsLabel->setObjectName("CustomerManagerLabel");
+
   pCustomerPhoneNumber = new QLabel(customerInfo.at(1));
+  pCustomerPhoneNumber->setObjectName("CustomerManagerContent");
+
   pCustomerEmail = new QLabel(customerInfo.at(2));
+  pCustomerEmail->setObjectName("CustomerManagerContent");
+
   pDateAccountedOpened = new QLabel(customerInfo.at(3));
+  pDateAccountedOpened->setObjectName("CustomerManagerContent");
+
   pAccountType = new QLabel(customerInfo.at(4));
+  pAccountType->setObjectName("CustomerManagerContent");
+
   pUninvestedFunds = new QLabel(customerInfo.at(5));
+  pUninvestedFunds->setObjectName("CustomerManagerContent");
+
+  pInvestmentsLabel = new QLabel("Customer Investments");
+  pInvestmentsLabel->setObjectName("CustomerManagerLabel");
 
   // After declaring the type of data to be displayed, the list of items
   // to display must be passed in
@@ -21,8 +58,13 @@ CustomerManagerView::CustomerManagerView(std::vector<QString> customerInfo,
   pHeldStocks->addDisplayList(stocks);
 
   pBuyStockButton = new QPushButton("Buy Stock");
+  pBuyStockButton->setMinimumSize(MIN_BUTTON_SIZE);
+
   pSellStockButton = new QPushButton("Sell Stock");
+  pSellStockButton->setMinimumSize(MIN_BUTTON_SIZE);
+
   pBackButton = new QPushButton("Back");
+  pBackButton->setMinimumSize(MIN_BUTTON_SIZE);
 
   // Set up the screen in the appropriate layout:
   // Across the top from left to right:
@@ -35,30 +77,57 @@ CustomerManagerView::CustomerManagerView(std::vector<QString> customerInfo,
   //   Buy Stock button
   //   Sell stock button
   pHeaderLayout = new QHBoxLayout();
-  pHeaderLayout->addWidget(pCustomerFullName);
-  pHeaderLayout->addWidget(pBackButton);
+  pHeaderLayout->addWidget(pCustomerFullName, 0, Qt::AlignLeft);
+  pHeaderLayout->addStretch(5);
+  pHeaderLayout->addWidget(pBackButton, 0, Qt::AlignRight);
 
   pCustomerInformationLayout = new QVBoxLayout();
-  pCustomerInformationLayout->addWidget(pCustomerPhoneNumber);
-  pCustomerInformationLayout->addWidget(pCustomerEmail);
-  pCustomerInformationLayout->addWidget(pDateAccountedOpened);
-  pCustomerInformationLayout->addWidget(pAccountType);
-  pCustomerInformationLayout->addWidget(pUninvestedFunds);
+  pCustomerInformationLayout->addWidget(pCustomerPhoneNumberLabel, 0,
+                                        Qt::AlignLeft);
+  pCustomerInformationLayout->addWidget(pCustomerPhoneNumber, 0,
+                                        Qt::AlignCenter);
+  pCustomerInformationLayout->addStretch(1);
+
+  pCustomerInformationLayout->addWidget(pCustomerEmailLabel, 0, Qt::AlignLeft);
+  pCustomerInformationLayout->addWidget(pCustomerEmail, 0, Qt::AlignCenter);
+  pCustomerInformationLayout->addStretch(1);
+
+  pCustomerInformationLayout->addWidget(pDateAccountedOpenedLabel, 0,
+                                        Qt::AlignLeft);
+  pCustomerInformationLayout->addWidget(pDateAccountedOpened, 0,
+                                        Qt::AlignCenter);
+  pCustomerInformationLayout->addStretch(1);
+
+  pCustomerInformationLayout->addWidget(pAccountTypeLabel, 0, Qt::AlignLeft);
+  pCustomerInformationLayout->addWidget(pAccountType, 0, Qt::AlignCenter);
+  pCustomerInformationLayout->addStretch(1);
+
+  pCustomerInformationLayout->addWidget(pUninvestedFundsLabel, 0,
+                                        Qt::AlignLeft);
+  pCustomerInformationLayout->addWidget(pUninvestedFunds, 0, Qt::AlignCenter);
+
+  pCustomerInformationLayout->addStretch(5);
 
   pBuyAndSellStockButtonLayout = new QHBoxLayout();
-  pBuyAndSellStockButtonLayout->addWidget(pBuyStockButton);
-  pBuyAndSellStockButtonLayout->addWidget(pSellStockButton);
+  pBuyAndSellStockButtonLayout->addStretch(1);
+  pBuyAndSellStockButtonLayout->addWidget(pBuyStockButton, 0);
+  pBuyAndSellStockButtonLayout->addStretch(1);
+  pBuyAndSellStockButtonLayout->addWidget(pSellStockButton, 0);
+  pBuyAndSellStockButtonLayout->addStretch(1);
 
   pButtonAndStockDisplayLayout = new QVBoxLayout();
+  pButtonAndStockDisplayLayout->addWidget(pInvestmentsLabel, 0, Qt::AlignLeft);
   pButtonAndStockDisplayLayout->addWidget(pHeldStocks);
   pButtonAndStockDisplayLayout->addLayout(pBuyAndSellStockButtonLayout);
 
   pBodyLayout = new QHBoxLayout();
   pBodyLayout->addLayout(pCustomerInformationLayout);
+  pBodyLayout->addSpacing(10);
   pBodyLayout->addLayout(pButtonAndStockDisplayLayout);
 
   pMainLayout = new QVBoxLayout(this);
   pMainLayout->addLayout(pHeaderLayout);
+  pMainLayout->addSpacing(20);
   pMainLayout->addLayout(pBodyLayout);
 
   // Make the appropriate connections
@@ -83,6 +152,14 @@ void CustomerManagerView::refreshPage(std::vector<QString> customerDisplayInfo,
   pUninvestedFunds->setText(customerDisplayInfo.at(5));
 
   pHeldStocks->refreshDisplayList(stocks);
+}
+
+// This is necessarcy to use style sheets.
+void CustomerManagerView::paintEvent(QPaintEvent *) {
+  QStyleOption opt;
+  opt.initFrom(this);
+  QPainter p(this);
+  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 //***************************SLOTS***********************************

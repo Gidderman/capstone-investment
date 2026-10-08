@@ -14,8 +14,6 @@ class LogInView : public QWidget {
   // Necessary macro for using signals and slots
   Q_OBJECT
 
-  // TODO: Refactor to not contain variables and use signals
-  // to pass log in information to the controller
 private:
   // These variables will be removed
   QString title;
@@ -24,6 +22,9 @@ private:
   QLabel *pTitleLabel;
   QLabel *pDescriptionText;
   QLabel *pWarningText;
+  QLabel *pPasswordLabel;
+  QLabel *pUsernameLabel;
+  QLabel *pPasswordVerificationLabel;
   QLineEdit *pUsernameEntryField;
   QLineEdit *pPasswordEntryField;
   QLineEdit *pPasswordVerificationField;
@@ -33,18 +34,21 @@ private:
   QPushButton *pCreatePasswordButton;
   QPushButton *pBackButton;
 
+  QVBoxLayout *pPasswordLayout;
+  QVBoxLayout *pUsernameLayout;
+  QVBoxLayout *pPasswordVerificationLayout;
   QVBoxLayout *pLayout;
 
 public:
   LogInView();
   ~LogInView();
-  // TODO: remove these functions after implementing signal
-  // functionality
   void runUsernameScreen();
   void runPasswordScreen();
   void runCreatePasswordScreen();
   void displayWarningText(QString text);
   void clear();
+
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void usernameEntered();

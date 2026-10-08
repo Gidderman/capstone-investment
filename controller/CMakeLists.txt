@@ -35,7 +35,7 @@ target_sources(Controllers
 
   PUBLIC
     FILE_SET HEADERS
-    FILES 
+    FILES
       AdminController.h
       MasterController.h
       TraderController.h
@@ -48,3 +48,9 @@ target_link_libraries(Controllers
     Models
     ViewUtils
 )
+
+target_compile_definitions(Investment
+  PRIVATE
+    STYLE_DIR="${CMAKE_SOURCE_DIR}/res/stylesheets"
+)
+

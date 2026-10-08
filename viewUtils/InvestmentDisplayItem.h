@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QMouseEvent>
 #include <QString>
+#include <QVBoxLayout>
 #include <QWidget>
 
 class InvestmentDisplayItem : public QWidget {
@@ -17,11 +18,22 @@ class InvestmentDisplayItem : public QWidget {
 
 private:
   // Display information
+
+  QLabel *pStockNameLabel;
+  QLabel *pStockCodeLabel;
+  QLabel *pNumberHeldLabel;
+  QLabel *pPricePerStockLabel;
+  QLabel *pTotalWorthLabel;
+
   QLabel *pStockName;
   QLabel *pStockCode;
   QLabel *pNumberHeld;
   QLabel *pPricePerStock;
   QLabel *pTotalWorth;
+
+  QVBoxLayout *pStockNameAndCodeLayout;
+  QVBoxLayout *pNumberHeldAndPriceLayout;
+  QVBoxLayout *pTotalWorthLayout;
 
   QHBoxLayout *pLayout;
 
@@ -36,6 +48,8 @@ public:
   InvestmentDisplayItem(int investmentId, QString stockName, QString stockCode,
                         QString numberHeld, QString pricePerStock);
   ~InvestmentDisplayItem();
+
+  void paintEvent(QPaintEvent *) override;
 
 signals:
   void clicked();

@@ -21,9 +21,13 @@ class TraderMainView : public QWidget {
 private:
   // Display components
   QLabel *pPageTitleDisplay;
+  QLabel *pTraderNameLabel;
   QLabel *pTraderNameDisplay;
+  QLabel *pTraderAccountNumberLabel;
   QLabel *pTraderAccountNumber;
+  QLabel *pNumAccountsManagedLabel;
   QLabel *pNumAccountsManagedDisplay;
+  QLabel *pCustomerListLabel;
 
   QPushButton *pLogOutButton;
 
@@ -33,14 +37,18 @@ private:
 
   // Layouts
   QVBoxLayout *pTraderInformationLayout;
-  QVBoxLayout *pLogOutButtonAndCustomerListLayout;
-  QHBoxLayout *pMainLayout;
+  QHBoxLayout *pTitleAndLogOutButtonLayout;
+  QVBoxLayout *pCustomerLabelAndList;
+  QHBoxLayout *pTraderInfoAndCustomerList;
+  QVBoxLayout *pMainLayout;
 
 public:
   // We pass in the info that we want displayed with the constructor
   TraderMainView(std::vector<QString> employeeDisplayInfo,
                  std::vector<Customer> managedCustomers);
   ~TraderMainView();
+
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void

@@ -2,14 +2,44 @@
 
 #include "CustomerDisplayItem.h"
 
+#include <QPainter>
+#include <QStyle>
+#include <QStyleOption>
+#include <qboxlayout.h>
+#include <qnamespace.h>
+
 CustomerDisplayItem::CustomerDisplayItem(QString name, QString id,
                                          QString currentWorth,
                                          QString availableFunds) {
+
+  this->setObjectName("DisplayItem");
+
+  pNameLabel = new QLabel("Name");
+  pNameLabel->setObjectName("DisplayItemLabel");
+  pIdLabel = new QLabel("ID Number");
+  pIdLabel->setObjectName("DisplayItemLabel");
+  pCurrentWorthLabel = new QLabel("Current Worth ($)");
+  pCurrentWorthLabel->setObjectName("DisplayItemLabel");
+  pAvailableFundsLabel = new QLabel("Funds Available ($)");
+  pAvailableFundsLabel->setObjectName("DisplayItemLabel");
+
   // Initialize the display variables
   this->pName = new QLabel(name);
+  pName->setObjectName("DisplayItemContent");
+
+  // Append zeros to the displayed id
+  if (id.size() < 8) {
+    for (unsigned int i = 0; i < 8 - id.size(); i++) {
+      id = "0" + id;
+    }
+  }
+
   this->pId = new QLabel(id);
+  pId->setObjectName("DisplayItemContent");
   this->pCurrentWorth = new QLabel(currentWorth);
+  pCurrentWorth->setObjectName("DisplayItemContent");
   this->pAvailableFunds = new QLabel(availableFunds);
+  pAvailableFunds->setObjectName("DisplayItemContent");
 
   // Set up the layout, it has two columns:
   // Left column from top to bottom:
@@ -22,11 +52,27 @@ CustomerDisplayItem::CustomerDisplayItem(QString name, QString id,
   pFundsLayout = new QVBoxLayout();
   pMainLayout = new QHBoxLayout(this);
 
-  pNameAndIdLayout->addWidget(pName);
-  pNameAndIdLayout->addWidget(pId);
+  pNameLayout = new QVBoxLayout();
+  pNameLayout->addWidget(pNameLabel, 0, Qt::AlignLeft);
+  pNameLayout->addWidget(pName, 0, Qt::AlignLeft);
 
-  pFundsLayout->addWidget(pCurrentWorth);
-  pFundsLayout->addWidget(pAvailableFunds);
+  pIdLayout = new QVBoxLayout();
+  pIdLayout->addWidget(pIdLabel, 0, Qt::AlignLeft);
+  pIdLayout->addWidget(pId, 0, Qt::AlignLeft);
+
+  pCurrentWorthLayout = new QVBoxLayout();
+  pCurrentWorthLayout->addWidget(pCurrentWorthLabel, 0, Qt::AlignLeft);
+  pCurrentWorthLayout->addWidget(pCurrentWorth, 0, Qt::AlignLeft);
+
+  pAvailableFundsLayout = new QVBoxLayout();
+  pAvailableFundsLayout->addWidget(pAvailableFundsLabel, 0, Qt::AlignLeft);
+  pAvailableFundsLayout->addWidget(pAvailableFunds, 0, Qt::AlignLeft);
+
+  pNameAndIdLayout->addLayout(pNameLayout);
+  pNameAndIdLayout->addLayout(pIdLayout);
+
+  pFundsLayout->addLayout(pCurrentWorthLayout);
+  pFundsLayout->addLayout(pAvailableFundsLayout);
 
   pMainLayout->addLayout(pNameAndIdLayout);
   pMainLayout->addLayout(pFundsLayout);
@@ -36,6 +82,14 @@ CustomerDisplayItem::CustomerDisplayItem(QString name, QString id,
 }
 
 CustomerDisplayItem::~CustomerDisplayItem() {}
+
+// This is necessarcy to use style sheets.
+void CustomerDisplayItem::paintEvent(QPaintEvent *) {
+  QStyleOption opt;
+  opt.initFrom(this);
+  QPainter p(this);
+  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+}
 
 void CustomerDisplayItem::mousePressEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {

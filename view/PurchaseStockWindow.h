@@ -19,6 +19,11 @@ class PurchaseStockWindow : public QWidget {
 
 private:
   // Display items
+  QLabel *pStockNameLabel;
+  QLabel *pStockCodeLabel;
+  QLabel *pNumToPurchaseLabel;
+  QLabel *pPriceOfPurchaseLabel;
+
   QComboBox *pSelectedStockDisplay;
   QComboBox *pSelectedStockCodeDisplay;
   QSpinBox *pNumberOfStockToPurchaseDisplay;
@@ -37,6 +42,8 @@ public:
   ~PurchaseStockWindow();
   void run();
   void setDisplayPrice(QString price);
+
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void listenForConfirmPurchase(); // Connected to the confirm purchase button

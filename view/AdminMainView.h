@@ -34,6 +34,8 @@ private:
 
   // Below are the various components of the screen
   QLabel *pTitle;
+  QLabel *pEmployeeLabel;
+  QLabel *pCustomerLabel;
   QPushButton *pCreateTraderButton;
   QPushButton *pDeactivateTraderButton;
   QPushButton *pCreateCustomerButton;
@@ -41,12 +43,13 @@ private:
   QPushButton *pLogOutButton;
 
   // Layouts used to format the screen
-  QHBoxLayout *pMainLayout;           // Overall layout
-  QVBoxLayout *pTitleAndTraderLayout; // Holds the page title and pTraderList
-  QVBoxLayout
-      *pLogOutAndCustomerLayout; // Holds the log out button and pCustomerList
-  QHBoxLayout *pTraderButtonLayout; // Holds the trader create and delete
-                                    // buttons
+  QVBoxLayout *pMainLayout;           // Overall layout
+  QHBoxLayout *pTitleAndLogOutButton; // Holds the page title and logout button
+  QHBoxLayout *pListsLayout;          // holds the employee and customer lists
+  QVBoxLayout *pEmployeeLayout;       // Employee list and buttons
+  QVBoxLayout *pCustomerLayout;       // Customer list and buttons
+  QHBoxLayout *pTraderButtonLayout;   // Holds the trader create and delete
+                                      // buttons
   QHBoxLayout
       *pCustomerButtonLayout; // Holds the customer trader and delete buttons
 
@@ -61,6 +64,9 @@ public:
   // or employees.
   void refreshEmployees(std::vector<Employee> totalEmployees);
   void refreshCustomers(std::vector<Customer> totalCustomers);
+
+  // Necessary for using the stylesheet
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void logOutInitiated();         // Connected to the log out button on the

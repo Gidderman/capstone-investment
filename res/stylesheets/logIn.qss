@@ -1,0 +1,31 @@
+QLabel#LogInViewTitleLabel { font-size: 32px }
+
+QLineEdit#LogInViewUsernameEntryEdit { font-size: 24px; }
+
+QLineEdit#LogInViewPasswordEntryEdit { 
+  font-size: 24px;
+  lineedit-password-mask-delay: 500; 
+}
+
+QLineEdit#LogInViewPasswordVerificationEntry { 
+  font-size: 24px;
+  lineedit-password-mask-delay: 500; 
+}
+
+QPushButton#LogInViewNextButton { font-size: 20px; }
+QPushButton#LogInViewBackButton { font-size: 20px; }
+QPushButton#LogInViewAttemptLoginButton { font-size: 20px; }
+
+QLabel#LogInViewDescriptionText { font-size: 26; }
+
+QLabel#LogInViewUsernameLabel { font-size: 18px; 
+color: gray; }
+QLabel#LogInViewPasswordLabel { font-size: 16px; color: gray; }
+QLabel#LogInViewPasswordVerificationLabel { font-size: 16px; color: gray; }
+
+QLabel#LogInViewWarningText { 
+  font-size: 18px;
+  color: red;
+}
+
+

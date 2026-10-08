@@ -62,7 +62,7 @@ std::vector<QString> TraderController::formatLoggedInEmployeeForDisplay() {
       loggedInEmployee.firstName + " " + loggedInEmployee.lastName));
   returnVector.push_back(QString::number(loggedInEmployee.accountID));
   returnVector.push_back(QString::number(loggedInEmployee.numAccountsManaged) +
-                         " total accounts managed.");
+                         " accounts");
 
   return returnVector;
 }

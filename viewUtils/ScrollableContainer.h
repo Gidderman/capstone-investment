@@ -14,6 +14,7 @@
 #include "Employee.h"
 #include "Investment.h"
 
+#include <QScrollArea>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <vector>
@@ -28,7 +29,16 @@ class ScrollableContainer : public QWidget {
 private:
   // Member variables
   CONTAINER_TYPE containerType;
+  QWidget *pContainerWidget;
   QVBoxLayout *pLayout;
+
+  QScrollArea *pScrollArea;
+
+  QVBoxLayout *pMasterLayout;
+
+  // Used to track a selected display item for display
+  // formatting purposes
+  QWidget *pSelectedItem;
 
   // Lists for display, only one list will be used depending on the type of
   // container constructed. Pointers are used to prevent unnecessary copying of
@@ -41,6 +51,8 @@ private:
   // out stale displayed widgets.
   void clearDisplay();
   void displayList();
+
+  void selectItem(QWidget *item);
 
 public:
   // Declare the container type upon construction
@@ -57,6 +69,8 @@ public:
   void refreshDisplayList(std::vector<Customer> customers);
   void refreshDisplayList(std::vector<Employee> employees);
   void refreshDisplayList(std::vector<Investment> investments);
+
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void listenForCustomerItemSingleClick(int id);

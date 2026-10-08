@@ -5,6 +5,7 @@
 #define CUSTOMER_CREATION_VIEW_H
 
 #include <QComboBox>
+#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -16,6 +17,16 @@ class CustomerCreationView : public QWidget {
 
 private:
   // The componenets to be displayed on screen
+  QLabel *pCreateCustomerLabel;
+
+  QLabel *pFirstNameLabel;
+  QLabel *pLastNameLabel;
+  QLabel *pPhoneNumberLabel;
+  QLabel *pEmailLabel;
+  QLabel *pInitialInvestmentLabel;
+  QLabel *pAccountTypeLabel;
+  QLabel *pEmployeeAssignedLabel;
+
   QLineEdit *pFirstNameEntry;
   QLineEdit *pLastNameEntry;
   QLineEdit *pPhoneNumberEntry;
@@ -46,6 +57,7 @@ public:
   void run(std::vector<QString> customerData);
   // Called when the view no longer needs to be displayed
   void end();
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void listenForCustomerCreation(); // Connected to the Create Customer button

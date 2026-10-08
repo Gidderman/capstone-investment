@@ -1,0 +1,25 @@
+QLabel#AdminViewTitle { font-size: 24px; font: bold }
+
+QLabel#AdminViewEmployeeLabel { font-size: 18px; }
+
+QLabel#AdminViewCustomerLabel { font-size: 18px; }
+
+QWidget#DisplayItem { background: rgb(245, 245, 245); selection-background-color: blue; }
+
+QWidget:hover#DisplayItem { background: rgb(225, 225, 255); }
+
+#DisplayItem[selected="true"] {
+  background: rgb(200, 200, 255);
+}
+
+QLabel#DisplayItemLabel { color: gray; font-size: 14px; }
+
+QLabel#DisplayItemContent { color: black; }
+
+QLabel#CustomerCreationTitle { font-size: 24px; font: bold; }
+
+QLabel#CustomerCreationItemLabel { font-size: 12; color: gray; margin-bottom: 0px;}
+
+QLabel#CreateEmployeeTitle { font-size: 24px; font: bold; }
+
+QLabel#CreateEmployeeItemLabel { font-size: 12; color: gray; margin-bottom: 0px;}

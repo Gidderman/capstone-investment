@@ -7,8 +7,10 @@
 
 #include <QComboBox>
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QVBoxLayout>
 #include <QWidget>
 
 class TraderCreationView : public QWidget {
@@ -17,6 +19,12 @@ class TraderCreationView : public QWidget {
 
 private:
   // Display componenets
+  QLabel *pCreateEmployeeTitle;
+
+  QLabel *pFirstNameLabel;
+  QLabel *pLastNameLabel;
+  QLabel *pRoleSelectionLabel;
+
   QLineEdit *pFirstNameEntry;
   QLineEdit *pLastNameEntry;
   QComboBox *pRoleSelection;
@@ -44,6 +52,8 @@ public:
   // Overload run function is called when editing an existing employee
   void run(std::vector<QString> employee);
   void end();
+
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void listenForEmployeeCreation();     // Connected to the create employee/Save

@@ -22,11 +22,20 @@ class CustomerManagerView : public QWidget {
 private:
   // Declare the various componenets for the screen
   QLabel *pCustomerFullName;
+
+  QLabel *pCustomerPhoneNumberLabel;
+  QLabel *pCustomerEmailLabel;
+  QLabel *pDateAccountedOpenedLabel;
+  QLabel *pAccountTypeLabel;
+  QLabel *pUninvestedFundsLabel;
+
   QLabel *pCustomerPhoneNumber;
   QLabel *pCustomerEmail;
   QLabel *pDateAccountedOpened;
   QLabel *pAccountType;
   QLabel *pUninvestedFunds;
+
+  QLabel *pInvestmentsLabel;
 
   // This is a custom widget used to display stock data in a
   // scrollable format
@@ -50,6 +59,8 @@ public:
   ~CustomerManagerView();
   void refreshPage(std::vector<QString> customerDisplayInfo,
                    std::vector<Investment> stocks);
+
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void

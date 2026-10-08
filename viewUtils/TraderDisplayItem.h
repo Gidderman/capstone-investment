@@ -18,9 +18,17 @@ class TraderDisplayItem : public QWidget {
 
 private:
   // Display information
+  QLabel *pNameLabel;
+  QLabel *pIdLabel;
+  QLabel *pNumAccountsManagedLabel;
+
   QLabel *pName;
   QLabel *pId;
   QLabel *pNumAccountsManaged;
+
+  QVBoxLayout *pNameLayout;
+  QVBoxLayout *pIdLayout;
+  QVBoxLayout *pNumAccountsManagedLayout;
 
   QHBoxLayout *pMainLayout;
   QVBoxLayout *pNameAndIdLayout;
@@ -38,6 +46,8 @@ public:
   // Pass in the information to display with the constructor
   TraderDisplayItem(QString name, QString id, QString numAccountsManaged);
   ~TraderDisplayItem();
+
+  void paintEvent(QPaintEvent *) override;
 
 signals:
   void clicked(int id); // Connected to the scrollable container.

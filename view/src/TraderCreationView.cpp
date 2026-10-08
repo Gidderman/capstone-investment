@@ -3,12 +3,27 @@
 
 #include "TraderCreationView.h"
 
+#include <QPainter>
+
 TraderCreationView::TraderCreationView() : id(-1) {
+
+  this->setObjectName("TraderCreationView");
+
   // Initialize display components
+  pCreateEmployeeTitle = new QLabel("Create Employee");
+  pCreateEmployeeTitle->setObjectName("CreateEmployeeTitle");
+
+  pFirstNameLabel = new QLabel("First Name");
+  pFirstNameLabel->setObjectName("CreateEmployeeItemLabel");
+
+  pLastNameLabel = new QLabel("Last Name");
+  pLastNameLabel->setObjectName("CreateEmployeeItemLabel");
+
+  pRoleSelectionLabel = new QLabel("Role");
+  pRoleSelectionLabel->setObjectName("CreateEmployeeItemLabel");
+
   pFirstNameEntry = new QLineEdit();
-  pFirstNameEntry->setPlaceholderText("First Name");
   pLastNameEntry = new QLineEdit();
-  pLastNameEntry->setPlaceholderText("Last Name");
   pRoleSelection = new QComboBox();
   pRoleSelection->addItem(QString("Trader"));
   pRoleSelection->addItem(QString("Admin"));
@@ -23,13 +38,28 @@ TraderCreationView::TraderCreationView() : id(-1) {
   // they are added to the layout
   layout = new QVBoxLayout(this);
 
-  layout->addWidget(pFirstNameEntry);
-  layout->addWidget(pLastNameEntry);
-  layout->addWidget(pRoleSelection);
-  layout->addWidget(pCreateEmployeeButton);
-  layout->addWidget(pCancelCreationButton);
-  layout->addWidget(pResetPasswordButton);
-  layout->addWidget(pUnlockAccountButton);
+  layout->addWidget(pCreateEmployeeTitle, 0, Qt::AlignCenter);
+  layout->addSpacing(10);
+
+  layout->addWidget(pFirstNameLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pFirstNameEntry, 1);
+  layout->addSpacing(5);
+
+  layout->addWidget(pLastNameLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pLastNameEntry, 1);
+  layout->addSpacing(5);
+
+  layout->addWidget(pRoleSelectionLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pRoleSelection, 1);
+  layout->addSpacing(10);
+
+  layout->addWidget(pCreateEmployeeButton, 0, Qt::AlignCenter);
+  layout->addSpacing(5);
+  layout->addWidget(pCancelCreationButton, 0, Qt::AlignCenter);
+  layout->addSpacing(5);
+  layout->addWidget(pResetPasswordButton, 0, Qt::AlignCenter);
+  layout->addSpacing(5);
+  layout->addWidget(pUnlockAccountButton, 0, Qt::AlignCenter);
 
   // Make connections
   connect(pCreateEmployeeButton, &QPushButton::clicked, this,
@@ -80,6 +110,14 @@ void TraderCreationView::run(std::vector<QString> employee) {
 void TraderCreationView::end() {
   this->clear();
   this->hide();
+}
+
+// This is necessarcy to use style sheets.
+void TraderCreationView::paintEvent(QPaintEvent *) {
+  QStyleOption opt;
+  opt.initFrom(this);
+  QPainter p(this);
+  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 //************************PRIVATE FUNCTIONS****************

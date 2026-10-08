@@ -18,6 +18,13 @@ class SellStockWindow : public QWidget {
 
 private:
   // Display items
+  QLabel *pStockNameLabel;
+  QLabel *pStockCodeLabel;
+  QLabel *pNumToSellLabel;
+  QLabel *pInitialInvestmentLabel;
+  QLabel *pCurrentInvestmentWorthLabel;
+  QLabel *pProfitOrLossLabel;
+
   QComboBox *pSelectedStockDisplay;
   QComboBox *pSelectedStockCodeDisplay;
   QSpinBox *pNumberToSellDisplay;
@@ -39,6 +46,8 @@ public:
   void run();
   void setDisplayInfo(std::vector<QString> displayData,
                       int maxNumberAllowedToSale);
+
+  void paintEvent(QPaintEvent *);
 
 public slots:
   void listenForConfirmSale(); // Connected to the confirm sell button in

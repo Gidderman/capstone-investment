@@ -1,0 +1,2 @@
+QLabel {font: "Times New Roman";
+        font-size: 14px }

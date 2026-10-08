@@ -22,10 +22,20 @@ class CustomerDisplayItem : public QWidget {
 
 private:
   // Display information
+  QLabel *pNameLabel;
+  QLabel *pIdLabel;
+  QLabel *pCurrentWorthLabel;
+  QLabel *pAvailableFundsLabel;
+
   QLabel *pName;
   QLabel *pId;
   QLabel *pCurrentWorth;
   QLabel *pAvailableFunds;
+
+  QVBoxLayout *pNameLayout;
+  QVBoxLayout *pIdLayout;
+  QVBoxLayout *pCurrentWorthLayout;
+  QVBoxLayout *pAvailableFundsLayout;
 
   QHBoxLayout *pMainLayout;
   QVBoxLayout *pNameAndIdLayout;
@@ -45,6 +55,8 @@ public:
   CustomerDisplayItem(QString name, QString id, QString currentWorth,
                       QString availableFunds);
   ~CustomerDisplayItem();
+
+  void paintEvent(QPaintEvent *) override;
 
 signals:
   void clicked(int id);

@@ -4,10 +4,20 @@
 #include "AdminMainView.h"
 #include "ScrollableContainer.h"
 
+#include <QPainter>
 #include <QString>
+#include <QStyle>
+#include <QStyleOption>
+#include <qnamespace.h>
 
 AdminMainView::AdminMainView(std::vector<Customer> totalCustomers,
                              std::vector<Employee> totalTraders) {
+  this->setObjectName("AdminMainView"); // Set for QSS operations
+
+  this->setMinimumSize(1024, 640);
+
+  QSize MIN_BUTTON_SIZE = {185, 30};
+
   // Add the customers to the scrollable container for display
   pCustomerList = new ScrollableContainer(CUSTOMERS);
   pCustomerList->addDisplayList(totalCustomers);
@@ -18,16 +28,34 @@ AdminMainView::AdminMainView(std::vector<Customer> totalCustomers,
 
   // Initializing member variables
   pTitle = new QLabel(QString("ADMINISTRATOR"));
+  pTitle->setObjectName("AdminViewTitle");
+
+  pEmployeeLabel = new QLabel(QString("Employee Accounts"));
+  pEmployeeLabel->setObjectName("AdminViewEmployeeLabel");
+
+  pCustomerLabel = new QLabel(QString("Customer Accounts"));
+  pCustomerLabel->setObjectName("AdminViewCustomerLabel");
 
   pCreateTraderButton = new QPushButton(QString("Add Trader"));
-  pDeactivateTraderButton = new QPushButton(QString("Deactivate Trader"));
-  pCreateCustomerButton = new QPushButton(QString("Add Customer"));
-  pDeleteCustomerButton = new QPushButton(QString("Remove Customer"));
-  pLogOutButton = new QPushButton(QString("Log Out"));
+  pCreateTraderButton->setMinimumSize(MIN_BUTTON_SIZE);
 
-  pMainLayout = new QHBoxLayout(this);
-  pTitleAndTraderLayout = new QVBoxLayout();
-  pLogOutAndCustomerLayout = new QVBoxLayout();
+  pDeactivateTraderButton = new QPushButton(QString("Deactivate Trader"));
+  pDeactivateTraderButton->setMinimumSize(MIN_BUTTON_SIZE);
+
+  pCreateCustomerButton = new QPushButton(QString("Add Customer"));
+  pCreateCustomerButton->setMinimumSize(MIN_BUTTON_SIZE);
+
+  pDeleteCustomerButton = new QPushButton(QString("Remove Customer"));
+  pDeleteCustomerButton->setMinimumSize(MIN_BUTTON_SIZE);
+
+  pLogOutButton = new QPushButton(QString("Log Out"));
+  pLogOutButton->setMinimumSize(MIN_BUTTON_SIZE);
+
+  pMainLayout = new QVBoxLayout(this);
+  pTitleAndLogOutButton = new QHBoxLayout();
+  pListsLayout = new QHBoxLayout();
+  pEmployeeLayout = new QVBoxLayout();
+  pCustomerLayout = new QVBoxLayout();
   pTraderButtonLayout = new QHBoxLayout();
   pCustomerButtonLayout = new QHBoxLayout();
 
@@ -43,20 +71,39 @@ AdminMainView::AdminMainView(std::vector<Customer> totalCustomers,
   //    Remove trader button
   //    Add customer button
   //    Remove customer button
-  pTitleAndTraderLayout->addWidget(pTitle);
-  pTitleAndTraderLayout->addWidget(pTraderList);
-  pTraderButtonLayout->addWidget(pCreateTraderButton);
-  pTraderButtonLayout->addWidget(pDeactivateTraderButton);
-  pTitleAndTraderLayout->addLayout(pTraderButtonLayout);
+  pTitleAndLogOutButton->addWidget(pTitle, 0, Qt::AlignLeft);
+  pTitleAndLogOutButton->addStretch(10);
+  pTitleAndLogOutButton->addWidget(pLogOutButton, 0, Qt::AlignRight);
 
-  pLogOutAndCustomerLayout->addWidget(pLogOutButton);
-  pLogOutAndCustomerLayout->addWidget(pCustomerList);
-  pCustomerButtonLayout->addWidget(pCreateCustomerButton);
-  pCustomerButtonLayout->addWidget(pDeleteCustomerButton);
-  pLogOutAndCustomerLayout->addLayout(pCustomerButtonLayout);
+  pTraderButtonLayout->addStretch(2);
+  pTraderButtonLayout->addWidget(pCreateTraderButton, 0);
+  pTraderButtonLayout->addStretch(2);
+  pTraderButtonLayout->addWidget(pDeactivateTraderButton, 0);
+  pTraderButtonLayout->addStretch(2);
 
-  pMainLayout->addLayout(pTitleAndTraderLayout);
-  pMainLayout->addLayout(pLogOutAndCustomerLayout);
+  pEmployeeLayout->addWidget(pEmployeeLabel, 0, Qt::AlignLeft);
+  pEmployeeLayout->addWidget(pTraderList);
+  pEmployeeLayout->addSpacing(10);
+  pEmployeeLayout->addLayout(pTraderButtonLayout);
+
+  pCustomerButtonLayout->addStretch(2);
+  pCustomerButtonLayout->addWidget(pCreateCustomerButton, 0);
+  pCustomerButtonLayout->addStretch(2);
+  pCustomerButtonLayout->addWidget(pDeleteCustomerButton, 0);
+  pCustomerButtonLayout->addStretch(2);
+
+  pCustomerLayout->addWidget(pCustomerLabel, 0, Qt::AlignLeft);
+  pCustomerLayout->addWidget(pCustomerList);
+  pCustomerLayout->addSpacing(10);
+  pCustomerLayout->addLayout(pCustomerButtonLayout);
+
+  pListsLayout->addLayout(pEmployeeLayout);
+  pListsLayout->addSpacing(20);
+  pListsLayout->addLayout(pCustomerLayout);
+
+  pMainLayout->addLayout(pTitleAndLogOutButton);
+  pMainLayout->addSpacing(15);
+  pMainLayout->addLayout(pListsLayout);
 
   // Connect widgets to appropriate slots
   connect(pLogOutButton, &QPushButton::clicked, this,
@@ -88,6 +135,14 @@ void AdminMainView::refreshEmployees(std::vector<Employee> totalEmployees) {
 
 void AdminMainView::refreshCustomers(std::vector<Customer> totalCustomers) {
   pCustomerList->refreshDisplayList(totalCustomers);
+}
+
+// This is necessarcy to use style sheets.
+void AdminMainView::paintEvent(QPaintEvent *) {
+  QStyleOption opt;
+  opt.initFrom(this);
+  QPainter p(this);
+  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 // *********************SLOTS*********************************************

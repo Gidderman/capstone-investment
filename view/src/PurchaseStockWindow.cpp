@@ -2,13 +2,28 @@
 // info
 
 #include "PurchaseStockWindow.h"
-#include <qcombobox.h>
-#include <qsizepolicy.h>
-#include <qspinbox.h>
+
+#include <QPainter>
+#include <qnamespace.h>
 
 PurchaseStockWindow::PurchaseStockWindow(
     std::vector<std::tuple<QString, QString, QString>> stockList) {
+
+  this->setObjectName("PurchaseStockWindow");
+
   // Initialize display items
+  pStockNameLabel = new QLabel("Stock Name");
+  pStockNameLabel->setObjectName("PurchaseStockLabel");
+
+  pStockCodeLabel = new QLabel("Stock Code");
+  pStockCodeLabel->setObjectName("PurchaseStockLabel");
+
+  pNumToPurchaseLabel = new QLabel("Number to Buy");
+  pNumToPurchaseLabel->setObjectName("PurchaseStockLabel");
+
+  pPriceOfPurchaseLabel = new QLabel("Total Cost of Purchase ($)");
+  pPriceOfPurchaseLabel->setObjectName("PurchaseStockLabel");
+
   pSelectedStockDisplay = new QComboBox();
   pSelectedStockCodeDisplay = new QComboBox();
 
@@ -20,7 +35,8 @@ PurchaseStockWindow::PurchaseStockWindow(
   pNumberOfStockToPurchaseDisplay = new QSpinBox();
   pNumberOfStockToPurchaseDisplay->setMinimum(1);
 
-  pTotalPriceOfPurchase = new QLabel(QString("TOTAL PRICE"));
+  pTotalPriceOfPurchase = new QLabel();
+  pTotalPriceOfPurchase->setObjectName("PurchaseStockContent");
 
   pConfirmPurchaseButton = new QPushButton(QString("Confirm Purchase"));
   pCancelPurchaseButton = new QPushButton(QString("Cancel"));
@@ -28,15 +44,31 @@ PurchaseStockWindow::PurchaseStockWindow(
   // Set up the Layout. The entry items are displayed in the order they
   // are added to the layout, with the buttons at the bottom
   pButtonLayout = new QHBoxLayout();
-  pButtonLayout->addWidget(pConfirmPurchaseButton);
-  pButtonLayout->addWidget(pCancelPurchaseButton);
+  pButtonLayout->addStretch(1);
+  pButtonLayout->addWidget(pConfirmPurchaseButton, 0);
+  pButtonLayout->addStretch(1);
+  pButtonLayout->addWidget(pCancelPurchaseButton, 0);
+  pButtonLayout->addStretch(1);
 
   pMainLayout = new QVBoxLayout(this);
+  pMainLayout->addWidget(pStockNameLabel, 0, Qt::AlignLeft);
   pMainLayout->addWidget(pSelectedStockDisplay);
+  pMainLayout->addSpacing(20);
+
+  pMainLayout->addWidget(pStockCodeLabel, 0, Qt::AlignLeft);
   pMainLayout->addWidget(pSelectedStockCodeDisplay);
+  pMainLayout->addSpacing(20);
+
+  pMainLayout->addWidget(pNumToPurchaseLabel, 0, Qt::AlignLeft);
   pMainLayout->addWidget(pNumberOfStockToPurchaseDisplay);
-  pMainLayout->addWidget(pTotalPriceOfPurchase);
-  pMainLayout->addLayout(pButtonLayout);
+  pMainLayout->addSpacing(20);
+
+  pMainLayout->addWidget(pPriceOfPurchaseLabel, 0, Qt::AlignLeft);
+  pMainLayout->addWidget(pTotalPriceOfPurchase, 0, Qt::AlignCenter);
+  pMainLayout->addSpacing(20);
+
+  pMainLayout->addLayout(pButtonLayout, 1);
+  pMainLayout->addStretch(5);
 
   // Make connections
   connect(pConfirmPurchaseButton, &QPushButton::clicked, this,
@@ -72,6 +104,14 @@ void PurchaseStockWindow::run() {
 
 void PurchaseStockWindow::setDisplayPrice(QString price) {
   pTotalPriceOfPurchase->setText(price);
+}
+
+// This is necessarcy to use style sheets.
+void PurchaseStockWindow::paintEvent(QPaintEvent *) {
+  QStyleOption opt;
+  opt.initFrom(this);
+  QPainter p(this);
+  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 //**********************SLOTS**************************

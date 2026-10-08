@@ -3,30 +3,49 @@
 
 #include "CustomerCreationView.h"
 
-#include <iostream>
-#include <qcombobox.h>
+#include <QPainter>
 
 CustomerCreationView::CustomerCreationView(std::vector<QString> employeeNames)
     : id(-1) {
 
+  this->setObjectName("CustomerCreationView");
+
+  pCreateCustomerLabel = new QLabel("Create Customer");
+  pCreateCustomerLabel->setObjectName("CustomerCreationTitle");
+
+  pFirstNameLabel = new QLabel("First Name");
+  pFirstNameLabel->setObjectName("CustomerCreationItemLabel");
+
+  pLastNameLabel = new QLabel("Last Name");
+  pLastNameLabel->setObjectName("CustomerCreationItemLabel");
+
+  pPhoneNumberLabel = new QLabel("Phone Number");
+  pPhoneNumberLabel->setObjectName("CustomerCreationItemLabel");
+
+  pEmailLabel = new QLabel("Email");
+  pEmailLabel->setObjectName("CustomerCreationItemLabel");
+
+  pInitialInvestmentLabel = new QLabel("Initial Investment");
+  pInitialInvestmentLabel->setObjectName("CustomerCreationItemLabel");
+
+  pAccountTypeLabel = new QLabel("Type of Account");
+  pAccountTypeLabel->setObjectName("CustomerCreationItemLabel");
+
+  pEmployeeAssignedLabel = new QLabel("Trader Assigned");
+  pEmployeeAssignedLabel->setObjectName("CustomerCreationItemLabel");
+
   // Initialize all display items, to include the placeholder text for all entry
   // boxes
   pFirstNameEntry = new QLineEdit();
-  pFirstNameEntry->setPlaceholderText("First Name");
   pLastNameEntry = new QLineEdit();
-  pLastNameEntry->setPlaceholderText("Last Name");
   pPhoneNumberEntry = new QLineEdit();
-  pPhoneNumberEntry->setPlaceholderText("Phone Number");
   pEmailEntry = new QLineEdit();
-  pEmailEntry->setPlaceholderText("E-Mail");
   pInitialInvestmentEntry = new QLineEdit();
-  pInitialInvestmentEntry->setPlaceholderText("Initial Money Invested");
   pAccountTypeEntry = new QComboBox();
   pAccountTypeEntry->addItem("Brokerage");
   pAccountTypeEntry->addItem("Retirement");
 
   pEmployeeAssignedEntry = new QComboBox();
-  pEmployeeAssignedEntry->addItem("None");
   for (QString name : employeeNames) {
     pEmployeeAssignedEntry->addItem(name);
   }
@@ -37,15 +56,41 @@ CustomerCreationView::CustomerCreationView(std::vector<QString> employeeNames)
   // Add components to the layout, they are displayed from top to bottom in the
   // order they are added to the layout
   layout = new QVBoxLayout(this);
-  layout->addWidget(pFirstNameEntry);
-  layout->addWidget(pLastNameEntry);
-  layout->addWidget(pPhoneNumberEntry);
-  layout->addWidget(pEmailEntry);
-  layout->addWidget(pInitialInvestmentEntry);
-  layout->addWidget(pAccountTypeEntry);
-  layout->addWidget(pEmployeeAssignedEntry);
-  layout->addWidget(pCreateCustomerButton);
-  layout->addWidget(pCancelCreationButton);
+  layout->addWidget(pCreateCustomerLabel, 0, Qt::AlignCenter);
+  layout->addSpacing(10);
+
+  layout->addWidget(pFirstNameLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pFirstNameEntry, 1);
+  layout->addSpacing(5);
+
+  layout->addWidget(pLastNameLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pLastNameEntry, 1);
+  layout->addSpacing(5);
+
+  layout->addWidget(pPhoneNumberLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pPhoneNumberEntry, 1);
+  layout->addSpacing(5);
+
+  layout->addWidget(pEmailLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pEmailEntry, 1);
+  layout->addSpacing(5);
+
+  layout->addWidget(pInitialInvestmentLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pInitialInvestmentEntry, 1);
+  layout->addSpacing(5);
+
+  layout->addWidget(pAccountTypeLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pAccountTypeEntry, 1);
+  layout->addSpacing(5);
+
+  layout->addWidget(pEmployeeAssignedLabel, 0, Qt::AlignLeft);
+  layout->addWidget(pEmployeeAssignedEntry, 1);
+  layout->addSpacing(10);
+
+  layout->addWidget(pCreateCustomerButton, 0, Qt::AlignCenter);
+  layout->addSpacing(5);
+
+  layout->addWidget(pCancelCreationButton, 0, Qt::AlignCenter);
 
   // Connect the buttons to the appropriate slots
   connect(pCreateCustomerButton, &QPushButton::clicked, this,
@@ -81,6 +126,14 @@ void CustomerCreationView::run(std::vector<QString> customerData) {
 void CustomerCreationView::end() {
   this->clear();
   this->hide();
+}
+
+// This is necessarcy to use style sheets.
+void CustomerCreationView::paintEvent(QPaintEvent *) {
+  QStyleOption opt;
+  opt.initFrom(this);
+  QPainter p(this);
+  style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 //************************PRIVATE FUNCTIONS***********
