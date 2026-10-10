@@ -2,14 +2,44 @@
 // application, primarily connecting to the Stock API and pulling up to date
 // stock information into the database.
 
-// TODO:
-// THIS CLASS IS CURRENLTY NOT IMPLEMENTED. MORE WORK IS REQUIRED.
-
 #ifndef INIT_SERVICE_H
 #define INIT_SERVICE_H
 
 #include "DataManager.h"
 
-class InitService {};
+#include <QNetworkAccessManager>
+
+class InitService : public QObject {
+  Q_OBJECT
+
+private:
+  DataManager &dataManager;
+
+  std::string apiEndpoint;
+  std::string apiKey;
+  QNetworkAccessManager *networkManager;
+
+  std::string errorInfo;
+  int outstandingRequests;
+
+  std::vector<std::string> trackedStockCodes;
+  std::vector<Stock> stockData; // Used to accrue all stock updates
+
+  void runStockQuery(std::string &stockCode); // runs the stock query
+  QJsonObject readConfigFile(std::string fileName);
+  void handleReply(std::string stockCode, QNetworkReply *reply);
+
+public:
+  InitService(DataManager &dataManager);
+  ~InitService();
+  void updateStockData();
+  void commitStockUpdates();
+
+signals:
+  void updateStockPrice(std::string stockCode, float stockPrice);
+  void notifyOfError(std::string stockCode, std::string error);
+  void refreshFinished();
+  void errorOccurred(std::string errorInfo);
+};
 
 #endif

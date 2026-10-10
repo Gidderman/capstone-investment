@@ -92,6 +92,7 @@ int main(int argc, char *argv[]) {
                    scheduleReload);
 
   MasterController masterController = MasterController();
+  masterController.executeMainFunctions();
 
   return app.exec();
 }

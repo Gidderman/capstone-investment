@@ -18,6 +18,7 @@
 MasterController::MasterController()
     : crudManager(CRUDManager()), dataManager(DataManager(crudManager)),
       logInService(LogInService(dataManager)),
+      initService(InitService(dataManager)),
       adminService(AdminService(dataManager)),
       traderService(TraderService(dataManager)),
       adminController(AdminController(adminService)),
@@ -40,13 +41,20 @@ MasterController::MasterController()
   connect(logInView, &LogInView::notifyOfPasswordCreation, this,
           &MasterController::detectPasswordCreation);
 
+  connect(&initService, &InitService::errorOccurred, this,
+          &MasterController::listenForStockRefreshError);
+  connect(&initService, &InitService::refreshFinished, this,
+          &MasterController::listenForStockRefreshCompletion);
+
   logInView->runUsernameScreen();
 }
 
 MasterController::~MasterController() {}
 
 // TODO: init functions
-void MasterController::executeMainFunctions() {};
+void MasterController::executeMainFunctions() {
+  initService.updateStockData();
+};
 
 // Performs the log in functions, determining which controller to log into.
 // Additionally, initializes the authorizer setting the allowed role in the
@@ -211,3 +219,11 @@ void MasterController::listenForLogOut() {
 
 // The user wants to go back to the username entry screen.
 void MasterController::listenForGoBack() { logInView->runUsernameScreen(); }
+
+void MasterController::listenForStockRefreshError(std::string errorInfo) {
+  displayError(QString::fromStdString(errorInfo));
+}
+
+void MasterController::listenForStockRefreshCompletion() {
+  initService.commitStockUpdates();
+}

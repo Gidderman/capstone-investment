@@ -2,5 +2,6 @@
   "database_username": "YOUR DATABASE USERNAME HERE",
   "database_password": "YOUR DATABASE PASSWORD HERE",
   "host": "YOUR HOST IP ADDRESS HERE",
-  "database_name": "YOUR DATABASE NAME HERE"
+  "database_name": "YOUR DATABASE NAME HERE",
+  "api_key": "YOUR FINNHUB API KEY HERE"
 }

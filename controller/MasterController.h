@@ -9,6 +9,7 @@
 #define MASTER_CONTROLLER_H
 
 #include "AdminController.h"
+#include "InitService.h"
 #include "LogInService.h"
 #include "LogInView.h"
 #include "TraderController.h"
@@ -26,6 +27,7 @@ private:
 
   // Service initializations
   LogInService logInService;
+  InitService initService;
 
   // Other services
   AdminService adminService;
@@ -61,6 +63,9 @@ public slots:
   // Used to detect when the adminController or traderController log out
   void listenForLogOut();
   void listenForGoBack();
+
+  void listenForStockRefreshError(std::string errorInfo);
+  void listenForStockRefreshCompletion();
 };
 
 #endif

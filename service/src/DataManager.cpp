@@ -19,7 +19,6 @@ DataManager::DataManager(CRUDManager &crudManager) : crudManager(crudManager) {
     errorInfo = crudManager.getErrorCode();
     // TODO: notify of error
   }
-  refreshHashTableStockData();
 }
 
 DataManager::~DataManager() {}
@@ -800,7 +799,7 @@ bool DataManager::resetPassword(int accountId) {
 bool DataManager::updateStoredStocks(std::vector<Stock> stocks) {
   QString query = "UPDATE stocks "
                   "SET stock_price = :stock_price, "
-                  "SET last_updated = NOW() "
+                  "last_updated = NOW() "
                   "WHERE stock_code = :stock_code";
   std::unordered_map<QString, QVariant> queryArgs;
   std::optional<QSqlQuery> queryStatus;
