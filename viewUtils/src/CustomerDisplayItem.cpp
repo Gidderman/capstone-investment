@@ -83,6 +83,8 @@ CustomerDisplayItem::CustomerDisplayItem(QString name, QString id,
 
 CustomerDisplayItem::~CustomerDisplayItem() {}
 
+QString CustomerDisplayItem::getId() { return pId->text(); }
+
 // This is necessarcy to use style sheets.
 void CustomerDisplayItem::paintEvent(QPaintEvent *) {
   QStyleOption opt;

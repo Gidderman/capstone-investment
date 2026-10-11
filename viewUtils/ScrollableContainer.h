@@ -14,6 +14,8 @@
 #include "Employee.h"
 #include "Investment.h"
 
+#include <QComboBox>
+#include <QLineEdit>
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -31,10 +33,15 @@ private:
   CONTAINER_TYPE containerType;
   QWidget *pContainerWidget;
   QVBoxLayout *pLayout;
+  QLabel *pSortLabel;
+
+  QLineEdit *pSearchBar;
+  QComboBox *pSortSelection;
 
   QScrollArea *pScrollArea;
 
   QVBoxLayout *pMasterLayout;
+  QHBoxLayout *pSortLayout;
 
   // Used to track a selected display item for display
   // formatting purposes
@@ -46,6 +53,12 @@ private:
   std::vector<CustomerDisplayItem *> customerDisplayList;
   std::vector<TraderDisplayItem *> employeeDisplayList;
   std::vector<InvestmentDisplayItem *> investmentDisplayList;
+
+  // We maintain a copy of current display items for sorting and filtering
+  // functions
+  std::vector<Customer> customerList;
+  std::vector<Employee> employeeList;
+  std::vector<Investment> investmentList;
 
   // This private function is used when refreshing the screen to clear
   // out stale displayed widgets.
@@ -79,6 +92,9 @@ public slots:
   void listenForEmployeeItemSingleClick(int id);
   void listenForEmployeeItemDoubleClick(
       int id); // Connected to each employee display item
+
+  void listenForFilterBySearch();
+  void reorderBySortSelection();
 
 signals:
   void notifyOfCustomerItemSingleClick(int id);

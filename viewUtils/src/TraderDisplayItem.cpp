@@ -58,16 +58,15 @@ TraderDisplayItem::TraderDisplayItem(QString name, QString id,
   pNumAccountsManagedLayout->addWidget(pNumAccountsManagedLabel, 0,
                                        Qt::AlignLeft);
   pNumAccountsManagedLayout->addWidget(pNumAccountsManaged, 0, Qt::AlignLeft);
-  pNumAccountsManagedLayout->addStretch(1);
 
   pMainLayout = new QHBoxLayout(this);
   pNameAndIdLayout = new QVBoxLayout();
 
-  pNameAndIdLayout->addLayout(pNameLayout);
-  pNameAndIdLayout->addLayout(pIdLayout);
+  pNameAndIdLayout->addLayout(pNameLayout, 0);
+  pNameAndIdLayout->addLayout(pIdLayout, 0);
 
-  pMainLayout->addLayout(pNameAndIdLayout);
-  pMainLayout->addLayout(pNumAccountsManagedLayout);
+  pMainLayout->addLayout(pNameAndIdLayout, 0);
+  pMainLayout->addLayout(pNumAccountsManagedLayout, 0);
 }
 
 TraderDisplayItem::~TraderDisplayItem() {}

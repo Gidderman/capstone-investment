@@ -51,8 +51,10 @@ void AdminController::run(int loggedInAccountId, Authorizer *authorizer) {
   // assigned employees to manage them
   std::vector<QString> employeeNames;
   for (Employee employee : allEmployees) {
-    employeeNames.push_back(QString::fromStdString(employee.lastName + ", " +
-                                                   employee.firstName.at(0)));
+    if (employee.role == TRADER) {
+      employeeNames.push_back(QString::fromStdString(employee.lastName + ", " +
+                                                     employee.firstName.at(0)));
+    }
   }
 
   pCustomerCreationView = new CustomerCreationView(employeeNames);
@@ -208,6 +210,13 @@ void AdminController::executeCustomerDeletion() {
 // We have either confirmed the creation of a new employee or
 // saved changes to an existing employee
 void AdminController::executeEmployeeAction(Employee employee) {
+  // Verify input
+  if (employee.firstName.size() == 0 || employee.lastName.size() == 0) {
+    displayError(
+        QString("Please complete all fields. Requested action rejected."));
+    return;
+  }
+
   // We determine if this employee is an existing one, or a new one by
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the employee.
@@ -260,6 +269,14 @@ void AdminController::cancelEmployeeAction() { pTraderCreationView->end(); }
 // We have confirmed the creation of a new customer or saved changes to and
 // existing customer
 void AdminController::executeCustomerAction(Customer customer) {
+  if (customer.firstName.empty() || customer.lastName.empty() ||
+      customer.phoneNum.empty() || customer.email.empty() ||
+      customer.uninvestedFunds <= 0.0f) {
+    displayError(
+        QString("Please complete all fields. Requested action rejected."));
+    return;
+  }
+
   // We determine if this customer is an existing one, or a new one by
   // checking the ID. If it has an existing ID we call the update function,
   // otherwise we create the customer.

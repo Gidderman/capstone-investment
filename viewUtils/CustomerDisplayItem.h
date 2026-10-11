@@ -2,9 +2,6 @@
 // Each instance of the class is a singular Customer that needs to be displayed
 // in a specific format.
 
-// TODO:
-// THIS CLASS IS INCOMPLETE, REQUIRING DISPLAY FORMATTING
-
 #ifndef CUSTOMER_DISPLAY_ITEM_H
 #define CUSTOMER_DISPLAY_ITEM_H
 
@@ -55,6 +52,7 @@ public:
   CustomerDisplayItem(QString name, QString id, QString currentWorth,
                       QString availableFunds);
   ~CustomerDisplayItem();
+  QString getId();
 
   void paintEvent(QPaintEvent *) override;
 

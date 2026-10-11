@@ -26,13 +26,19 @@ inline auto customerId = [](const Customer &a, const Customer &b) {
 inline auto reverseCustomerId = [](const Customer &a, const Customer &b) {
   return a.customerID > b.customerID;
 };
+inline auto uninvestedFunds = [](const Customer &a, const Customer &b) {
+  return a.uninvestedFunds > b.uninvestedFunds;
+};
+inline auto reverseUninvestedFunds = [](const Customer &a, const Customer &b) {
+  return a.uninvestedFunds < b.uninvestedFunds;
+};
 
 inline auto investmentWorth = [](const Investment &a, const Investment &b) {
-  return a.currentInvestmentWorth < b.currentInvestmentWorth;
+  return a.currentInvestmentWorth > b.currentInvestmentWorth;
 };
 inline auto reverseInvestmentWorth = [](const Investment &a,
                                         const Investment &b) {
-  return a.currentInvestmentWorth > b.currentInvestmentWorth;
+  return a.currentInvestmentWorth < b.currentInvestmentWorth;
 };
 
 inline auto employeeName = [](const Employee &a, const Employee &b) {
@@ -41,12 +47,18 @@ inline auto employeeName = [](const Employee &a, const Employee &b) {
 inline auto reverseEmployeeName = [](const Employee &a, const Employee &b) {
   return a.lastName > b.lastName;
 };
-
 inline auto employeeId = [](const Employee &a, const Employee &b) {
   return a.accountID < b.accountID;
 };
 inline auto reverseEmployeeId = [](const Employee &a, const Employee &b) {
   return a.accountID > b.accountID;
+};
+inline auto numAccountsManaged = [](const Employee &a, const Employee &b) {
+  return a.numAccountsManaged < b.numAccountsManaged;
+};
+inline auto reverseNumAccountsManaged = [](const Employee &a,
+                                           const Employee &b) {
+  return a.numAccountsManaged > b.numAccountsManaged;
 };
 
 // The actual template quickSort function. We pass the vector by reference to

@@ -230,8 +230,7 @@ Employee DataManager::getEmployee(int accountId) {
         employeeData.value().value("last_name").toString().toStdString();
     fetchedEmployee.numAccountsManaged =
         employeeData.value().value("num_customer").toInt();
-    fetchedEmployee.numAccountsManaged =
-        (ROLE)employeeData.value().value("role_id").toInt();
+    fetchedEmployee.role = (ROLE)employeeData.value().value("role_id").toInt();
   }
 
   return fetchedEmployee;
@@ -269,8 +268,7 @@ Employee DataManager::getEmployeeByLastName(std::string name) {
         employeeData.value().value("last_name").toString().toStdString();
     fetchedEmployee.numAccountsManaged =
         employeeData.value().value("num_customer").toInt();
-    fetchedEmployee.numAccountsManaged =
-        (ROLE)employeeData.value().value("role_id").toInt();
+    fetchedEmployee.role = (ROLE)employeeData.value().value("role_id").toInt();
   }
 
   return fetchedEmployee;
@@ -660,9 +658,9 @@ bool DataManager::updateCustomer(int customerId, Customer update) {
   queryArgs.emplace(":date_account_opened",
                     QString::fromStdString(update.dateAccountOpened));
   if (update.accountType == RETIREMENT) {
-    queryArgs.emplace(":date_account_opened", "Retirement");
+    queryArgs.emplace(":account_type", "Retirement");
   } else {
-    queryArgs.emplace(":date_account_opened", "Brokerage");
+    queryArgs.emplace(":account_type", "Brokerage");
   }
   queryArgs.emplace(":uninvested_funds", update.uninvestedFunds);
   queryArgs.emplace(":account_id", update.accountID);

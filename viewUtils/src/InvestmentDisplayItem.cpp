@@ -65,7 +65,6 @@ InvestmentDisplayItem::InvestmentDisplayItem(int investmentId,
   pTotalWorthLayout = new QVBoxLayout();
   pTotalWorthLayout->addWidget(pTotalWorthLabel, 0, Qt::AlignLeft);
   pTotalWorthLayout->addWidget(pTotalWorth, 0, Qt::AlignLeft);
-  pTotalWorthLayout->addStretch(1);
 
   pLayout = new QHBoxLayout(this);
   pLayout->addLayout(pStockNameAndCodeLayout);

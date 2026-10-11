@@ -103,6 +103,7 @@ CustomerCreationView::~CustomerCreationView() {}
 
 void CustomerCreationView::run() {
   this->clear();
+  pInitialInvestmentEntry->setReadOnly(false);
   this->show();
 }
 
@@ -114,6 +115,7 @@ void CustomerCreationView::run(std::vector<QString> customerData) {
   pPhoneNumberEntry->setText(customerData.at(3));
   pEmailEntry->setText(customerData.at(4));
   pInitialInvestmentEntry->setText(customerData.at(5));
+  pInitialInvestmentEntry->setReadOnly(true); // Should not be able to edit
   pAccountTypeEntry->setCurrentText(customerData.at(6));
   pEmployeeAssignedEntry->setCurrentText(customerData.at(7));
 
