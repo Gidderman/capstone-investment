@@ -46,6 +46,10 @@ void InitService::commitStockUpdates() {
   }
 
   if (errorInfo.size() != 0) {
+    // Due to the asynchronous nature of QtNetwork and the requests, we cannot
+    // rely on throwing exceptions (specifically because we utilize a lambda
+    // function for each request), as such when we have errors in the process we
+    // emit a signal once all errors have been accrued to notify the user.
     emit errorOccurred("InitService::commitStockUpdates -> " + errorInfo);
     errorInfo = "";
   }
@@ -65,6 +69,8 @@ void InitService::runStockQuery(std::string &stockCode) {
 
   QNetworkReply *reply = networkManager->get(request);
 
+  // Each connection is connected to a specific reply, meaning that when the
+  // reply is finished we can respond appropriately to the applicable reply.
   connect(reply, &QNetworkReply::finished, this,
           [this, stockCode, reply]() { handleReply(stockCode, reply); });
 }
@@ -97,6 +103,8 @@ QJsonObject InitService::readConfigFile(std::string fileName) {
   return configObject;
 }
 
+// This is called only from the lambda function connected to a reply's finished
+// signal.
 void InitService::handleReply(std::string stockCode, QNetworkReply *reply) {
   const int httpStatus =
       reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -115,6 +123,9 @@ void InitService::handleReply(std::string stockCode, QNetworkReply *reply) {
     }
     outstandingRequests--;
 
+    // If this is the last request that needs to be processed, we should
+    // inform the MasterController that it needs to write the stock data to
+    // the database.
     if (outstandingRequests <= 0) {
       emit refreshFinished();
     }
@@ -128,6 +139,9 @@ void InitService::handleReply(std::string stockCode, QNetworkReply *reply) {
     errorInfo += "Stock " + stockCode + " no valid price returned\n";
     outstandingRequests--;
 
+    // If this is the last request that needs to be processed, we should
+    // inform the MasterController that it needs to write the stock data to
+    // the database.
     if (outstandingRequests <= 0) {
       emit refreshFinished();
     }
@@ -138,6 +152,9 @@ void InitService::handleReply(std::string stockCode, QNetworkReply *reply) {
       {-1, "", stockCode, (float)returnValue.value("c").toDouble()});
   outstandingRequests--;
 
+  // If this is the last request that needs to be processed, we should
+  // inform the MasterController that it needs to write the stock data to
+  // the database.
   if (outstandingRequests <= 0) {
     emit refreshFinished();
   }

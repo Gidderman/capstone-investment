@@ -10,6 +10,7 @@ CRUDManager::CRUDManager() { init(); }
 
 CRUDManager::~CRUDManager() {}
 
+// Initialize the connection to our database.
 bool CRUDManager::init() {
 
   std::optional<QJsonObject> databaseLogInInfo = readJsonData("config.json");
@@ -40,6 +41,7 @@ std::optional<QSqlQuery>
 CRUDManager::runQuery(QString queryText,
                       std::unordered_map<QString, QVariant> queryArgs) {
 
+  // Utilize parameratized queries to protect agains SQL injection
   QSqlQuery query;
   query.prepare(queryText);
   for (auto &qArg : queryArgs) {
@@ -64,6 +66,8 @@ std::string CRUDManager::getErrorCode() {
 
 //********************PRIVATE FUNCITONS**************************************
 
+// Read our config file to get the private information for logging into our
+// database
 std::optional<QJsonObject> CRUDManager::readJsonData(QString fileName) {
 
   QFile configFile;

@@ -2,6 +2,7 @@
 // more information
 
 #include "CustomerCreationView.h"
+#include "AdminMainView.h"
 
 #include <QPainter>
 
@@ -37,9 +38,17 @@ CustomerCreationView::CustomerCreationView(std::vector<QString> employeeNames)
   // Initialize all display items, to include the placeholder text for all entry
   // boxes
   pFirstNameEntry = new QLineEdit();
+  pFirstNameEntry->setMaxLength(25);
+
   pLastNameEntry = new QLineEdit();
+  pLastNameEntry->setMaxLength(30);
+
   pPhoneNumberEntry = new QLineEdit();
+  pPhoneNumberEntry->setMaxLength(12);
+
   pEmailEntry = new QLineEdit();
+  pEmailEntry->setMaxLength(50);
+
   pInitialInvestmentEntry = new QLineEdit();
   pAccountTypeEntry = new QComboBox();
   pAccountTypeEntry->addItem("Brokerage");

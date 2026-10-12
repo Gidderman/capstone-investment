@@ -103,10 +103,10 @@ void ScrollableContainer::addDisplayList(std::vector<Employee> employees) {
     std::string employeeDisplayName =
         employee.lastName + ", " + employee.firstName.at(0);
 
-    TraderDisplayItem *displayItem =
-        new TraderDisplayItem(QString::fromStdString(employeeDisplayName),
-                              QString::number(employee.accountID),
-                              QString::number(employee.numAccountsManaged));
+    EmployeeDisplayItem *displayItem =
+        new EmployeeDisplayItem(QString::fromStdString(employeeDisplayName),
+                                QString::number(employee.accountID),
+                                QString::number(employee.numAccountsManaged));
 
     this->employeeDisplayList.push_back(displayItem);
   }
@@ -168,7 +168,7 @@ void ScrollableContainer::refreshDisplayList(std::vector<Employee> employees) {
     std::string employeeDisplayName =
         employee.lastName + ", " + employee.firstName.at(0);
 
-    TraderDisplayItem *displayItem = new TraderDisplayItem(
+    EmployeeDisplayItem *displayItem = new EmployeeDisplayItem(
         QString::fromStdString(employeeDisplayName),
         QString::number(employee.accountID),
         QString::fromStdString(numCustomersManagedDisplayText));
@@ -236,18 +236,17 @@ void ScrollableContainer::displayList() {
               &ScrollableContainer::listenForCustomerItemDoubleClick);
     }
   } else if (containerType == TRADERS) {
-    for (TraderDisplayItem *displayItem : employeeDisplayList) {
+    for (EmployeeDisplayItem *displayItem : employeeDisplayList) {
       pLayout->addWidget(displayItem);
 
-      connect(displayItem, &TraderDisplayItem::clicked, this,
+      connect(displayItem, &EmployeeDisplayItem::clicked, this,
               &ScrollableContainer::listenForEmployeeItemSingleClick);
-      connect(displayItem, &TraderDisplayItem::doubleClicked, this,
+      connect(displayItem, &EmployeeDisplayItem::doubleClicked, this,
               &ScrollableContainer::listenForEmployeeItemDoubleClick);
     }
   } else {
     for (InvestmentDisplayItem *displayItem : investmentDisplayList) {
       pLayout->addWidget(displayItem);
-      // TODO: stock display click connections
     }
   }
   pLayout->addStretch();
@@ -309,12 +308,15 @@ void ScrollableContainer::listenForFilterBySearch() {
               .contains(pSearchBar->text(), Qt::CaseInsensitive) ||
           QString::fromStdString(customerList.at(i).lastName)
               .contains(pSearchBar->text(), Qt::CaseInsensitive)) {
+
+        // Due to the way we construct the display lists, the index matches
+        // the index of the customer list
         customerDisplayList.at(i)->show();
       }
     }
 
   } else if (containerType == TRADERS) {
-    for (TraderDisplayItem *displayItem : employeeDisplayList) {
+    for (EmployeeDisplayItem *displayItem : employeeDisplayList) {
       displayItem->hide();
     }
 
@@ -323,6 +325,9 @@ void ScrollableContainer::listenForFilterBySearch() {
               .contains(pSearchBar->text(), Qt::CaseInsensitive) ||
           QString::fromStdString(employeeList.at(i).lastName)
               .contains(pSearchBar->text(), Qt::CaseInsensitive)) {
+
+        // Due to the way we construct the display lists, the index matches
+        // the index of the employee list
         employeeDisplayList.at(i)->show();
       }
     }
@@ -336,6 +341,9 @@ void ScrollableContainer::listenForFilterBySearch() {
               .contains(pSearchBar->text(), Qt::CaseInsensitive) ||
           QString::fromStdString(investmentList.at(i).stock.stockCode)
               .contains(pSearchBar->text(), Qt::CaseInsensitive)) {
+
+        // Due to the way we construct the display lists, the index matches
+        // the index of the investment list
         investmentDisplayList.at(i)->show();
       }
     }
@@ -369,7 +377,7 @@ void ScrollableContainer::reorderBySortSelection() {
     }
 
     refreshDisplayList(customerList);
-    listenForFilterBySearch();
+    listenForFilterBySearch(); // Called to prevent overwriting our search bar
   } else if (containerType == TRADERS) {
     switch (pSortSelection->currentIndex()) {
     case 0:
@@ -396,7 +404,7 @@ void ScrollableContainer::reorderBySortSelection() {
     }
 
     refreshDisplayList(employeeList);
-    listenForFilterBySearch();
+    listenForFilterBySearch(); // Called to prevent overwriting our search bar
   } else {
     switch (pSortSelection->currentIndex()) {
     case 0:
@@ -411,6 +419,6 @@ void ScrollableContainer::reorderBySortSelection() {
     }
 
     refreshDisplayList(investmentList);
-    listenForFilterBySearch();
+    listenForFilterBySearch(); // Called to prevent overwriting our search bar
   }
 }

@@ -20,10 +20,10 @@ private:
   CRUDManager &crudManager;
 
   // Data structure to store stocks for quick access. Due to the limits
-  // of the free API that is used to pull stock information, we will be
-  // dealing with stale stock data (at most approximately 24 hours old)
-  // and as such I have chosen to limit the number of database calls in
-  // this instance, instead opting for speed with "stale" data.
+  // of the free API that is used to pull stock information, we will already be
+  // dealing with stale stock data and as such I have chosen to limit the number
+  // of database calls in this instance, instead opting for speed with "stale"
+  // data.
   Custom::HashTable stockHashTable;
 
   // This pulls all stocks and populates them within the hash table
@@ -44,7 +44,9 @@ public:
   // setting their password after creation.
   Credentials getCredentialsByEmployeeId(int employeeId);
 
-  // Individual get functions
+  // All the major functions of this class work by creating the appropriate
+  // parameritized query, performing the query via the CRUDManager, then
+  // verifying and formatting the results.
   Customer getCustomer(int customerId);
   Employee getEmployee(int accountId);
   Employee getEmployeeByLastName(std::string name);

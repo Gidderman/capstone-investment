@@ -15,15 +15,18 @@ private:
 public:
   TraderService(DataManager &dataManager);
   ~TraderService();
-  // Used to get the list of customers to display on the MainTraderView
+
   std::vector<Customer> getListOfManagedCustomers(int employeeId);
   Customer getCustomerById(int customerId);
+
   // Returns a list of available stocks for purchasing
   std::vector<Stock> getListOfAvailableStocks();
-  // Calculates the price for purchasing stocks based on the number of stocks
-  // and the selected stock from the purchase stock window
+
   void executeStockPurchase(int customerId,
                             std::tuple<std::string, int, float> transaction);
+
+  // Calculates the price for purchasing stocks based on the number of stocks
+  // and the selected stock from the purchase stock window
   float calculatePriceOfStockPurchase(std::string stockCode, int num);
 
   void executeStockSale(int customerId,

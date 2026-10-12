@@ -115,9 +115,9 @@ AdminMainView::AdminMainView(std::vector<Customer> totalCustomers,
   connect(pTraderList, &ScrollableContainer::notifyOfEmployeeItemDoubleClick,
           this, &AdminMainView::editEmployeeInitiated);
   connect(pDeactivateTraderButton, &QPushButton::clicked, this,
-          &AdminMainView::notifyOfEmployeeDeletion);
+          &AdminMainView::notifyOfEmployeeDeactivation);
   connect(pCreateCustomerButton, &QPushButton::clicked, this,
-          &AdminMainView::notifyOfCustomerCreation);
+          &AdminMainView::notifyOfCreateCustomerButtonPressed);
   connect(pCustomerList, &ScrollableContainer::notifyOfCustomerItemSingleClick,
           this, &AdminMainView::customerSelected);
   connect(pCustomerList, &ScrollableContainer::notifyOfCustomerItemDoubleClick,
@@ -152,7 +152,7 @@ void AdminMainView::logOutInitiated() { emit notifyOfLogOut(); }
 // Called when the create employee button is clicked, causing the
 // AdminController to then display the CreateEmployeeWindow
 void AdminMainView::createEmployeeInitiated() {
-  emit notifyOfEmployeeCreation();
+  emit notifyOfCreateEmployeeButtonPressed();
 }
 
 // Called when a displayed employee is double clicked, causing the
@@ -165,13 +165,13 @@ void AdminMainView::editEmployeeInitiated(int id) {
 // Called when the delete employee button is clicked, causing the
 // AdminController to display the warning window
 void AdminMainView::deleteEmployeeInitiated() {
-  emit notifyOfEmployeeDeletion();
+  emit notifyOfEmployeeDeactivation();
 }
 
 // Called when the create customer button is clicked, causing the
 // AdminController to display the create customer window
 void AdminMainView::createCustomerInitiated() {
-  emit notifyOfCustomerCreation();
+  emit notifyOfCreateCustomerButtonPressed();
 }
 
 // Called when a displayed customer is double clicked

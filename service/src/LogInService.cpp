@@ -16,8 +16,6 @@ LogInService::~LogInService() {}
 
 // Returns three bools, first is true if an account exists does not exist, the
 // second for if the account needs to make a password, the third if the account
-// is locked. If both are true that indicates there is not an account associated
-// with that username, if both are false then the log in can commence
 std::tuple<bool, bool, bool>
 LogInService::doesAccountHaveValidCredentials(std::string username) {
   std::tuple<Employee, Credentials> logInInformation =
@@ -48,7 +46,8 @@ LogInService::doesAccountHaveValidCredentials(std::string username) {
 
 // This function gets the associated employee and credentials based on the
 // entred username, and returns a tuple of the employee and the allowed ROLE
-// if the log in was successful.
+// if the log in was successful. We do not return the credentials to minimize
+// potential credential exposure
 std::optional<std::tuple<Employee, ROLE>>
 LogInService::handleLogInAttempt(std::string enteredPassword) {
 
@@ -167,8 +166,6 @@ bool LogInService::hashPassword(std::string &rawPassword,
   return true;
 }
 
-// Authenticates the entered password against the stored salted, hashed
-// password
 bool LogInService::authenticate(std::string enteredPassword,
                                 std::string validPassword) {
   return crypto_pwhash_str_verify(validPassword.c_str(),

@@ -29,9 +29,11 @@ void TraderController::run(Employee employee, Authorizer *authorizer) {
   // the allowable role for the given user, if it doesn't match the role for
   // this screen then the program will not proceed.
   if (!authorizer->authorizeUser(TRADER)) {
-    // TODO: Throw an exception
+    throw std::logic_error(
+        "Unauthorized access to the Trader Screen was attempted");
   }
 
+  // Used to display employee information on screen
   loggedInEmployee = employee;
 
   try {
@@ -39,6 +41,8 @@ void TraderController::run(Employee employee, Authorizer *authorizer) {
         formatLoggedInEmployeeForDisplay(),
         traderService.getListOfManagedCustomers(loggedInEmployee.accountID));
   } catch (std::logic_error &e) {
+    // std::logic_error is the standard error the program throws when
+    // encountering a potential issue
     displayError(QString::fromStdString(e.what()));
   } catch (std::exception &e) {
     displayError(QString::fromStdString(e.what()));
@@ -88,6 +92,7 @@ TraderController::formatIndividualCustomerForDisplay(Customer customer) {
 }
 
 void TraderController::displayError(QString errorText) {
+  // Displays a pop up window notifying the user of an error
   ErrorWindow *errorWindow = new ErrorWindow(errorText);
   int windowAcknowledged = errorWindow->exec();
   delete errorWindow;

@@ -20,12 +20,14 @@ private:
   QNetworkAccessManager *networkManager;
 
   std::string errorInfo;
-  int outstandingRequests;
+  int outstandingRequests; // Tracks the number of request we are waiting for
+                           // to complete
 
-  std::vector<std::string> trackedStockCodes;
+  std::vector<std::string>
+      trackedStockCodes;        // Used to determine what stock values to get
   std::vector<Stock> stockData; // Used to accrue all stock updates
 
-  void runStockQuery(std::string &stockCode); // runs the stock query
+  void runStockQuery(std::string &stockCode);
   QJsonObject readConfigFile(std::string fileName);
   void handleReply(std::string stockCode, QNetworkReply *reply);
 
@@ -33,7 +35,7 @@ public:
   InitService(DataManager &dataManager);
   ~InitService();
   void updateStockData();
-  void commitStockUpdates();
+  void commitStockUpdates(); // Writes the updated stocks to the database
 
 signals:
   void updateStockPrice(std::string stockCode, float stockPrice);

@@ -45,6 +45,7 @@ private:
 public:
   MasterController();
   ~MasterController();
+
   // The below function would be used to direct the application initialization
   // functions
   void executeMainFunctions();

@@ -2,8 +2,8 @@
 // Each instance of the class is a singular Trader that needs to be displayed
 // in a specific format.
 
-#ifndef TRADER_DISPLAY_ITEM_H
-#define TRADER_DISPLAY_ITEM_H
+#ifndef EMPLOYEE_DISPLAY_ITEM_H
+#define EMPLOYEE_DISPLAY_ITEM_H
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -12,7 +12,7 @@
 #include <qboxlayout.h>
 #include <qevent.h>
 
-class TraderDisplayItem : public QWidget {
+class EmployeeDisplayItem : public QWidget {
   // Requried to use signals and slots
   Q_OBJECT
 
@@ -44,8 +44,8 @@ protected:
 
 public:
   // Pass in the information to display with the constructor
-  TraderDisplayItem(QString name, QString id, QString numAccountsManaged);
-  ~TraderDisplayItem();
+  EmployeeDisplayItem(QString name, QString id, QString numAccountsManaged);
+  ~EmployeeDisplayItem();
 
   void paintEvent(QPaintEvent *) override;
 

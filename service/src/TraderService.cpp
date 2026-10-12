@@ -8,6 +8,8 @@
 #include <stdexcept>
 #include <string>
 
+// We utilize the passed in DataManager to prevent creating multiple
+// CRUDManagers and therefore, multiple database connections
 TraderService::TraderService(DataManager &dataManager)
     : dataManager(dataManager) {}
 
@@ -180,6 +182,7 @@ std::vector<float> TraderService::calculateResultOfSale(int customerId,
       transactionInfo.push_back(
           investment.stock.stockPrice *
           (float)investment.numHeld); // Current investment worth
+
       // result of the transaction
       transactionInfo.push_back(num * investment.stock.stockPrice);
       transactionInfo.push_back((float)investment.numHeld);

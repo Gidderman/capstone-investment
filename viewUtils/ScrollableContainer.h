@@ -7,8 +7,8 @@
 #define SCROLLABLE_CONTAINER_H
 
 #include "CustomerDisplayItem.h"
+#include "EmployeeDisplayItem.h"
 #include "InvestmentDisplayItem.h"
-#include "TraderDisplayItem.h"
 
 #include "Customer.h"
 #include "Employee.h"
@@ -51,7 +51,7 @@ private:
   // container constructed. Pointers are used to prevent unnecessary copying of
   // information
   std::vector<CustomerDisplayItem *> customerDisplayList;
-  std::vector<TraderDisplayItem *> employeeDisplayList;
+  std::vector<EmployeeDisplayItem *> employeeDisplayList;
   std::vector<InvestmentDisplayItem *> investmentDisplayList;
 
   // We maintain a copy of current display items for sorting and filtering

@@ -17,7 +17,6 @@
 DataManager::DataManager(CRUDManager &crudManager) : crudManager(crudManager) {
   if (!updateStoredStocks(getAllStoredStocks())) {
     errorInfo = crudManager.getErrorCode();
-    // TODO: notify of error
   }
 }
 

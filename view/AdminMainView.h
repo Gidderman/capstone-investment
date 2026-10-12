@@ -5,10 +5,6 @@
 // clicking on a displayed employee or customer will allow the user to edit
 // them.
 
-// TODO:
-// THERE IS STILL A LOT OF WORK TO DO ON THIS CLASS, SUCH AS HIGHLIGHTING A
-// SELECTED CUSTOMER OR EMPLOYEE AND GENERAL DISPLAY FORMATING
-
 #ifndef ADMIN_MAIN_VIEW_H
 #define ADMIN_MAIN_VIEW_H
 
@@ -90,14 +86,17 @@ public slots:
 signals:
   void
   notifyOfLogOut(); // Connected to AdminController to notify of log out request
-  void notifyOfEmployeeCreation(); // Informs the AdminController that the user
-                                   // wants to create a new employee
+  void notifyOfCreateEmployeeButtonPressed(); // Informs the AdminController
+                                              // that the user wants to create
+                                              // a new employee
   void notifyOfEmployeeEdit(int id); // Informs the AdminController that the
                                      // user wants to edit an existing employee
-  void notifyOfEmployeeDeletion(); // Informs the AdminController that the user
-                                   // is trying to delete an employee
-  void notifyOfCustomerCreation(); // Informs the AdminController that the user
-                                   // wants to create a new employee
+  void
+  notifyOfEmployeeDeactivation(); // Informs the AdminController that the
+                                  // user is trying to deactivate an employee
+  void
+  notifyOfCreateCustomerButtonPressed(); // Informs the AdminController that the
+                                         // user wants to create a new employee
   void notifyOfCustomerEdit(
       int id); // Informs adminController that we are editing a customer
   void notifyOfCustomerDeletion(); // informs the AdminController that the user

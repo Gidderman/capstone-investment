@@ -2,8 +2,8 @@
 // handles the input and output for that window, reporting results to the admin
 // controller.
 
-#ifndef TRADER_CREATION_VIEW_H
-#define TRADER_CREATION_VIEW_H
+#ifndef EMPLOYEE_CREATION_VIEW_H
+#define EMPLOYEE_CREATION_VIEW_H
 
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -13,7 +13,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-class TraderCreationView : public QWidget {
+class EmployeeCreationView : public QWidget {
   // Required to utilize signals and slots
   Q_OBJECT
 
@@ -45,8 +45,8 @@ private:
   void clear();
 
 public:
-  TraderCreationView();
-  ~TraderCreationView();
+  EmployeeCreationView();
+  ~EmployeeCreationView();
   // Main entry point into this class
   void run();
   // Overload run function is called when editing an existing employee

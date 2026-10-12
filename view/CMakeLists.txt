@@ -10,7 +10,7 @@ target_sources(Views
     src/LogInView.cpp
     src/PurchaseStockWindow.cpp
     src/SellStockWindow.cpp
-    src/TraderCreationView.cpp
+    src/EmployeeCreationView.cpp
     src/TraderMainView.cpp
     src/WarningWindow.cpp
     src/ErrorWindow.cpp
@@ -24,7 +24,7 @@ target_sources(Views
       LogInView.h
       PurchaseStockWindow.h
       SellStockWindow.h
-      TraderCreationView.h
+      EmployeeCreationView.h
       TraderMainView.h
       WarningWindow.h
       ErrorWindow.h

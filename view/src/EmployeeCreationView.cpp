@@ -1,13 +1,13 @@
-// This class implements TraderCreationView.h, see header file for further
+// This class implements EmployeeCreationView.h, see header file for further
 // information
 
-#include "TraderCreationView.h"
+#include "EmployeeCreationView.h"
 
 #include <QPainter>
 
-TraderCreationView::TraderCreationView() : id(-1) {
+EmployeeCreationView::EmployeeCreationView() : id(-1) {
 
-  this->setObjectName("TraderCreationView");
+  this->setObjectName("EmployeeCreationView");
 
   // Initialize display components
   pCreateEmployeeTitle = new QLabel("Create Employee");
@@ -23,7 +23,11 @@ TraderCreationView::TraderCreationView() : id(-1) {
   pRoleSelectionLabel->setObjectName("CreateEmployeeItemLabel");
 
   pFirstNameEntry = new QLineEdit();
+  pFirstNameEntry->setMaxLength(25);
+
   pLastNameEntry = new QLineEdit();
+  pLastNameEntry->setMaxLength(30);
+
   pRoleSelection = new QComboBox();
   pRoleSelection->addItem(QString("Trader"));
   pRoleSelection->addItem(QString("Admin"));
@@ -63,19 +67,19 @@ TraderCreationView::TraderCreationView() : id(-1) {
 
   // Make connections
   connect(pCreateEmployeeButton, &QPushButton::clicked, this,
-          &TraderCreationView::listenForEmployeeCreation);
+          &EmployeeCreationView::listenForEmployeeCreation);
   connect(pCancelCreationButton, &QPushButton::clicked, this,
-          &TraderCreationView::listenForCreationCancellation);
+          &EmployeeCreationView::listenForCreationCancellation);
   connect(pUnlockAccountButton, &QPushButton::clicked, this,
-          &TraderCreationView::listenForAccountUnlock);
+          &EmployeeCreationView::listenForAccountUnlock);
   connect(pResetPasswordButton, &QPushButton::clicked, this,
-          &TraderCreationView::listenForPasswordReset);
+          &EmployeeCreationView::listenForPasswordReset);
 }
 
-TraderCreationView::~TraderCreationView() {}
+EmployeeCreationView::~EmployeeCreationView() {}
 
 // Called when creating a new employee
-void TraderCreationView::run() {
+void EmployeeCreationView::run() {
   this->clear();
 
   // Neither of these buttons are applicable to creating an account
@@ -89,7 +93,7 @@ void TraderCreationView::run() {
 
 // Called when editing an existing employee. Prepopulates all the fiels with the
 // employee data.
-void TraderCreationView::run(std::vector<QString> employee) {
+void EmployeeCreationView::run(std::vector<QString> employee) {
   pFirstNameEntry->setText(employee.at(0));
   pLastNameEntry->setText(employee.at(1));
   pRoleSelection->setCurrentText(employee.at(2));
@@ -107,13 +111,13 @@ void TraderCreationView::run(std::vector<QString> employee) {
   this->show();
 }
 
-void TraderCreationView::end() {
+void EmployeeCreationView::end() {
   this->clear();
   this->hide();
 }
 
 // This is necessarcy to use style sheets.
-void TraderCreationView::paintEvent(QPaintEvent *) {
+void EmployeeCreationView::paintEvent(QPaintEvent *) {
   QStyleOption opt;
   opt.initFrom(this);
   QPainter p(this);
@@ -122,7 +126,7 @@ void TraderCreationView::paintEvent(QPaintEvent *) {
 
 //************************PRIVATE FUNCTIONS****************
 // Clears all entry fields to their defaults
-void TraderCreationView::clear() {
+void EmployeeCreationView::clear() {
   id = -1;
   pFirstNameEntry->clear();
   pLastNameEntry->clear();
@@ -133,7 +137,7 @@ void TraderCreationView::clear() {
 //************************SLOTS****************************
 // Called when the Create Employee/Save Employee button is clicked,
 // lets AdminController know that there is some action that needs to be taken
-void TraderCreationView::listenForEmployeeCreation() {
+void EmployeeCreationView::listenForEmployeeCreation() {
   std::vector<QString> employee;
   employee.push_back(pFirstNameEntry->text());
   employee.push_back(pLastNameEntry->text());
@@ -147,16 +151,16 @@ void TraderCreationView::listenForEmployeeCreation() {
 
 // Called when the cancel button is clicked, lets the AdminController know
 // to close the screen
-void TraderCreationView::listenForCreationCancellation() {
+void EmployeeCreationView::listenForCreationCancellation() {
   emit notifyOfCancellation();
 }
 
 // Called when the Unlock account button is clicked. Informs the Admin
 // Controller
-void TraderCreationView::listenForAccountUnlock() {
+void EmployeeCreationView::listenForAccountUnlock() {
   emit notifyOfAccountUnlock(this->id);
 }
 
-void TraderCreationView::listenForPasswordReset() {
+void EmployeeCreationView::listenForPasswordReset() {
   emit notifyOfPasswordReset(this->id);
 }

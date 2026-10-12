@@ -5,7 +5,7 @@ find_package(Qt6 REQUIRED COMPONENTS Widgets)
 target_sources(ViewUtils
   PRIVATE
     src/ScrollableContainer.cpp
-    src/TraderDisplayItem.cpp
+    src/EmployeeDisplayItem.cpp
     src/CustomerDisplayItem.cpp
     src/InvestmentDisplayItem.cpp
 
@@ -13,7 +13,7 @@ target_sources(ViewUtils
     FILE_SET HEADERS
     FILES
       ScrollableContainer.h
-      TraderDisplayItem.h
+      EmployeeDisplayItem.h
       CustomerDisplayItem.h
       InvestmentDisplayItem.h
 )

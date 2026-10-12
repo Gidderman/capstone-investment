@@ -1,6 +1,6 @@
 // This class implements TraderDisplayItem.h, see header file for more info
 
-#include "TraderDisplayItem.h"
+#include "EmployeeDisplayItem.h"
 
 #include <QPainter>
 #include <QStyle>
@@ -8,8 +8,8 @@
 #include <qboxlayout.h>
 #include <qnamespace.h>
 
-TraderDisplayItem::TraderDisplayItem(QString name, QString id,
-                                     QString numAccountsManaged) {
+EmployeeDisplayItem::EmployeeDisplayItem(QString name, QString id,
+                                         QString numAccountsManaged) {
   this->setObjectName("DisplayItem");
 
   // Initialize the display variables
@@ -69,24 +69,24 @@ TraderDisplayItem::TraderDisplayItem(QString name, QString id,
   pMainLayout->addLayout(pNumAccountsManagedLayout, 0);
 }
 
-TraderDisplayItem::~TraderDisplayItem() {}
+EmployeeDisplayItem::~EmployeeDisplayItem() {}
 
 // This is necessarcy to use style sheets.
-void TraderDisplayItem::paintEvent(QPaintEvent *) {
+void EmployeeDisplayItem::paintEvent(QPaintEvent *) {
   QStyleOption opt;
   opt.initFrom(this);
   QPainter p(this);
   style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
-void TraderDisplayItem::mousePressEvent(QMouseEvent *event) {
+void EmployeeDisplayItem::mousePressEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
     emit clicked(this->id);
   }
 }
 
 // When the item is double clicked, tell the scrollable container
-void TraderDisplayItem::mouseDoubleClickEvent(QMouseEvent *event) {
+void EmployeeDisplayItem::mouseDoubleClickEvent(QMouseEvent *event) {
   if (event->buttons() == Qt::LeftButton) {
     emit doubleClicked(this->id);
   }

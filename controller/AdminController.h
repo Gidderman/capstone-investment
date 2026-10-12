@@ -1,5 +1,5 @@
 // The AdminController serves the purpose of formating all inputs and outputs
-// for the Admin screen, which consists of AdminMainView, TraderCreationView,
+// for the Admin screen, which consists of AdminMainView, EmployeeCreationView,
 // and CustomerCreationView, as well as a seperate warning window that provides
 // the user an opportunity to go back when deleting an employee or customer. In
 // addition to the formatting function, the AdminController also directs the
@@ -12,7 +12,7 @@
 #include "AdminService.h"
 #include "Authorizer.h"
 #include "CustomerCreationView.h"
-#include "TraderCreationView.h"
+#include "EmployeeCreationView.h"
 #include "WarningWindow.h"
 
 #include <QObject>
@@ -28,15 +28,12 @@ private:
   // Qt, which expects pointers for essentially all operations.
   AdminMainView *pAdminMainView;
   CustomerCreationView *pCustomerCreationView;
-  TraderCreationView *pTraderCreationView;
+  EmployeeCreationView *pEmployeeCreationView;
 
   WarningWindow *pDeleteWarning;
 
   // Service declaration
   AdminService &adminService;
-
-  // The controller keeps track of the logged in employees id
-  int loggedInAccountId;
 
   // This formats an individual employee or customer for display. This is
   // primarily used when editing an employee or customer and it is needed to
@@ -51,19 +48,18 @@ public:
   ~AdminController();
   // This function is the entry into the AdminController and is called by the
   // Master Controller after a successful admin log in.
-  void run(int loggedInAccountId, Authorizer *authorizer);
+  void run(Authorizer *authorizer);
 
-  // The below functions communicate with the AdminService to send data back to
-  // the database.
-  void executeEmployeeCreation();
-  void executeEmployeeEdit(Employee employeeToBeEdited);
+  void initiateEmployeeCreation();
+  void initiateEmployeeEdit(Employee employeeToBeEdited);
   void executeEmployeeDeactivation();
-  void executeCustomerCreation();
-  void executeCustomerEdit(Customer customer);
+  void initiateCustomerCreation();
+  void initiateCustomerEdit(Customer customer);
   void executeCustomerDeletion();
 
-  // These actions are called from the TraderCreationView and correspond to the
-  // buttons there: 'Create Employee/Save Changes' for executeEmployeeAction(),
+  // These actions are called from the EmployeeCreationView and correspond to
+  // the buttons there: 'Create Employee/Save Changes' for
+  // executeEmployeeAction(),
   //'Unlock Account' for executeEmployeeAccountUnlock(), and 'Cancel' for
   // cancelEmployeeAction()
   void executeEmployeeAction(Employee employee);
@@ -79,18 +75,20 @@ public slots:
   // These slots are the communication points between the various screens and
   // the controller.
   void listenForLogOut(); // Connected to the AdminMainView log out button.
-  void listenForEmployeeCreation(); // Connected to the AdminMainView Create
-                                    // Employee button.
+  void
+  listenForInitiationOfEmployeeCreation(); // Connected to the AdminMainView
+                                           // Create Employee button.
   void listenForEmployeeEdit(
       int id); // Connected a double click on an existing employee
-  void listenForEmployeeDeletion();   // Connected to the AdminMainView Remove
-                                      // Employee button.
-  void listenForCustomerCreation();   // Connected to the AdminMainView Create
-                                      // Customer button.
-  void listenForCustomerEdit(int id); // Connected to a double click on an
-                                      // existing customer.
-  void listenForCustomerDeletion();   // Connected to the AdminMainView Remove
-                                      // Customer button.
+  void listenForEmployeeDeactivation(); // Connected to the AdminMainView
+                                        // Deactivate Employee button.
+  void
+  listenForInitiationOfCustomerCreation(); // Connected to the AdminMainView
+                                           // Create Customer button.
+  void listenForCustomerEdit(int id);      // Connected to a double click on an
+                                           // existing customer.
+  void listenForCustomerDeletion(); // Connected to the AdminMainView Remove
+                                    // Customer button.
 
   // While the above slots were related to the AdminMainView, these are related
   // to the CreateTraderView
@@ -106,8 +104,10 @@ public slots:
       std::vector<QString> customer);   // Connected to the confirm button
   void listenForCustomerActionCancel(); // Connected to the cancel button
 
-  void listenForCustomerSelection(int id);
-  void listenForEmployeeSelection(int id);
+  void listenForCustomerSelection(
+      int id); // Connected to a single click on a displayed customer
+  void listenForEmployeeSelection(
+      int id); // Connected to a single click on a displayed employee
 
 signals:
   void informMasterControllerOfLogOut();

@@ -14,7 +14,9 @@
 // Additionally creates instances of all the services and controllers. This is
 // done to prevent recreating database connections, ensuring that each service
 // and controller only connects to a single DataManager and therefore a single
-// CRUD manager
+// CRUD manager. Chose to pass by reference vice using the singleton pattern
+// for each of these services to maintain some enforcement of the designed
+// architecture.
 MasterController::MasterController()
     : crudManager(CRUDManager()), dataManager(DataManager(crudManager)),
       logInService(LogInService(dataManager)),
@@ -51,7 +53,6 @@ MasterController::MasterController()
 
 MasterController::~MasterController() {}
 
-// TODO: init functions
 void MasterController::executeMainFunctions() {
   initService.updateStockData();
 };
@@ -102,15 +103,26 @@ void MasterController::executeLogin(std::string enteredPassword) {
   // the log in window.
   switch (std::get<1>(logInInformation.value())) {
   case ADMIN:
-
-    logInView->hide();
-    adminController.run(std::get<0>(logInInformation.value()).accountID,
-                        &authorizer);
+    try {
+      logInView->hide();
+      adminController.run(&authorizer);
+    } catch (std::logic_error &e) {
+      displayError(e.what());
+    } catch (std::exception &e) {
+      displayError(e.what());
+    }
     break;
 
   case TRADER:
-    logInView->hide();
-    traderController.run(std::get<0>(logInInformation.value()), &authorizer);
+    try {
+      logInView->hide();
+      traderController.run(std::get<0>(logInInformation.value()), &authorizer);
+    } catch (std::logic_error &e) {
+      displayError(e.what());
+    } catch (std::exception &e) {
+      displayError(e.what());
+    }
+
     break;
 
   default:
@@ -126,6 +138,7 @@ void MasterController::executeLogOut() {
 
 //**************************PRIVATE FUNCTIONS************************
 void MasterController::displayError(QString errorText) {
+  // Displays a pop up window with the applicable error
   ErrorWindow *errorWindow = new ErrorWindow(errorText);
   int windowAcknowledged = errorWindow->exec();
   delete errorWindow;
@@ -183,6 +196,7 @@ void MasterController::detectLogin(QString password) {
   }
 } // connected to the log in button on the log in screen
 
+// Connected to the line edit where the user reenters a password for creation
 void MasterController::listenForPasswordVerificationFieldChange(
     QString password, QString passwordVerification) {
   if (!logInService.verifyPasswordsMatch(password.toStdString(),
@@ -193,6 +207,7 @@ void MasterController::listenForPasswordVerificationFieldChange(
   }
 }
 
+// Connected to the create password button
 void MasterController::detectPasswordCreation(QString password,
                                               QString passwordVerification) {
   if (!logInService.verifyPasswordComplexityRequirements(
@@ -213,6 +228,8 @@ void MasterController::detectPasswordCreation(QString password,
   }
 }
 
+// Connected to the log out buttons on both the Admin Main View and Trader Main
+// View
 void MasterController::listenForLogOut() {
   executeLogOut();
 } // connected to the log out buttons on the admin and trader screens
@@ -220,10 +237,16 @@ void MasterController::listenForLogOut() {
 // The user wants to go back to the username entry screen.
 void MasterController::listenForGoBack() { logInView->runUsernameScreen(); }
 
+// Due to the asynchronous nature of pulling stock data from the API,
+// and the use of lambda functions to compensate, we rely on signals and slots
+// to communicate errors while trying to pull fresh stock data vice exceptions
 void MasterController::listenForStockRefreshError(std::string errorInfo) {
   displayError(QString::fromStdString(errorInfo));
 }
 
+// Once all of network requests for stock information have completed (whether
+// successfully or not) this slot is called to write the new stock data to
+// the database.
 void MasterController::listenForStockRefreshCompletion() {
   initService.commitStockUpdates();
 }
